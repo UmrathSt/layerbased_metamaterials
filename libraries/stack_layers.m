@@ -1,0 +1,60 @@
+function [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
+ %% takes a list of structures describing layers. Example:
+ %% layer_list = [(@CreateRect, rectangle_object),
+ %%               (@CreateCircle, circle_object)]
+ %% first list entry is supposed to describe unitcell dimensions
+  CSX = InitCSX();
+  z = 0;
+  zvals = [z];
+  xvals = [];
+  yvals = [];
+  layer_list = layer_list;
+  UC = layer_list{1, 2};
+  param_str = ["# stacked metamaterial geometry \n# f [Hz], L [" num2str(UC.unit) " m]\n"];
+  [CSX, params] = CreateUC(CSX, UC, [0, 0, 0], 0);
+  param_str = horzcat(param_str, params);
+  [CSX, params] = defineMaterials(CSX, material_list, param_str);
+  param_str = horzcat(param_str, params);
+  for i = 2:(size(layer_list)(1));
+    object = layer_list{i, 2};
+    object_handler = layer_list{i, 1};
+    zvals = horzcat(zvals, [zvals(end)-object.lz/2, zvals(end)-object.lz]);
+    try;
+      R = object.R1;
+      w = object.w1;
+      xvals = horzcat(xvals, [-R, -R+w, R-w, R]);
+      yvals = horzcat(yvals, [-R, -R+w, R-w, R]);    
+    catch lasterror;
+    end_try_catch;
+    try;
+      R = object.R2;
+      w = object.w2;
+      xvals = horzcat(xvals, [-R, -R+w, R-w, R]);
+      yvals = horzcat(yvals, [-R, -R+w, R-w, R]);     
+    catch lasterror;
+    end_try_catch;
+    try;
+      R = object.R;
+      w = object.w;
+      xvals = horzcat(xvals, [-R, -R+w, R-w, R]);
+      yvals = horzcat(yvals, [-R, -R+w, R-w, R]);     
+    catch lasterror;
+    end_try_catch;
+    translate = [object.xycenter(1:2), zvals(end)+object.lz/2];
+    rotate = object.rotate;
+    param_str = horzcat(param_str, ["# layer number " num2str(i-1) ":\n"]);
+    [CSX, params] = object_handler(CSX, object, translate, rotate);
+    param_str = horzcat(param_str, params);
+  endfor;
+  lastz = zvals(end);
+  
+  mesh.x = SmoothMeshLines([-UC.lx/2, xvals, UC.lx/2], UC.dx, 1.1);
+  mesh.y = SmoothMeshLines([-UC.ly/2, yvals, UC.ly/2], UC.dy, 1.1);
+  if not(UC.grounded);
+    mesh.z = SmoothMeshLines2([-UC.lz/2, zvals, UC.lz/2], UC.dz);
+  else;
+    mesh.z = SmoothMeshLines2([-7*UC.lz/8, zvals, 1*UC.lz/8], UC.dz);
+  endif;
+    CSX = DefineRectGrid(CSX, UC.unit, mesh);
+  mesh = AddPML(mesh, [0 0 0 0 8 8]);
+endfunction;
