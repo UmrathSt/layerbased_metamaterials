@@ -3,7 +3,6 @@
 from pyx import *
 import numpy as np
 import sys
-from raw_text import raw
 text.set(mode="latex")
 unit.set(xscale=1)
 c = canvas.canvas()

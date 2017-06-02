@@ -43,8 +43,8 @@ class MinkowskiFractal:
 
     def shift_line(self, l):
         scale = self.scale
-        trans_x = scale*l.dir[1]
-        trans_y = scale*l.dir[0]
+        trans_x = scale*l.dir[1]*l.length
+        trans_y = -scale*l.dir[0]*l.length
         new_p1 = point(l.start.x - trans_x, l.start.y - trans_y)
         new_p2 = point(l.stop.x - trans_x, l.stop.y - trans_y)
         new_line = line(new_p1, new_p2)
@@ -53,21 +53,35 @@ class MinkowskiFractal:
     def iterate(self):
         new_points = []
         for i in range(len(self.points) - 1):
-            insert_idx = i+1
-            to_insert = self.split_points(self.points[i], self.points[i+1])
-            new_points.append(self.points[i])
-            new_points.append(to_insert[0])
-            l = line(to_insert[0], to_insert[1])
-            shift_line = self.shift_line(l)
-            new_points.extend([shift_line.start, shift_line.stop])
-            new_points.append(to_insert[1])
-            new_points.append(self.points[i+1])
+            try:
+                insert_idx = i+1
+                to_insert = self.split_points(self.points[i], self.points[i+1])
+                new_points.append(self.points[i])
+                new_points.append(to_insert[0])
+                l = line(to_insert[0], to_insert[1])
+                shift_line = self.shift_line(l)
+                new_points.extend([shift_line.start, shift_line.stop])
+                new_points.append(to_insert[1])
+                new_points.append(self.points[i+1])
+            except:
+                pass
         self.points = new_points            
 
 if __name__ == "__main__":
-    points = [point(1, 0), point(1, 1)]
-    mkf = MinkowskiFractal(points)
-    print(mkf.get_points())
-    mkf.iterate()
-    print(mkf.get_points())
-
+    from matplotlib import pyplot as plt
+    import numpy as np
+    points = [point(-1, 1), point(1, 1), 
+              point(1, -1), point(-1, -1),
+              point(-1, 1)]
+    mkf = MinkowskiFractal(points, 0.5, 2)
+    i = 0
+    colors = ["k", "r", "b", "g"]
+    while i < len(colors):
+        kurve = np.array([[p.x, p.y] for p in mkf.get_points()])
+        plt.plot(kurve[:, 0], kurve[:, 1], linestyle = "-", linewidth = 2, color = colors[i])
+        mkf.iterate()
+        i += 1
+    plt.axis("equal")
+    plt.xlim([-1.5, 1.5])
+    plt.ylim([-1.5,1.5])
+    plt.show()
