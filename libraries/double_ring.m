@@ -5,7 +5,7 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complementia
   UC.td_dumps = 1;
   UC.fd_dumps = 1;
   UC.s_dumps = 1;
-  UC.s_dumps_folder = "/home/stefan/Arbeit/openEMS/layerbased_metamaterials/SParameters";
+  UC.s_dumps_folder = "~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse/SParameters";
   UC.s11_filename_prefix = ["UCDim_" num2str(UCDim) "_lz_" num2str(fr4_thickness) "_R1_" num2str(R1) "_w1_" num2str(w1) "_R2_" num2str(R2) "_w2_" num2str(w2) "_epsFR4_Lorentz_" num2str(eps_FR4)];
   complemential = complemential;
   if complemential;
@@ -13,7 +13,7 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complementia
   endif;
   UC.s11_filename = "Sparameters_";
   UC.s11_subfolder = "double_ring";
-  UC.run_simulation = 1;
+  UC.run_simulation = 0;
   UC.show_geometry = 0;
   UC.grounded = 1;
   UC.unit = 1e-3;
@@ -28,11 +28,14 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complementia
   UC.dump_frequencies = [2.4e9, 5.2e9, 16.5e9];
   UC.s11_delta_f = 10e6;
   UC.EndCriteria = 5e-4;
-  UC.SimPath = ["/mnt/hgfs/E/openEMS/layerbased_metamaterials/" UC.s11_subfolder "/" UC.s11_filename_prefix];
-  confirm_recursive_rmdir(0);
+  UC.SimPath = ["~/Arbeit/openEMS/layerbased_metamaterials/Simulation/" UC.s11_subfolder "/" UC.s11_filename_prefix];
   UC.SimCSX = "geometry.xml";
-  [status, message, messageid] = rmdir(UC.SimPath, 's' ); % clear previous directory
-  [status, message, messageid] = mkdir(UC.SimPath ); % create empty simulation folder
+  UC.ResultPath = ["~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse"];
+  if UC.run_simulation;
+    confirm_recursive_rmdir(0);
+    [status, message, messageid] = rmdir(UC.SimPath, 's' ); % clear previous directory
+    [status, message, messageid] = mkdir(UC.SimPath ); % create empty simulation folder
+  endif;
   FDTD = InitFDTD('EndCriteria', UC.EndCriteria);
   FDTD = SetGaussExcite(FDTD, 0.5*(UC.f_start+UC.f_stop),0.5*(UC.f_stop-UC.f_start));
   BC = {'PMC', 'PMC', 'PEC', 'PEC', 'PML_8', 'PML_8'}; % boundary conditions
@@ -101,7 +104,7 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complementia
   if UC.run_simulation;
     openEMS_opts = '';#'-vvv';
     #Settings = ["--debug-PEC", "--debug-material"];
-    Settings = [];
+    Settings = ["--numThreads=3"];
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);
   endif;
   doPortDump(port, UC);
