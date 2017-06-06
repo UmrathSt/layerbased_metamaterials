@@ -3,6 +3,7 @@ function [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
  %% layer_list = [(@CreateRect, rectangle_object),
  %%               (@CreateCircle, circle_object)]
  %% first list entry is supposed to describe unitcell dimensions
+ %% development
   CSX = InitCSX();
   z = 0;
   zvals = [z];
