@@ -5,7 +5,7 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complementia
   UC.td_dumps = 1;
   UC.fd_dumps = 1;
   UC.s_dumps = 1;
-  UC.s_dumps_folder = "~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse/SParameters";
+  UC.s_dumps_folder = "~/git_layerbased/layerbases_metamaterials/Ergebnisse/SParameters";
   UC.s11_filename_prefix = ["UCDim_" num2str(UCDim) "_lz_" num2str(fr4_thickness) "_R1_" num2str(R1) "_w1_" num2str(w1) "_R2_" num2str(R2) "_w2_" num2str(w2) "_epsFR4_Lorentz_" num2str(eps_FR4)];
   complemential = complemential;
   if complemential;
@@ -13,8 +13,8 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complementia
   endif;
   UC.s11_filename = "Sparameters_";
   UC.s11_subfolder = "double_ring";
-  UC.run_simulation = 0;
-  UC.show_geometry = 0;
+  UC.run_simulation = 1;
+  UC.show_geometry = 1;
   UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 1e9;
@@ -28,9 +28,9 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complementia
   UC.dump_frequencies = [2.4e9, 5.2e9, 16.5e9];
   UC.s11_delta_f = 10e6;
   UC.EndCriteria = 5e-4;
-  UC.SimPath = ["~/Arbeit/openEMS/layerbased_metamaterials/Simulation/" UC.s11_subfolder "/" UC.s11_filename_prefix];
+  UC.SimPath = ["~/git_layerbased/layerbases_metamaterials/Simulation/" UC.s11_subfolder "/" UC.s11_filename_prefix];
   UC.SimCSX = "geometry.xml";
-  UC.ResultPath = ["~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse"];
+  UC.ResultPath = ["~/git_layerbased/layerbases_metamaterials/Ergebnisse"];
   if UC.run_simulation;
     confirm_recursive_rmdir(0);
     [status, message, messageid] = rmdir(UC.SimPath, 's' ); % clear previous directory
@@ -89,9 +89,9 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complementia
   dblring.complemential = complemential;
 
 
-  layer_list = {@CreateUC, UC; @CreateRect, rectangle; 
-                               @CreateRect, substrate;
-                               @CreateDoubleRing, dblring};
+  layer_list = {{@CreateUC, UC}; {@CreateRect, rectangle}; 
+                                 {@CreateRect, substrate};
+                                 {@CreateDoubleRing, dblring}};
   material_list = {substrate.material, rectangle.material, dblring.material, dblring.bmaterial};
   [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
   [CSX, port] = definePorts(CSX, mesh, UC.f_start);
