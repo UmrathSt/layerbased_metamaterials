@@ -86,12 +86,27 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complementia
   dblring.prio = 2;
   dblring.xycenter = [0, 0];
   dblring.complemential = complemential;
-
+  
+  tube.name = "tubes";
+  tube.lx = UCDim;
+  tube.ly = UCDim;
+  tube.lz = dblring.lz+substrate.lz+rectangle.lz;
+  tube.R = dblring.w1/2;
+  tube.translate = [dblring.R1-dblring.w1/2, 0, +substrate.lz+rectangle.lz];
+  tube.number = 5;
+  tube.rotate = 0;
+  tube.prio = 2;
+  tube.xycenter = [0, 0];
+  tube.material.name = "Tubes";
+  tube.material.type = "const";
+  tube.material.EpsilonPlasmaFrequency = 2.5e14;
+  tube.material.EpsilonRelaxTime = 1.6e-13;
+  tube.material.Kappa = 56e6;
 
   layer_list = {{@CreateUC, UC}; {@CreateRect, rectangle}; 
                                  {@CreateRect, substrate};
-                                 {@CreateDoubleRing, dblring}
-                                 };
+                                 {@CreateDoubleRing, dblring};
+                                 {@CreateTubes, tube}};
   material_list = {substrate.material, tube.material, rectangle.material, dblring.material, dblring.bmaterial};
   [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
   [CSX, port] = definePorts(CSX, mesh, UC.f_start);
