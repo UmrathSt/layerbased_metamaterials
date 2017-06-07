@@ -5,7 +5,7 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complementia
   UC.td_dumps = 1;
   UC.fd_dumps = 1;
   UC.s_dumps = 1;
-  UC.s_dumps_folder = "~/git_layerbased/layerbases_metamaterials/Ergebnisse/SParameters";
+  UC.s_dumps_folder = "~/Arbeit/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters";
   UC.s11_filename_prefix = ["UCDim_" num2str(UCDim) "_lz_" num2str(fr4_thickness) "_R1_" num2str(R1) "_w1_" num2str(w1) "_R2_" num2str(R2) "_w2_" num2str(w2) "_epsFR4_Lorentz_" num2str(eps_FR4)];
   complemential = complemential;
   if complemential;
@@ -13,7 +13,7 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complementia
   endif;
   UC.s11_filename = "Sparameters_";
   UC.s11_subfolder = "double_ring";
-  UC.run_simulation = 1;
+  UC.run_simulation = 0;
   UC.show_geometry = 1;
   UC.grounded = 1;
   UC.unit = 1e-3;
@@ -28,9 +28,9 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complementia
   UC.dump_frequencies = [2.4e9, 5.2e9, 16.5e9];
   UC.s11_delta_f = 10e6;
   UC.EndCriteria = 5e-4;
-  UC.SimPath = ["~/git_layerbased/layerbases_metamaterials/Simulation/" UC.s11_subfolder "/" UC.s11_filename_prefix];
+  UC.SimPath = ["/mnt/hgfs/E/openEMS/layerbased_metamaterials/Simulation/" UC.s11_subfolder "/" UC.s11_filename_prefix];
   UC.SimCSX = "geometry.xml";
-  UC.ResultPath = ["~/git_layerbased/layerbases_metamaterials/Ergebnisse"];
+  UC.ResultPath = ["~/Arbeit/git_layerbased/layerbased_metamaterials/Ergebnisse"];
   if UC.run_simulation;
     confirm_recursive_rmdir(0);
     [status, message, messageid] = rmdir(UC.SimPath, 's' ); % clear previous directory
@@ -40,11 +40,10 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complementia
   FDTD = SetGaussExcite(FDTD, 0.5*(UC.f_start+UC.f_stop),0.5*(UC.f_stop-UC.f_start));
   BC = {'PMC', 'PMC', 'PEC', 'PEC', 'PML_8', 'PML_8'}; % boundary conditions
   FDTD = SetBoundaryCond(FDTD, BC);
-
+  rectangle.name = "backplate";
   rectangle.lx = UCDim;
   rectangle.ly = UCDim;
   rectangle.lz = 0.5;
-  rectangle.translate = [0, 0, 0];
   rectangle.rotate = 0;
   rectangle.prio = 2;
   rectangle.xycenter = [0, 0];
@@ -55,6 +54,7 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complementia
   rectangle.material.EpsilonRelaxTime = 1.6e-13;
   rectangle.material.Kappa = 56e6;
   # Substrate
+  substrate.name = "FR4 substrate";
   substrate.lx = UC.lx;
   substrate.ly = UC.ly;
   substrate.lz = fr4_thickness;
@@ -65,9 +65,8 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complementia
   substrate.material.Epsilon = eps_FR4;
 
   # circle
-
+  dblring.name = "double rings";
   dblring.lz = 0.05;
-  dblring.translate = [0, 0, 0];
   dblring.rotate = 0;
   dblring.material.name = "copperRings";
 #  dblring.material.Kappa = 56e6;
@@ -87,12 +86,28 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complementia
   dblring.prio = 2;
   dblring.xycenter = [0, 0];
   dblring.complemential = complemential;
-
+  
+  tube.name = "tubes";
+  tube.lx = UCDim;
+  tube.ly = UCDim;
+  tube.lz = dblring.lz+substrate.lz+rectangle.lz;
+  tube.R = dblring.w1/2;
+  tube.translate = [dblring.R1-dblring.w1/2, 0, +substrate.lz+rectangle.lz];
+  tube.number = 5;
+  tube.rotate = 0;
+  tube.prio = 2;
+  tube.xycenter = [0, 0];
+  tube.material.name = "Tubes";
+  tube.material.type = "const";
+  tube.material.EpsilonPlasmaFrequency = 2.5e14;
+  tube.material.EpsilonRelaxTime = 1.6e-13;
+  tube.material.Kappa = 56e6;
 
   layer_list = {{@CreateUC, UC}; {@CreateRect, rectangle}; 
                                  {@CreateRect, substrate};
-                                 {@CreateDoubleRing, dblring}};
-  material_list = {substrate.material, rectangle.material, dblring.material, dblring.bmaterial};
+                                 {@CreateDoubleRing, dblring};
+                                 {@CreateTubes, tube}};
+  material_list = {substrate.material, tube.material, rectangle.material, dblring.material, dblring.bmaterial};
   [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
   [CSX, port] = definePorts(CSX, mesh, UC.f_start);
   UC.param_str = param_str;
