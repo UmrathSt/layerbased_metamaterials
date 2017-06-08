@@ -73,14 +73,15 @@ if __name__ == "__main__":
     points = [point(-1, 1), point(1, 1), 
               point(1, -1), point(-1, -1),
               point(-1, 1)]
-    mkf = MinkowskiFractal(points, 0.5, 2)
+    mkf = MinkowskiFractal(points, -1, 2)
     i = 0
-    colors = ["k", "r", "b", "g"]
+    colors = ["k", "r", "b"]
     while i < len(colors):
         kurve = np.array([[p.x, p.y] for p in mkf.get_points()])
-        plt.plot(kurve[:, 0], kurve[:, 1], linestyle = "-", linewidth = 2, color = colors[i])
+        #plt.plot(kurve[:, 0], kurve[:, 1], linestyle = "-", linewidth = 2, color = colors[i])
         mkf.iterate()
         i += 1
+    plt.plot(kurve[:, 0], kurve[:, 1], linestyle = "-", linewidth = 4, color = colors[i-1])
     plt.axis("equal")
     plt.xlim([-1.5, 1.5])
     plt.ylim([-1.5,1.5])

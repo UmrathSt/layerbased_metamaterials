@@ -108,7 +108,7 @@ function double_ring_2tube(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, number
   tube2.ly = UCDim;
   tube2.lz = dblring.lz+substrate.lz+rectangle.lz;
   tube2.R = dblring.w2/4;
-  tube2.translate = [dblring.R2-dblring.w2/2, 0, +substrate.lz+rectangle.lz];
+  tube2.translate = [dblring.R2-dblring.w2/2, 0, +substrate.lz+rectangle.lz+tube1.lz];
   tube2.number = number;
   tube2.rotate = 0;
   tube2.prio = 2;
@@ -124,7 +124,7 @@ function double_ring_2tube(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, number
                                  {@CreateDoubleRing, dblring};
                                  {@CreateTubes, tube1};
                                  {@CreateTubes, tube2}};
-  material_list = {substrate.material, tube.material, rectangle.material, dblring.material, dblring.bmaterial};
+  material_list = {substrate.material, tube1.material, rectangle.material, dblring.material, dblring.bmaterial};
   [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
   [CSX, port] = definePorts(CSX, mesh, UC.f_start);
   UC.param_str = param_str;
