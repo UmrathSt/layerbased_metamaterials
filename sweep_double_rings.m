@@ -13,7 +13,8 @@ complemential = 0;
 fr4_thickness = 2;
 eps_FR4 = 4.6;
 number = 10;
-for fr4_thickness = 2;
-  double_ringC(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complemential);
+fr4_thickness = 2;
+for ROhm = [1, 100, 10000];
+  double_splitring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, ROhm, complemential);
 
 endfor;

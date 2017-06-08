@@ -1,4 +1,4 @@
-function double_ring_2tube(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complemential);
+function double_splitring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, ROhm, complemential);
   physical_constants;
   UC.layer_td = 1;
   UC.layer_fd = 1;
@@ -6,15 +6,15 @@ function double_ring_2tube(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, comple
   UC.fd_dumps = 1;
   UC.s_dumps = 1;
   UC.s_dumps_folder = "~/Arbeit/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters";
-  UC.s11_filename_prefix = ["UCDim_" num2str(UCDim) "_lz_" num2str(fr4_thickness) "_R1_" num2str(R1) "_w1_" num2str(w1) "_R2_" num2str(R2) "_w2_" num2str(w2) "_epsFR4_Lorentz_" num2str(eps_FR4)];
+  UC.s11_filename_prefix = ["UCDim_" num2str(UCDim) "_lz_" num2str(fr4_thickness) "_R1_" num2str(R1) "_w1_" num2str(w1) "_R2_" num2str(R2) "_w2_" num2str(w2) "_epsFR4_Lorentz_" num2str(eps_FR4) "_ROhm_" num2str(ROhm)];
   complemential = complemential;
   if complemential;
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, "_comp");
   endif;
   UC.s11_filename = "Sparameters_";
-  UC.s11_subfolder = "double_ringC";
-  UC.run_simulation = 0;
-  UC.show_geometry = 1;
+  UC.s11_subfolder = "double_splitring";
+  UC.run_simulation = 1;
+  UC.show_geometry = 0;
   UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 1e9;
@@ -81,8 +81,9 @@ function double_ring_2tube(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, comple
   dblring.R2 = R2;
   dblring.w1 = w1;
   dblring.w2 = w2;
-  dblring.Rc = 7;
-  dblring.Wc = (R1-R2)/6;
+  dblring.split_angle1 = pi/30;
+  dblring.split_angle2 = dblring.split_angle1;
+  dblring.ROhm = 10;
   dblring.UClx = UCDim;
   dblring.UCly = UCDim;
   dblring.prio = 2;
@@ -92,7 +93,7 @@ function double_ring_2tube(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, comple
 
   layer_list = {{@CreateUC, UC}; {@CreateRect, rectangle}; 
                                  {@CreateRect, substrate};
-                                 {@CreateDoubleRingC, dblring};
+                                 {@CreateDoubleSplitRing, dblring}
                                  };
   material_list = {substrate.material, rectangle.material, dblring.material, dblring.bmaterial};
   [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
