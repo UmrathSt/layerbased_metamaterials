@@ -14,7 +14,7 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complementia
   UC.s11_filename = "Sparameters_";
   UC.s11_subfolder = "double_ring";
   UC.run_simulation = 0;
-  UC.show_geometry = 0;
+  UC.show_geometry = 1;
   UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 1e9;

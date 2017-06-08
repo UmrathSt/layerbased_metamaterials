@@ -1,4 +1,4 @@
-function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complemential);
+function double_ring_2tube(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complemential);
   physical_constants;
   UC.layer_td = 1;
   UC.layer_fd = 1;
@@ -12,9 +12,9 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complementia
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, "_comp");
   endif;
   UC.s11_filename = "Sparameters_";
-  UC.s11_subfolder = "double_ring";
-  UC.run_simulation = 0;
-  UC.show_geometry = 0;
+  UC.s11_subfolder = "double_ringC";
+  UC.run_simulation = 1;
+  UC.show_geometry = 1;
   UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 1e9;
@@ -81,6 +81,8 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complementia
   dblring.R2 = R2;
   dblring.w1 = w1;
   dblring.w2 = w2;
+  dblring.Rc = 7;
+  dblring.Wc = (R1-R2)/6;
   dblring.UClx = UCDim;
   dblring.UCly = UCDim;
   dblring.prio = 2;
@@ -90,7 +92,7 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complementia
 
   layer_list = {{@CreateUC, UC}; {@CreateRect, rectangle}; 
                                  {@CreateRect, substrate};
-                                 {@CreateDoubleRing, dblring}
+                                 {@CreateDoubleRingC, dblring};
                                  };
   material_list = {substrate.material, rectangle.material, dblring.material, dblring.bmaterial};
   [CSX, mesh, param_str] = stack_layers(layer_list, material_list);

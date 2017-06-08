@@ -24,7 +24,7 @@ S11_dB = 20*np.log10(abs(data[:, 1] + 1j*data[:, 2]))
 
 g = graph.graphxy(width=8,
 		x = graph.axis.lin(title = args.xlabel),
-		y = graph.axis.lin(title = args.ylabel),
+		y = graph.axis.lin(title = args.ylabel, max=0),
 		)
 g.plot([graph.data.values(x = data[:, 0]/1e9, y = S11_dB)],
        [graph.style.line([color.rgb.black])])
