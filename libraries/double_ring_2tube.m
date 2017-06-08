@@ -1,4 +1,4 @@
-function double_ring_tube(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, number, complemential);
+function double_ring_2tube(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, number, complemential);
   physical_constants;
   UC.layer_td = 1;
   UC.layer_fd = 1;
@@ -12,7 +12,7 @@ function double_ring_tube(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, number,
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, "_comp");
   endif;
   UC.s11_filename = "Sparameters_";
-  UC.s11_subfolder = "double_ring_tube";
+  UC.s11_subfolder = "double_ring_2tube";
   UC.run_simulation = 1;
   UC.show_geometry = 1;
   UC.grounded = 1;
@@ -103,13 +103,27 @@ function double_ring_tube(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, number,
   tube1.material.EpsilonRelaxTime = 1.6e-13;
   tube1.material.Kappa = 56e6;
   
-
+  tube2.name = "tubes2";
+  tube2.lx = UCDim;
+  tube2.ly = UCDim;
+  tube2.lz = dblring.lz+substrate.lz+rectangle.lz;
+  tube2.R = dblring.w2/4;
+  tube2.translate = [dblring.R2-dblring.w2/2, 0, +substrate.lz+rectangle.lz];
+  tube2.number = number;
+  tube2.rotate = 0;
+  tube2.prio = 2;
+  tube2.xycenter = [0, 0];
+  tube2.material.name = "Tubes";
+  tube2.material.type = "const";
+  tube2.material.EpsilonPlasmaFrequency = 2.5e14;
+  tube2.material.EpsilonRelaxTime = 1.6e-13;
+  tube2.material.Kappa = 56e6;
 
   layer_list = {{@CreateUC, UC}; {@CreateRect, rectangle}; 
                                  {@CreateRect, substrate};
                                  {@CreateDoubleRing, dblring};
                                  {@CreateTubes, tube1};
-                                 };
+                                 {@CreateTubes, tube2}};
   material_list = {substrate.material, tube.material, rectangle.material, dblring.material, dblring.bmaterial};
   [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
   [CSX, port] = definePorts(CSX, mesh, UC.f_start);

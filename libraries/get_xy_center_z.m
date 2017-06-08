@@ -3,7 +3,7 @@ function [z_xy] = get_xy_center_z(layer_list);
 % from one layer to another
   z_xy = [];
   for i = 2:size(layer_list)(1);
-    for j = 1: size(layer_list{i});
+    for j = 1:size(layer_list{i}(1));
       if size(z_xy) == 0;
         z_xy = horzcat(z_xy, -layer_list{i}{j, 2}.lz/2);
       else;

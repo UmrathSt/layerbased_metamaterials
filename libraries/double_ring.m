@@ -14,7 +14,7 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complementia
   UC.s11_filename = "Sparameters_";
   UC.s11_subfolder = "double_ring";
   UC.run_simulation = 0;
-  UC.show_geometry = 1;
+  UC.show_geometry = 0;
   UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 1e9;
@@ -92,7 +92,7 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complementia
                                  {@CreateRect, substrate};
                                  {@CreateDoubleRing, dblring}
                                  };
-  material_list = {substrate.material, tube.material, rectangle.material, dblring.material, dblring.bmaterial};
+  material_list = {substrate.material, rectangle.material, dblring.material, dblring.bmaterial};
   [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
   [CSX, port] = definePorts(CSX, mesh, UC.f_start);
   UC.param_str = param_str;
