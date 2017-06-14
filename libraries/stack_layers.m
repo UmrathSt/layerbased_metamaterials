@@ -66,6 +66,6 @@ function [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
   else;
     mesh.z = SmoothMeshLines2([-7*UC.lz/8, zvals, 1*UC.lz/8], UC.dz);
   endif;
-    CSX = DefineRectGrid(CSX, UC.unit, mesh);
+  CSX = DefineRectGrid(CSX, UC.unit, mesh);
   mesh = AddPML(mesh, [0 0 0 0 8 8]);
 endfunction;

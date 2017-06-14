@@ -34,25 +34,29 @@ function [CSX, params] = CreateDoubleSplitRing(CSX, object, translate, rotate);
     CSX = AddBox(CSX, bmaterial, object.prio, bstart, bstop,
             'Transform', {'Rotate_Z', rotate, 'Translate', translate});
   endif;
-  CSX = AddCylindricalShell(CSX, ringmaterial, object.prio+1, 
-        ring_start, ring_stop, R1-w1/2, w1,
-        'Transform', {'Rotate_Z', rotate, 'Translate', translate});
-  % y, z coords of gap cross section
-  pts(1,1) = R1; pts(2,1) = -lz/2;
-  pts(1,2) = R1; pts(2,2) = +lz/2;
-  pts(1,3) = R1-w1; pts(2,3) = +lz/2;
-  pts(1,4) = R1-w1; pts(2,4) = -lz/2;
-  CSX = AddRotPoly(CSX, bmaterial, object.prio+2, 0, pts, 2, [-split_angle1/2, split_angle1/2],
-        'Transform', {'Translate', translate});
   CSX = AddLumpedElement(CSX, "resistor", "x", 'R', ROhm);
-  rlength = 1.1*split_angle1*R1;
-  start = [-rlength/2, R1-w1/3, -lz/2];
-  stop  = [rlength/2, R1-2*w1/3, lz/2];
-  CSX = AddBox(CSX, "resistor", object.prio+2, start, stop,
-        'Transform', {'Translate', translate});
+  for alpha = (0:3) .* pi/2;
+    CSX = AddCylindricalShell(CSX, ringmaterial, object.prio+1, 
+          ring_start, ring_stop, R1-w1/2, w1,
+          'Transform', {'Rotate_Z', alpha, 'Translate', translate});
+    % y, z coords of gap cross section
+    enlarge = 1.025;
+    pts(1,1) = R1*enlarge; pts(2,1) = -lz/2;
+    pts(1,2) = R1*enlarge; pts(2,2) = +lz/2;
+    pts(1,3) = R1/enlarge-w1; pts(2,3) = +lz/2;
+    pts(1,4) = R1/enlarge-w1; pts(2,4) = -lz/2;
+    CSX = AddRotPoly(CSX, bmaterial, object.prio+2, 0, pts, 2, [-split_angle1/2, split_angle1/2],
+          'Transform', {'Translate', translate, 'Rotate_Z', alpha});
+    
+    rlength = 1.3*split_angle1*R1;
+    start = [-rlength/2, R1-w1/3, -lz/2];
+    stop  = [rlength/2, R1-2*w1/3, lz/2];
+    CSX = AddBox(CSX, "resistor", object.prio+2, start, stop,
+          'Transform', {'Translate', translate, 'Rotate_Z', alpha});
+  endfor;
   CSX = AddCylindricalShell(CSX, ringmaterial, object.prio+1, 
         ring_start, ring_stop, R2-w2/2, w2,
-        'Transform', {'Rotate_Z', rotate, 'Translate', translate});
+        'Transform', {'Rotate_Z', rotate+alpha, 'Translate', translate});
   ocenter = [object.xycenter(1:2), 0] + translate;
   params = ["# circular rings made of "  ringmaterial " at center position x = " num2str(ocenter(1)) " y = " num2str(ocenter(2)) " z = " num2str(ocenter(3)) "\n" \
             "# radius R1, R2=" num2str(R1) ", " num2str(R2) " ringwidths w1, w2=" num2str(w1) ", " num2str(w2) ", background material " bmaterial "\n" \
