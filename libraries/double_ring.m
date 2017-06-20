@@ -1,4 +1,4 @@
-function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complemential);
+function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, complemential);
   physical_constants;
   UC.layer_td = 1;
   UC.layer_fd = 1;
@@ -6,13 +6,13 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complementia
   UC.fd_dumps = 1;
   UC.s_dumps = 1;
   UC.s_dumps_folder = "~/Arbeit/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters";
-  UC.s11_filename_prefix = ["UCDim_" num2str(UCDim) "_lz_" num2str(fr4_thickness) "_R1_" num2str(R1) "_w1_" num2str(w1) "_R2_" num2str(R2) "_w2_" num2str(w2) "_epsFR4_Lorentz_" num2str(eps_FR4)];
+  UC.s11_filename_prefix = ["UCDim_" num2str(UCDim) "_lz_" num2str(fr4_thickness) "_R1_" num2str(R1) "_w1_" num2str(w1) "_R2_" num2str(R2) "_w2_" num2str(w2) "_eps_" num2str(eps_subs) "_tand_" num2str(tand)];
   complemential = complemential;
   if complemential;
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, "_comp");
   endif;
   UC.s11_filename = "Sparameters_";
-  UC.s11_subfolder = "double_ring_ressheet";
+  UC.s11_subfolder = "double_ring_water";
   UC.run_simulation = 1;
   UC.show_geometry = 1;
   UC.grounded = 1;
@@ -53,27 +53,19 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complementia
   rectangle.material.EpsilonPlasmaFrequency = 2.5e14;
   rectangle.material.EpsilonRelaxTime = 1.6e-13;
   rectangle.material.Kappa = 56e6;
-  # resistive sheet
-  res_sheet.name = "resistive sheet";
-  res_sheet.lx = UC.lx;
-  res_sheet.ly = UC.ly;
-  res_sheet.lz = 0.1;
-  res_sheet.rotate = 0;
-  res_sheet.prio = 2;
-  res_sheet.material.name = "nanorods";
-  res_sheet.material.type = "const";
-  res_sheet.material.Kappa = 10;
-  res_sheet.xycenter = [0, 0];
+
   # Substrate
-  substrate.name = "FR4 substrate";
+  substrate.name = "Water substrate";
   substrate.lx = UC.lx;
   substrate.ly = UC.ly;
   substrate.lz = fr4_thickness;
   substrate.rotate = 0;
   substrate.prio = 2;
   substrate.xycenter = [0, 0];
-  substrate.material.name = "FR4_Lorentz";
-  substrate.material.Epsilon = eps_FR4;
+  substrate.material.name = "Water";
+  substrate.material.type = "const";
+  substrate.material.Epsilon = eps_subs;
+  substrate.material.tand = tand;
 
   # circle
   dblring.name = "double rings";
@@ -100,11 +92,10 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, complementia
 
 
   layer_list = {{@CreateUC, UC}; {@CreateRect, rectangle};
-                                 {@CreateRect, res_sheet};
                                  {@CreateRect, substrate};
                                  {@CreateDoubleRing, dblring}
                                  };
-  material_list = {substrate.material, res_sheet.material, rectangle.material, dblring.material, dblring.bmaterial};
+  material_list = {substrate.material, rectangle.material, dblring.material, dblring.bmaterial};
   [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
   [CSX, port] = definePorts(CSX, mesh, UC.f_start);
   UC.param_str = param_str;
