@@ -1,11 +1,11 @@
-function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, complemential);
+function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_refinement, complemential);
   physical_constants;
   UC.layer_td = 1;
   UC.layer_fd = 1;
   UC.td_dumps = 1;
   UC.fd_dumps = 1;
   UC.s_dumps = 1;
-  UC.s_dumps_folder = "~/Arbeit/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters";
+  UC.s_dumps_folder = "~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters";
   UC.s11_filename_prefix = ["UCDim_" num2str(UCDim) "_lz_" num2str(fr4_thickness) "_R1_" num2str(R1) "_w1_" num2str(w1) "_R2_" num2str(R2) "_w2_" num2str(w2) "_eps_" num2str(eps_subs) "_tand_" num2str(tand)];
   complemential = complemential;
   if complemential;
@@ -23,14 +23,14 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, compl
   UC.ly = UCDim;
   UC.lz = c0/ UC.f_start / 2 / UC.unit;
   UC.dz = c0 / (UC.f_stop) / UC.unit / 20;
-  UC.dx = UC.dz/3;
+  UC.dx = UC.dz/3/mesh_refinement;
   UC.dy = UC.dx;
   UC.dump_frequencies = [2.4e9, 5.2e9, 16.5e9];
   UC.s11_delta_f = 10e6;
   UC.EndCriteria = 5e-4;
   UC.SimPath = ["/mnt/hgfs/E/openEMS/layerbased_metamaterials/Simulation/" UC.s11_subfolder "/" UC.s11_filename_prefix];
   UC.SimCSX = "geometry.xml";
-  UC.ResultPath = ["~/Arbeit/git_layerbased/layerbased_metamaterials/Ergebnisse"];
+  UC.ResultPath = ["~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse"];
   if UC.run_simulation;
     confirm_recursive_rmdir(0);
     [status, message, messageid] = rmdir(UC.SimPath, 's' ); % clear previous directory
@@ -66,6 +66,7 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, compl
   substrate.material.type = "const";
   substrate.material.Epsilon = eps_subs;
   substrate.material.tand = tand;
+  substrate.zrefinement = sqrt(eps_subs/4);
 
   # circle
   dblring.name = "double rings";
