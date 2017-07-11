@@ -14,7 +14,8 @@ function [port] = dumpS11(port, UC);
   s21 = port{2}.uf.inc./port{1}.uf.inc;
   U1 = port{2}.uf.tot;
   I1 = port{2}.if.tot;
-  s11_filename = ['S_f_' s11_filename_prefix '.txt'];
+  s11_filename = ['S11_f_' s11_filename_prefix '.txt'];
+  s21_filename = ['S21_f_' s11_filename_prefix '.txt'];
   s_folder = [UC.ResultPath "/SParameters/" s11_subfolder];
   if not(exist(s_folder, "dir"));
     display("Folder for S11 output did not exist.");
@@ -34,7 +35,10 @@ function [port] = dumpS11(port, UC);
   end;
   fclose(outfile);
   xlabel = "\"\$ f\\; [\\mathrm{GHz}]$\"";
-  ylabel = "\"\$ 20\\log|S_{11}|$\"";
-  system(["python3 ./python_scripts/S11_plot.py --file " s11_filename " --xlabel " xlabel " --ylabel " ylabel " --folder " s_folder]);
+  ylabelS11 = "\"\$ 20\\log|S_{11}|$\"";
+  ylabelS21 = "\"\$ 20\\log|S_{21}|$\"";
+  system(["python3 ./python_scripts/S11_plot.py --infile " s11_filename " --xlabel " xlabel " --ylabel " ylabelS11 " --folder " s_folder " --outfile " s11_filename " --Xaxis " num2str(0) " --Yaxis " num2str(1)]);
+  system(["python3 ./python_scripts/S11_plot.py --infile " s11_filename " --xlabel " xlabel " --ylabel " ylabelS21 " --folder " s_folder " --outfile " s21_filename " --Xaxis " num2str(0) " --Yaxis " num2str(3)]);
+
   return;
 endfunction

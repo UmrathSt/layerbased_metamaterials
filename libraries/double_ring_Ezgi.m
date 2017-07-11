@@ -12,8 +12,8 @@ function double_ring_Ezgi(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, 
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, "_comp");
   endif;
   UC.s11_filename = "Sparameters_";
-  UC.s11_subfolder = "double_ring_Ezgi";
-  UC.run_simulation = 1;
+  UC.s11_subfolder = "double_ring_Ezgi_smooth";
+  UC.run_simulation = 0;
   UC.show_geometry = 0;
   UC.grounded = 0;
   UC.unit = 1e-3;
@@ -25,8 +25,8 @@ function double_ring_Ezgi(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, 
   UC.dz = c0 / (UC.f_stop) / UC.unit / 20;
   UC.dx = UC.dz/3/mesh_refinement;
   UC.dy = UC.dx;
-  UC.dump_frequencies = [2.4e9, 5.2e9, 16.5e9];
-  UC.s11_delta_f = 10e6;
+  UC.dump_frequencies = [3.1e9, 5.2e9, 7.5e9];
+  UC.s11_delta_f = 5e6;
   UC.EndCriteria = 5e-4;
   UC.SimPath = ["/mnt/hgfs/E/openEMS/layerbased_metamaterials/Simulation/" UC.s11_subfolder "/" UC.s11_filename_prefix];
   UC.SimCSX = "geometry.xml";
