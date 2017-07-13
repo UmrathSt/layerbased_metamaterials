@@ -18,7 +18,7 @@ function [CSX, param_str] = defineMaterials(CSX, material_list, param_str);
       catch lasterror;
       end_try_catch;
     elseif strcmp(material_list{i}.type, "const");
-      printf("Using Material with frequency independent epsilon/conducivity");
+      printf(["Using Material with frequency independent epsilon/conducivity for " material_list{i}.name]);
       CSX = AddMaterial(CSX, material_list{i}.name);
       try;
         CSX = SetMaterialProperty(CSX, material_list{i}.name, 'Kappa', material_list{i}.Kappa);
@@ -36,16 +36,14 @@ function [CSX, param_str] = defineMaterials(CSX, material_list, param_str);
 
     elseif strcmp(material_list{i}.type, "Drude");
       isdrude = 1;
-        printf(["using Lorentz material for: " material_list{i}.name]);
-        CSX = AddLorentzMaterial(CSX, material_list{i}.name);
-        try;
-          CSX = SetMaterialProperty(CSX, material_list{i}.name, 'EpsilonPlasmaFrequency', material_list{i}.EpsilonPlasmaFrequency,
+      printf(["using Lorentz material for: " material_list{i}.name]);
+      CSX = AddLorentzMaterial(CSX, material_list{i}.name);
+      try;
+        CSX = SetMaterialProperty(CSX, material_list{i}.name, 'EpsilonPlasmaFrequency', material_list{i}.EpsilonPlasmaFrequency,
                  'EpsilonRelaxTime', material_list{i}.EpsilonRelaxTime, 'Kappa', material_list{i}.Kappa, 'Epsilon', 1); # conductivity
-        catch lasterror;
-        end_try_catch;
-        continue;
-    else;
-      CSX = AddMaterial(CSX, material_list{i}.name);
+      catch lasterror;
+      end_try_catch;
+      continue;
     endif;
   end;
 endfunction;

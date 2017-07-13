@@ -50,8 +50,6 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_
   rectangle.material.name = "copper";
   #rectangle.material.Kappa = 56e6;
   rectangle.material.type = "const";
-  rectangle.material.EpsilonPlasmaFrequency = 2.5e14;
-  rectangle.material.EpsilonRelaxTime = 1.6e-13;
   rectangle.material.Kappa = 56e6;
 
   # Substrate
