@@ -22,6 +22,6 @@ function [CSX, port, nf2ff] = definePortsNF2FF(CSX, mesh, UC);
       start = [mesh.x(1), mesh.y(1), mesh.z(n_cells_to_edge-2)];
       stop  = [mesh.x(end), mesh.y(end), 0];
       [CSX nf2ff] = CreateNF2FFBox(CSX, "nf2ff_box", start, stop, 'Directions', [1, 1, 1, 1, 1, 0]);
-  end;
+  endif;
 
   endfunction;
