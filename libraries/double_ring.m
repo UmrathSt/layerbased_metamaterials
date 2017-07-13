@@ -12,9 +12,9 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, "_comp");
   endif;
   UC.s11_filename = "Sparameters_";
-  UC.s11_subfolder = "double_ring_water";
+  UC.s11_subfolder = "double_ring_eps_sweep";
   UC.run_simulation = 1;
-  UC.show_geometry = 1;
+  UC.show_geometry = 0;
   UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 1e9;
@@ -27,7 +27,7 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_
   UC.dy = UC.dx;
   UC.dump_frequencies = [2.4e9, 5.2e9, 16.5e9];
   UC.s11_delta_f = 10e6;
-  UC.EndCriteria = 5e-4;
+  UC.EndCriteria = 1e-3;
   UC.SimPath = ["/mnt/hgfs/E/openEMS/layerbased_metamaterials/Simulation/" UC.s11_subfolder "/" UC.s11_filename_prefix];
   UC.SimCSX = "geometry.xml";
   UC.ResultPath = ["~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse"];

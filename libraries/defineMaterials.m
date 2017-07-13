@@ -17,27 +17,14 @@ function [CSX, param_str] = defineMaterials(CSX, material_list, param_str);
         CSX = SetMaterialProperty(CSX, "FR4_Lorentz", "Epsilon", material_list{i}.Epsilon);
       catch lasterror;
       end_try_catch;
-    else;
+    elseif strcmp(material_list{i}.type, "const");
+      printf("Using Material with frequency independent epsilon/conducivity");
+      CSX = AddMaterial(CSX, material_list{i}.name);
       try;
-        if strcmp(material_list{i}.type, "Drude");
-          isdrude = 1;
-          printf("using Lorentz material");
-          CSX = AddLorentzMaterial(CSX, material_list{i}.name);
-          try;
-            CSX = SetMaterialProperty(CSX, material_list{i}.name, 'EpsilonPlasmaFrequency', material_list{i}.EpsilonPlasmaFrequency,
-                    'EpsilonRelaxTime', material_list{i}.EpsilonRelaxTime, 'Kappa', material_list{i}.Kappa, 'Epsilon', 1); # conductivity
-          catch lasterror;
-          end_try_catch;
-          continue;
-        else;
-          CSX = AddMaterial(CSX, material_list{i}.name);
-        endif;
+        CSX = SetMaterialProperty(CSX, material_list{i}.name, 'Kappa', material_list{i}.Kappa);
       catch lasterror;
       end_try_catch;
-      try;
-        CSX = SetMaterialProperty(CSX, material_list{i}.name, 'Kappa', material_list{i}.Kappa); # conductivity
-      catch lasterror;
-      end_try_catch;
+      
       try;
         CSX = SetMaterialProperty(CSX, material_list{i}.name, 'Epsilon', material_list{i}.Epsilon); # real Permittivity
       catch lasterror;
@@ -45,7 +32,20 @@ function [CSX, param_str] = defineMaterials(CSX, material_list, param_str);
       try;
           CSX = SetMaterialProperty(CSX, material_list{i}.name, 'Kappa', material_list{i}.Epsilon*material_list{i}.tand*2*pi*EPS0*material_list{i}.f0); # real Permittivity
       catch lasterror;
-      end_try_catch;
+      end_try_catch;    
+
+    elseif strcmp(material_list{i}.type, "Drude");
+      isdrude = 1;
+        printf(["using Lorentz material for: " material_list{i}.name]);
+        CSX = AddLorentzMaterial(CSX, material_list{i}.name);
+        try;
+          CSX = SetMaterialProperty(CSX, material_list{i}.name, 'EpsilonPlasmaFrequency', material_list{i}.EpsilonPlasmaFrequency,
+                 'EpsilonRelaxTime', material_list{i}.EpsilonRelaxTime, 'Kappa', material_list{i}.Kappa, 'Epsilon', 1); # conductivity
+        catch lasterror;
+        end_try_catch;
+        continue;
+    else;
+      CSX = AddMaterial(CSX, material_list{i}.name);
     endif;
   end;
 endfunction;

@@ -38,7 +38,8 @@ function [port] = dumpS11(port, UC);
   ylabelS11 = "\"\$ 20\\log|S_{11}|$\"";
   ylabelS21 = "\"\$ 20\\log|S_{21}|$\"";
   system(["python3 ./python_scripts/S11_plot.py --infile " s11_filename " --xlabel " xlabel " --ylabel " ylabelS11 " --folder " s_folder " --outfile " s11_filename " --Xaxis " num2str(0) " --Yaxis " num2str(1)]);
-  system(["python3 ./python_scripts/S11_plot.py --infile " s11_filename " --xlabel " xlabel " --ylabel " ylabelS21 " --folder " s_folder " --outfile " s21_filename " --Xaxis " num2str(0) " --Yaxis " num2str(3)]);
-
+  if UC.grounded == 0;
+    system(["python3 ./python_scripts/S11_plot.py --infile " s11_filename " --xlabel " xlabel " --ylabel " ylabelS21 " --folder " s_folder " --outfile " s21_filename " --Xaxis " num2str(0) " --Yaxis " num2str(3)]);
+  endif;
   return;
 endfunction
