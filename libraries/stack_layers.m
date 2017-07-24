@@ -67,12 +67,12 @@ function [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
   
   lastz = zvals(end);
   
-  mesh.x = SmoothMeshLines([-UC.lx/2, xvals, UC.lx/2], UC.dx, 1.1);
-  mesh.y = SmoothMeshLines([-UC.ly/2, yvals, UC.ly/2], UC.dy, 1.1);
+  mesh.x = SmoothMeshLines([-UC.lx/2, xvals, UC.lx/2], UC.dx, 1.3);
+  mesh.y = SmoothMeshLines([-UC.ly/2, yvals, UC.ly/2], UC.dy, 1.3);
   if not(UC.grounded);
-    mesh.z = SmoothMeshLines([-UC.lz/2, zvals, UC.lz/2], UC.dz);
+    mesh.z = SmoothMeshLines([-UC.lz/2, zvals, UC.lz/2], UC.dz, 1.3);
   else;
-    mesh.z = SmoothMeshLines([-7*UC.lz/8, zvals, 1*UC.lz/8], UC.dz);
+    mesh.z = SmoothMeshLines([-7*UC.lz/8, zvals, 1*UC.lz/8], UC.dz, 1.3);
   endif;
   CSX = DefineRectGrid(CSX, UC.unit, mesh);
   mesh = AddPML(mesh, [0 0 0 0 8 8]);

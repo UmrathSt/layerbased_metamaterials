@@ -1,4 +1,4 @@
-function chiral_double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_refinement, complemential);
+function chiral_double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, alpha, N, rlength, rwidth, eps_subs, tand, mesh_refinement, complemential);
   physical_constants;
   UC.layer_td = 1;
   UC.layer_fd = 1;
@@ -7,7 +7,7 @@ function chiral_double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand
   UC.s_dumps = 1;
   UC.nf2ff = 0;
   UC.s_dumps_folder = "~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters";
-  UC.s11_filename_prefix = ["UCDim_" num2str(UCDim) "_lz_" num2str(fr4_thickness) "_R1_" num2str(R1) "_w1_" num2str(w1) "_R2_" num2str(R2) "_w2_" num2str(w2) "_eps_" num2str(eps_subs) "_tand_" num2str(tand)];
+  UC.s11_filename_prefix = ["UCDim_" num2str(UCDim) "_lz_" num2str(fr4_thickness) "_R1_" num2str(R1) "_w1_" num2str(w1) "_R2_" num2str(R2) "_w2_" num2str(w2) "_alpha_" num2str(alpha) "_N_" num2str(N) "_rl_" num2str(rlength) "_rw_" num2str(rwidth) "_eps_" num2str(eps_subs) "_tand_" num2str(tand)];
   complemential = complemential;
   if complemential;
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, "_comp");
@@ -88,6 +88,10 @@ function chiral_double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand
   chiral_dblring.R2 = R2;
   chiral_dblring.w1 = w1;
   chiral_dblring.w2 = w2;
+  chiral_dblring.N = N;
+  chiral_dblring.rlength = rlength;
+  chiral_dblring.rwidth = rwidth;
+  chiral_dblring.alpha = alpha;
   chiral_dblring.UClx = UCDim;
   chiral_dblring.UCly = UCDim;
   chiral_dblring.prio = 2;
