@@ -58,7 +58,7 @@ function [CSX, params] = CreateDoubleRingCB(CSX, object, translate, rotate);
   % quadrant II
   ocenter = [object.xycenter(1:2), 0] + translate + shift24
   CSX = AddCylindricalShell(CSX, ringmaterial, object.prio+1, 
-        ring_start, ring_stop, R3-w3/2, w4,
+        ring_start, ring_stop, R3-w3/2, w3,
         'Transform', {'Rotate_Z', rotate, 'Translate', ocenter});
   CSX = AddCylindricalShell(CSX, ringmaterial, object.prio+1, 
         ring_start, ring_stop, R4-w4/2, w4,

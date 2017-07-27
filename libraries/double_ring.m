@@ -13,7 +13,7 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, "_comp");
   endif;
   UC.s11_filename = "Sparameters_";
-  UC.s11_subfolder = "double_ring_eps_sweep";
+  UC.s11_subfolder = "double_ring_lz_sweep";
   UC.run_simulation = 1;
   UC.show_geometry = 0;
   UC.grounded = 1;

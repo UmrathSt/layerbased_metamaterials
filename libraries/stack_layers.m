@@ -51,7 +51,7 @@ function [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
         yvals = horzcat(yvals, [-(UC.ly/2+R)/2, -R, -R+w, R-w, R, (UC.ly/2+R)/2]);    
       catch lasterror;
       end_try_catch;
-      printf("creating object: %s \n", object.name);
+      %printf("creating object: %s \n", object.name);
       add_trans = [0, 0, 0];
       try;
         add_trans = object.translate;

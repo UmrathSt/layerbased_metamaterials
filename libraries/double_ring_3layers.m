@@ -14,8 +14,8 @@ function double_ring_3layers(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tan
   endif;
   UC.s11_filename = "Sparameters_";
   UC.s11_subfolder = "double_ring_3layers";
-  UC.run_simulation = 0;
-  UC.show_geometry = 1;
+  UC.run_simulation = 1;
+  UC.show_geometry = 0;
   UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 1e9;
@@ -142,7 +142,7 @@ function double_ring_3layers(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tan
                                  {@CreateRect, substrate};
                                  {@CreateDoubleRing, dblring2};
                                  {@CreateRect, substrate};
-                                 {@CreateDoubleRing, dblring3}
+                                 {@CreateDoubleRing, dblring3};
                                  };
   material_list = {substrate.material, rectangle.material, dblring1.material, dblring3.bmaterial};
   [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
