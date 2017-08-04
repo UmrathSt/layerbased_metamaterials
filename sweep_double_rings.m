@@ -5,7 +5,7 @@ addpath("./libraries");
 
 rect_gap = 0;
 R1 = 9.6;
-R2 = 5.0;t
+R2 = 5.0;
 w1 = 1.5;
 w2 = 0.5;
 UCDim = 20;

@@ -5,13 +5,13 @@ addpath("./libraries");
 
 
 
-UCDim = 20;
+UCDim = 24;
 L = 18;
 w = 0.75;
 g = 1;
 N = 8;
 fr4_thickness = 2;
-tand = 0.015;
+tand = 0.05;
 mesh_refinement = 1;
 complemential = 0;
 swap = 1;
