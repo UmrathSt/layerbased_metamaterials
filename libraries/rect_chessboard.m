@@ -1,4 +1,4 @@
-function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_refinement, complemential);
+function rect_chessboard(UCDim, fr4_thickness, L1, L2, eps_subs, tand, mesh_refinement);
   physical_constants;
   UC.layer_td = 1;
   UC.layer_fd = 1;
@@ -7,15 +7,12 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_
   UC.s_dumps = 1;
   UC.nf2ff = 0;
   UC.s_dumps_folder = "~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters";
-  UC.s11_filename_prefix = ["UCDim_" num2str(UCDim) "_lz_" num2str(fr4_thickness) "_R1_" num2str(R1) "_w1_" num2str(w1) "_R2_" num2str(R2) "_w2_" num2str(w2) "_eps_" num2str(eps_subs) "_tand_" num2str(tand)];
-  complemential = complemential;
-  if complemential;
-    UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, "_comp");
-  endif;
+  UC.s11_filename_prefix = ["UCDim_" num2str(UCDim) "_lz_" num2str(fr4_thickness) "_L1_" num2str(L1) "_L2_" num2str(L2) "_eps_" num2str(eps_subs) "_tand_" num2str(tand)];
+
   UC.s11_filename = "Sparameters_";
-  UC.s11_subfolder = "double_ring_eps_sweep";
+  UC.s11_subfolder = "rect_chessboard";
   UC.run_simulation = 1;
-  UC.show_geometry = 0;
+  UC.show_geometry = 1;
   UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 1e9;
@@ -69,34 +66,30 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_
   substrate.zrefinement = sqrt(eps_subs);
 
   # circle
-  dblring.name = "double rings";
-  dblring.lz = 0.05;
-  dblring.rotate = 0;
-  dblring.material.name = "copperRings";
-#  dblring.material.Kappa = 56e6;
-  dblring.material.EpsilonPlasmaFrequency = 2.5e14;
-  dblring.material.EpsilonRelaxTime = 1.6e-13;
-  dblring.material.Kappa = 56e6;
-  dblring.material.type = "const";
-  dblring.bmaterial.name = "air";
-  dblring.bmaterial.type = "const";
-  dblring.bmaterial.Epsilon = 1;
-  dblring.R1 = R1;
-  dblring.R2 = R2;
-  dblring.w1 = w1;
-  dblring.w2 = w2;
-  dblring.UClx = UCDim;
-  dblring.UCly = UCDim;
-  dblring.prio = 2;
-  dblring.xycenter = [0, 0];
-  dblring.complemential = complemential;
+  rect_chessboard.name = "Chessboard Copper";
+  rect_chessboard.lz = 0.05;
+  rect_chessboard.rotate = 0;
+  rect_chessboard.material.name = "copperRects";
+  rect_chessboard.material.Kappa = 56e6;
+  rect_chessboard.material.type = "const";
+  rect_chessboard.bmaterial.name = "air";
+  rect_chessboard.bmaterial.type = "const";
+  rect_chessboard.bmaterial.Epsilon = 1;
+  rect_chessboard.lx1 = L1;
+  rect_chessboard.ly1 = L1;
+  rect_chessboard.lx2 = L2;
+  rect_chessboard.ly2 = L2;
+  rect_chessboard.UClx = UCDim;
+  rect_chessboard.UCly = UCDim;
+  rect_chessboard.prio = 2;
+  rect_chessboard.xycenter = [0, 0];
 
 
   layer_list = {{@CreateUC, UC}; {@CreateRect, rectangle};
                                  {@CreateRect, substrate};
-                                 {@CreateDoubleRing, dblring}
+                                 {@CreateRectChessboard, rect_chessboard}
                                  };
-  material_list = {substrate.material, rectangle.material, dblring.material, dblring.bmaterial};
+  material_list = {substrate.material, rectangle.material, rect_chessboard.material, rect_chessboard.bmaterial};
   [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
   if UC.nf2ff == 0;
     [CSX, port] = definePorts(CSX, mesh, UC.f_start);

@@ -70,7 +70,7 @@ function double_ring_3layers(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tan
 
   # circle
   dblring1.name = "double rings";
-  dblring1.lz = 0.05;
+  dblring1.lz = 0.1;
   dblring1.rotate = 0;
   dblring1.material.name = "copperRings";
   dblring1.material.Kappa = 56e6;
@@ -91,7 +91,7 @@ function double_ring_3layers(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tan
   dblring1.complemential = complemential;
   
   dblring2.name = "double rings";
-  dblring2.lz = 0.05;
+  dblring2.lz = 0.1;
   dblring2.rotate = 0;
   dblring2.material.name = "copperRings";
   dblring2.material.Kappa = 56e6;
@@ -101,7 +101,7 @@ function double_ring_3layers(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tan
   dblring2.bmaterial.Epsilon = eps_subs;
   dblring2.bmaterial.tand = tand;
   dblring2.bmaterial.f0 = 10e9;
-  scale = 0.8;
+  scale = 0.975;
   dblring2.R1 = R1*scale;
   dblring2.R2 = R2*scale;
   dblring2.w1 = w1*scale;
@@ -114,7 +114,7 @@ function double_ring_3layers(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tan
   
   
   dblring3.name = "double rings";
-  dblring3.lz = 0.05;
+  dblring3.lz = 0.1;
   dblring3.rotate = 0;
   dblring3.material.name = "copperRings";
   dblring3.material.Kappa = 56e6;
@@ -124,7 +124,7 @@ function double_ring_3layers(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tan
   dblring3.bmaterial.Epsilon = 1;
   dblring3.bmaterial.tand = tand;
   dblring3.bmaterial.f0 = 10e9;
-  scale = 0.9;
+  scale = 0.95;
   dblring3.R1 = R1*scale;
   dblring3.R2 = R2*scale;
   dblring3.w1 = w1*scale;

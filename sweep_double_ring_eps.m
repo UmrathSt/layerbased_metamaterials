@@ -17,7 +17,7 @@ tand = 0.015;
 mesh_refinement = scale;
 swap = 1;
 eps_subs = 4.1;
-for UCDim = [28, 29, 30];
+for UCDim = [21.5];
   double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_refinement, complemential);
 endfor;
 #for eps_subs = [4.05, 4.15];
