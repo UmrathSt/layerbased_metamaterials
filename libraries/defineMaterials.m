@@ -31,7 +31,7 @@ function [CSX, param_str] = defineMaterials(CSX, material_list, param_str);
       end_try_catch;
       try;
           CSX = SetMaterialProperty(CSX, material_list{i}.name, 'Kappa', material_list{i}.Epsilon*material_list{i}.tand*2*pi*EPS0*material_list{i}.f0); # real Permittivity
-          printf(["Using loss tangent for description of conductivity, f0 = " num2str(material_list{i}.f0)]);
+          printf(["Using loss tangent for description of conductivity, f0 = " num2str(material_list{i}.f0) "\n"]);
       catch lasterror;
       end_try_catch;    
 

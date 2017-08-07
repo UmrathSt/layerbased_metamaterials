@@ -1,4 +1,4 @@
-function windings(UCDim, fr4_thickness, L, w, g, N, alpha, eps_subs, tand, mesh_refinement, complemential);
+function plus(UCDim, fr4_thickness, L, w, eps_subs, tand, mesh_refinement, complemential);
   physical_constants;
   UC.layer_td = 1;
   UC.layer_fd = 1;
@@ -13,13 +13,13 @@ function windings(UCDim, fr4_thickness, L, w, g, N, alpha, eps_subs, tand, mesh_
     midstr = "/git_layerbased/";
   endif;
   UC.s_dumps_folder = ["~/Arbeit/openEMS" midstr "layerbased_metamaterials/Ergebnisse/SParameters"];
-  UC.s11_filename_prefix = ["UCDim_" num2str(UCDim) "_lz_" num2str(fr4_thickness) "_L_" num2str(L) "_w_" num2str(w) "_g_" num2str(g) "_N_" num2str(N) "_eps_" num2str(eps_subs) "_tand_" num2str(tand)];
+  UC.s11_filename_prefix = ["UCDim_" num2str(UCDim) "_lz_" num2str(fr4_thickness) "_plusL_" num2str(L), "_plusW_", num2str(w) "_eps_" num2str(eps_subs) "_tand_" num2str(tand)];
   complemential = complemential;
   if complemential;
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, "_comp");
   endif;
   UC.s11_filename = "Sparameters_";
-  UC.s11_subfolder = "windings";
+  UC.s11_subfolder = "plus";
   UC.run_simulation = 1;
   UC.show_geometry = 1;
   UC.grounded = 1;
@@ -30,8 +30,7 @@ function windings(UCDim, fr4_thickness, L, w, g, N, alpha, eps_subs, tand, mesh_
   UC.ly = UCDim;
   UC.lz = c0/ UC.f_start / 2 / UC.unit;
   UC.dz = c0 / (UC.f_stop) / UC.unit / 20;
-  min_dxy = min(g, w);
-  UC.dx = min_dxy/4;
+  UC.dx = UC.dz/3/mesh_refinement;
   UC.dy = UC.dx;
   UC.dump_frequencies = [2.4e9, 5.2e9, 16.5e9];
   UC.s11_delta_f = 10e6;
@@ -43,7 +42,7 @@ function windings(UCDim, fr4_thickness, L, w, g, N, alpha, eps_subs, tand, mesh_
   UC.SimPath = ["/mnt/hgfs/E/openEMS/layerbased_metamaterials/Simulation/" UC.s11_subfolder "/" UC.s11_filename_prefix];
   UC.ResultPath = ["~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse"];
   endif;
-  UC.SimCSX = "geometry.xml";
+  UC.SimCSX = "geometry.xml";  
   if UC.run_simulation;
     confirm_recursive_rmdir(0);
     [status, message, messageid] = rmdir(UC.SimPath, 's' ); % clear previous directory
@@ -81,31 +80,29 @@ function windings(UCDim, fr4_thickness, L, w, g, N, alpha, eps_subs, tand, mesh_
   substrate.zrefinement = sqrt(eps_subs);
 
   # circle
-  coil.name = "coil";
-  coil.lz = 0.05;
-  coil.rotate = 0;
-  coil.material.name = "copper_coil";
-  coil.material.Kappa = 56e6;
-  coil.material.type = "const";
-  coil.bmaterial.name = "air";
-  coil.bmaterial.type = "const";
-  coil.bmaterial.Epsilon = 1;
-  coil.L = L;
-  coil.w = w;
-  coil.g = g;
-  coil.N = N;
-  coil.alpha = alpha;
-  coil.UClx = UCDim;
-  coil.UCly = UCDim;
-  coil.prio = 2;
-  coil.xycenter = [0, 0];
-  coil.complemential = complemential;
-  
+  plus.name = "copper-plus";
+  plus.lz = 0.05;
+  plus.rotate = 0;
+  plus.material.name = "copperPLus";
+  plus.material.Kappa = 56e6;
+  plus.material.type = "const";
+  plus.bmaterial.name = "air";
+  plus.bmaterial.type = "const";
+  plus.bmaterial.Epsilon = 1;
+  plus.L = L;
+  plus.w = w;
+  plus.UClx = UCDim;
+  plus.UCly = UCDim;
+  plus.prio = 2;
+  plus.xycenter = [0, 0];
+  plus.complemential = complemential;
+
+
   layer_list = {{@CreateUC, UC}; {@CreateRect, rectangle};
                                  {@CreateRect, substrate};
-                                 {@CreateCoil, coil}
+                                 {@CreatePlus, plus}
                                  };
-  material_list = {substrate.material, rectangle.material, coil.material, coil.bmaterial};
+  material_list = {substrate.material, rectangle.material, plus.material, plus.bmaterial};
   [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
   if UC.nf2ff == 0;
     [CSX, port] = definePorts(CSX, mesh, UC.f_start);
@@ -126,9 +123,9 @@ function windings(UCDim, fr4_thickness, L, w, g, N, alpha, eps_subs, tand, mesh_
     CSXGeomPlot([UC.SimPath '/' UC.SimCSX]);
   endif;
   if UC.run_simulation;
-    openEMS_opts = '--engine=multithreaded --numThreads=6';#'-vvv';
+    openEMS_opts = '';#'-vvv';
     #Settings = ["--debug-PEC", "--debug-material"];
-    Settings = ["--disable-dumps"];
+    Settings = ["--numThreads=3"];
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);
   endif;
   doPortDump(port, UC);

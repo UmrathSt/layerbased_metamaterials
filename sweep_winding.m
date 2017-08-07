@@ -6,12 +6,12 @@ addpath("./libraries");
 
 
 UCDim = 24;
-L = 18;
+L = 20;
 w = 0.75;
-g = 1;
-N = 8;
+g = 1.5;
+N = 6;
 fr4_thickness = 2;
-tand = 0.05;
+tand = 0.015;
 mesh_refinement = 1;
 complemential = 0;
 swap = 1;
