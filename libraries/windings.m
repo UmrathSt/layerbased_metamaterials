@@ -6,7 +6,7 @@ function windings(UCDim, fr4_thickness, L, w, g, N, alpha, eps_subs, tand, mesh_
   UC.fd_dumps = 1;
   UC.s_dumps = 1;
   UC.nf2ff = 0;
-  if uname().nodename == "Xeon":
+  if uname().nodename == "Xeon";
     midstr = "/git_layerbased/";
     printf("Running job on XEON \n");
   else;
