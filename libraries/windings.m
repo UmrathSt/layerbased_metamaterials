@@ -7,10 +7,10 @@ function windings(UCDim, fr4_thickness, L, w, g, N, alpha, eps_subs, tand, mesh_
   UC.s_dumps = 1;
   UC.nf2ff = 0;
   if uname().nodename == "Xeon";
-    midstr = "/git_layerbased/";
+    midstr = "/";
     printf("Running job on XEON \n");
   else;
-    midstr = "/";
+    midstr = "/git_layerbased/";
   endif;
   UC.s_dumps_folder = ["~/Arbeit/openEMS" midstr "layerbased_metamaterials/Ergebnisse/SParameters"];
   UC.s11_filename_prefix = ["UCDim_" num2str(UCDim) "_lz_" num2str(fr4_thickness) "_L_" num2str(L) "_w_" num2str(w) "_g_" num2str(g) "_N_" num2str(N) "_eps_" num2str(eps_subs) "_tand_" num2str(tand)];
@@ -36,9 +36,14 @@ function windings(UCDim, fr4_thickness, L, w, g, N, alpha, eps_subs, tand, mesh_
   UC.dump_frequencies = [2.4e9, 5.2e9, 16.5e9];
   UC.s11_delta_f = 10e6;
   UC.EndCriteria = 1e-3;
+  if uname().nodename == "Xeon";
+    UC.SimPath = ["/media/stefan/Daten/openEMS/" UC.s11_subfolder "/" UC.s11_filename_prefix];
+    UC.ResultPath = ["~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse"];
+  else;
   UC.SimPath = ["/mnt/hgfs/E/openEMS/layerbased_metamaterials/Simulation/" UC.s11_subfolder "/" UC.s11_filename_prefix];
-  UC.SimCSX = "geometry.xml";
   UC.ResultPath = ["~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse"];
+  endif;
+  UC.SimCSX = "geometry.xml";
   if UC.run_simulation;
     confirm_recursive_rmdir(0);
     [status, message, messageid] = rmdir(UC.SimPath, 's' ); % clear previous directory
@@ -121,9 +126,9 @@ function windings(UCDim, fr4_thickness, L, w, g, N, alpha, eps_subs, tand, mesh_
     CSXGeomPlot([UC.SimPath '/' UC.SimCSX]);
   endif;
   if UC.run_simulation;
-    openEMS_opts = '';#'-vvv';
+    openEMS_opts = '--engine=multithreaded --numThreads=6';#'-vvv';
     #Settings = ["--debug-PEC", "--debug-material"];
-    Settings = ["--engine=multithreaded --numThreads=6"];
+    Settings = [""];
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);
   endif;
   doPortDump(port, UC);
