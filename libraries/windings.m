@@ -6,7 +6,13 @@ function windings(UCDim, fr4_thickness, L, w, g, N, alpha, eps_subs, tand, mesh_
   UC.fd_dumps = 1;
   UC.s_dumps = 1;
   UC.nf2ff = 0;
-  UC.s_dumps_folder = "~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters";
+  if uname().nodename == "Xeon":
+    midstr = "/git_layerbased/";
+    printf("Running job on XEON \n");
+  else;
+    midstr = "/";
+  endif;
+  UC.s_dumps_folder = ["~/Arbeit/openEMS" midstr "layerbased_metamaterials/Ergebnisse/SParameters"];
   UC.s11_filename_prefix = ["UCDim_" num2str(UCDim) "_lz_" num2str(fr4_thickness) "_L_" num2str(L) "_w_" num2str(w) "_g_" num2str(g) "_N_" num2str(N) "_eps_" num2str(eps_subs) "_tand_" num2str(tand)];
   complemential = complemential;
   if complemential;
@@ -117,7 +123,7 @@ function windings(UCDim, fr4_thickness, L, w, g, N, alpha, eps_subs, tand, mesh_
   if UC.run_simulation;
     openEMS_opts = '';#'-vvv';
     #Settings = ["--debug-PEC", "--debug-material"];
-    Settings = ["--numThreads=3"];
+    Settings = ["--engine=multithreaded --numThreads=6"];
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);
   endif;
   doPortDump(port, UC);
