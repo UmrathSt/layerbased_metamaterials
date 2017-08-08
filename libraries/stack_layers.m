@@ -18,17 +18,21 @@ function [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
   [CSX, params] = defineMaterials(CSX, material_list, param_str);
   param_str = horzcat(param_str, params);
   for i = 2:(size(layer_list)(1)); % layer 1 is the Unit-Cell
-    for j = 1:(size(layer_list{i}(1)));
+    for j = 1:(size(layer_list{i}(1)));    
       object = layer_list{i}{j, 2};
-      object_handler = layer_list{i}{j, 1};
+      object_handler = layer_list{i}{j, 1};      
       refiner = 0;
+      #display(["working on " object.name]);
       try;
         refiner = object.lz/object.zrefinement;
       end_try_catch;
       if refiner;
         zvals = horzcat(zvals, linspace(zvals(end)-UC.dz/(1+refiner), zvals(end)-object.lz, object.lz/UC.dz*(1+refiner)));
       else;
-        zvals = horzcat(zvals, [zvals(end)-object.lz/2, zvals(end)-object.lz]);
+        zvals = horzcat(zvals, [zvals(end)-object.lz]);
+      # old:
+      # zvals = horzcat(zvals, [zvals(end)-object.lz/2, zvals(end)-object.lz]);
+
       endif;
       try;
         R = object.R1;
