@@ -5,7 +5,11 @@ function rectangles(UCDim, fr4_thickness, N, L, dL, eps_FR4, tand, complemential
   UC.td_dumps = 1;
   UC.fd_dumps = 1;
   UC.s_dumps = 1;
-  UC.s_dumps_folder = "~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters";
+  if uname().nodename == "Xeon";
+    UC.s_dumps_folder = "~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse/SParameters";
+  else;
+    UC.s_dumps_folder = "~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters";
+  endif;
   UC.s11_filename_prefix = ["UCDim_" num2str(UCDim) "_lz_" num2str(fr4_thickness) "_rectL_" num2str(L) "_N_" num2str(N) "_dL_" num2str(dL) "_epsFR4_" num2str(eps_FR4) "_tand_" num2str(tand)];
   complemential = complemential;
   if complemential;
@@ -28,9 +32,14 @@ function rectangles(UCDim, fr4_thickness, N, L, dL, eps_FR4, tand, complemential
   UC.dump_frequencies = [2.4e9, 5.2e9, 16.5e9];
   UC.s11_delta_f = 10e6;
   UC.EndCriteria = 5e-4;
-  UC.SimPath = ["/mnt/hgfs/E/openEMS/layerbased_metamaterials/Simulation/" UC.s11_subfolder "/" UC.s11_filename_prefix];
   UC.SimCSX = "geometry.xml";
-  UC.ResultPath = ["~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse"];
+  if uname().nodename == "Xeon";
+    UC.SimPath = ["/media/stefan/Daten/openEMS/" UC.s11_subfolder "/" UC.s11_filename_prefix];
+    UC.ResultPath = ["~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse"];
+  else;
+    UC.SimPath = ["/mnt/hgfs/E/openEMS/layerbased_metamaterials/Simulation/" UC.s11_subfolder "/" UC.s11_filename_prefix];
+    UC.ResultPath = ["~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse"];
+  endif;
   if UC.run_simulation;
     confirm_recursive_rmdir(0);
     [status, message, messageid] = rmdir(UC.SimPath, 's' ); % clear previous directory
