@@ -12,7 +12,7 @@ number = 10;
 fr4_thickness = 0.2;
 L = 18;
 dL = 1;
-N = 10;
+N = 20;
 
 rectangles(UCDim, fr4_thickness, N, L, dL, eps_FR4, tand, complemential);
 
