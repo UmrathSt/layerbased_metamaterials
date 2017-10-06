@@ -1,9 +1,9 @@
 function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_refinement, complemential);
   physical_constants;
-  UC.layer_td = 1;
-  UC.layer_fd = 1;
-  UC.td_dumps = 1;
-  UC.fd_dumps = 1;
+  UC.layer_td = 0;
+  UC.layer_fd = 0;
+  UC.td_dumps = 0;
+  UC.fd_dumps = 0;
   UC.s_dumps = 1;
   UC.nf2ff = 0;
   UC.s_dumps_folder = "~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters";
@@ -22,7 +22,7 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_
   UC.f_stop = 20e9;
   UC.lx = UCDim;
   UC.ly = UCDim;
-  UC.lz = c0/ UC.f_start / 2 / UC.unit;
+  UC.lz = c0/ UC.f_start / 3 / UC.unit;
   UC.dz = c0 / (UC.f_stop) / UC.unit / 20;
   UC.dx = UC.dz/3/mesh_refinement;
   UC.dy = UC.dx;
@@ -119,7 +119,7 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_
   if UC.run_simulation;
     openEMS_opts = '';#'-vvv';
     #Settings = ["--debug-PEC", "--debug-material"];
-    Settings = ["--numThreads=3"];
+    Settings = ["--numThreads=2"];
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);
   endif;
   doPortDump(port, UC);
