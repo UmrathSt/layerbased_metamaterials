@@ -6,7 +6,7 @@ addpath("./libraries");
 
 
 w = 2;
-UCDim = 20;
+UCDim = 22;
 complemential = 0;
 fr4_thickness = 2;
 eps_FR4 = 4.6;

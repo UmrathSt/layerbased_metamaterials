@@ -123,9 +123,9 @@ function plus(UCDim, fr4_thickness, L, w, eps_subs, tand, mesh_refinement, compl
     CSXGeomPlot([UC.SimPath '/' UC.SimCSX]);
   endif;
   if UC.run_simulation;
-    openEMS_opts = '';#'-vvv';
+    openEMS_opts = '--engine=multithreaded --numThreads=6';#'-vvv';
     #Settings = ["--debug-PEC", "--debug-material"];
-    Settings = ["--numThreads=3"];
+    Settings = [""];
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);
   endif;
   doPortDump(port, UC);

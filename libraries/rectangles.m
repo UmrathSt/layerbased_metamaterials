@@ -1,9 +1,9 @@
 function rectangles(UCDim, fr4_thickness, N, L, dL, eps_FR4, tand, complemential);
   physical_constants;
-  UC.layer_td = 1;
-  UC.layer_fd = 1;
-  UC.td_dumps = 1;
-  UC.fd_dumps = 1;
+  UC.layer_td = 0;
+  UC.layer_fd = 0;
+  UC.td_dumps = 0;
+  UC.fd_dumps = 0;
   UC.s_dumps = 1;
   if uname().nodename == "Xeon";
     UC.s_dumps_folder = "~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse/SParameters";
@@ -49,6 +49,7 @@ function rectangles(UCDim, fr4_thickness, N, L, dL, eps_FR4, tand, complemential
   FDTD = SetGaussExcite(FDTD, 0.5*(UC.f_start+UC.f_stop),0.5*(UC.f_stop-UC.f_start));
   BC = {'PMC', 'PMC', 'PEC', 'PEC', 'PML_8', 'PML_8'}; % boundary conditions
   FDTD = SetBoundaryCond(FDTD, BC);
+  
   rectangle.name = "backplate";
   rectangle.lx = UCDim;
   rectangle.ly = UCDim;
@@ -57,7 +58,6 @@ function rectangles(UCDim, fr4_thickness, N, L, dL, eps_FR4, tand, complemential
   rectangle.prio = 2;
   rectangle.xycenter = [0, 0];
   rectangle.material.name = "copper";
-  #rectangle.material.Kappa = 56e6;
   rectangle.material.type = "const";
   rectangle.material.Kappa = 56e6;
  
@@ -90,6 +90,8 @@ function rectangles(UCDim, fr4_thickness, N, L, dL, eps_FR4, tand, complemential
   rectpatch.xycenter = [0,0];
   rectpatch.material.name = "copper";
   rectpatch.material.type = "const";
+  rectpatch.material.Kappa = 56e6;
+  
   rectpatch.bmaterial.name = "FR4";
   rectpatch.bmaterial.type = "const";
   rectpatch.bmaterial.Epsilon = eps_FR4;
@@ -106,6 +108,7 @@ function rectangles(UCDim, fr4_thickness, N, L, dL, eps_FR4, tand, complemential
   for i = 1:N-1;
     rectpatch.lx -= dL;
     rectpatch.ly -= dL;
+    substrate.lz = fr4_thickness * (1 - 0.33 * i/N);
     layer_list(i*2+1,1) = {{@CreateRect, substrate}};
     layer_list(i*2+2,1) = {{@CreateRectangle, rectpatch}};
   endfor;
@@ -123,9 +126,9 @@ function rectangles(UCDim, fr4_thickness, N, L, dL, eps_FR4, tand, complemential
     CSXGeomPlot([UC.SimPath '/' UC.SimCSX]);
   endif;
   if UC.run_simulation;
-    openEMS_opts = '';#'-vvv';
+    openEMS_opts = '--engine=multithreaded --numThreads=3';#'-vvv';
     #Settings = ["--debug-PEC", "--debug-material"];
-    Settings = ["--numThreads=3"];
+    Settings = [""];
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);
   endif;
   doPortDump(port, UC);
