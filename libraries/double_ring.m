@@ -27,7 +27,7 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_
   UC.f_stop = 20e9;
   UC.lx = UCDim;
   UC.ly = UCDim;
-  UC.lz = c0/ UC.f_start / 2 / UC.unit;
+  UC.lz = c0/ UC.f_start / 3 / UC.unit;
   UC.dz = c0 / (UC.f_stop) / UC.unit / 20;
   UC.dx = UC.dz/3/mesh_refinement;
   UC.dy = UC.dx;
@@ -130,7 +130,11 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_
   if UC.run_simulation;
     openEMS_opts = '--engine=multithreaded --numThreads=4';#'-vvv';
     #Settings = ["--debug-PEC", "--debug-material"];
+<<<<<<< HEAD
     Settings = [""];
+=======
+    Settings = ["--numThreads=2"];
+>>>>>>> 6244806c95eaa52086960a7cd0845ae4de428de2
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);
   endif;
   doPortDump(port, UC);

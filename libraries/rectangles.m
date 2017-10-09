@@ -5,8 +5,11 @@ function rectangles(UCDim, fr4_thickness, N, L, dL, eps_FR4, tand, complemential
   UC.td_dumps = 0;
   UC.fd_dumps = 0;
   UC.s_dumps = 1;
-  if uname().nodename == "Xeon";
-    UC.s_dumps_folder = "~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse/SParameters";
+  machine = uname().nodename;
+  if length(machine) == 4;
+    if machine == "Xeon";
+      UC.s_dumps_folder = "~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse/SParameters";
+    endif;
   else;
     UC.s_dumps_folder = "~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters";
   endif;
@@ -33,9 +36,11 @@ function rectangles(UCDim, fr4_thickness, N, L, dL, eps_FR4, tand, complemential
   UC.s11_delta_f = 10e6;
   UC.EndCriteria = 5e-4;
   UC.SimCSX = "geometry.xml";
-  if uname().nodename == "Xeon";
-    UC.SimPath = ["/media/stefan/Daten/openEMS/" UC.s11_subfolder "/" UC.s11_filename_prefix];
-    UC.ResultPath = ["~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse"];
+  if length(machine) == 4;
+    if machine == "Xeon";
+      UC.SimPath = ["/media/stefan/Daten/openEMS/" UC.s11_subfolder "/" UC.s11_filename_prefix];
+      UC.ResultPath = ["~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse"];
+    endif;
   else;
     UC.SimPath = ["/mnt/hgfs/E/openEMS/layerbased_metamaterials/Simulation/" UC.s11_subfolder "/" UC.s11_filename_prefix];
     UC.ResultPath = ["~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse"];
@@ -128,7 +133,11 @@ function rectangles(UCDim, fr4_thickness, N, L, dL, eps_FR4, tand, complemential
   if UC.run_simulation;
     openEMS_opts = '--engine=multithreaded --numThreads=3';#'-vvv';
     #Settings = ["--debug-PEC", "--debug-material"];
+<<<<<<< HEAD
     Settings = [""];
+=======
+    Settings = ["--numThreads=2"];
+>>>>>>> 6244806c95eaa52086960a7cd0845ae4de428de2
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);
   endif;
   doPortDump(port, UC);

@@ -63,7 +63,6 @@ function rect_chessboard(UCDim, fr4_thickness, L1, L2, eps_subs, tand, mesh_refi
   substrate.material.Epsilon = eps_subs;
   substrate.material.tand = tand;
   substrate.material.f0 = 10e9;
-  substrate.zrefinement = sqrt(eps_subs);
 
   # circle
   rect_chessboard.name = "Chessboard Copper";
