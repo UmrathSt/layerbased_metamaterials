@@ -130,11 +130,7 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_
   if UC.run_simulation;
     openEMS_opts = '--engine=multithreaded --numThreads=4';#'-vvv';
     #Settings = ["--debug-PEC", "--debug-material"];
-<<<<<<< HEAD
     Settings = [""];
-=======
-    Settings = ["--numThreads=2"];
->>>>>>> 6244806c95eaa52086960a7cd0845ae4de428de2
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);
   endif;
   doPortDump(port, UC);

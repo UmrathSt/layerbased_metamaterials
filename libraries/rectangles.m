@@ -133,11 +133,7 @@ function rectangles(UCDim, fr4_thickness, N, L, dL, eps_FR4, tand, complemential
   if UC.run_simulation;
     openEMS_opts = '--engine=multithreaded --numThreads=3';#'-vvv';
     #Settings = ["--debug-PEC", "--debug-material"];
-<<<<<<< HEAD
     Settings = [""];
-=======
-    Settings = ["--numThreads=2"];
->>>>>>> 6244806c95eaa52086960a7cd0845ae4de428de2
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);
   endif;
   doPortDump(port, UC);
