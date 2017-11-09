@@ -1,8 +1,8 @@
-function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_refinement, complemential);
+function double_ring_PBC(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_refinement, complemential);
   physical_constants;
   UC.layer_td = 0;
   UC.layer_fd = 0;
-  UC.td_dumps = 0;
+  UC.td_dumps = 1;
   UC.fd_dumps = 0;
   UC.s_dumps = 1;
   UC.nf2ff = 0;
@@ -24,7 +24,7 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_
   UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 1e9;
-  UC.f_stop = 20e9;
+  UC.f_stop = 5e9;
   UC.lx = UCDim;
   UC.ly = UCDim;
   UC.lz = c0/ UC.f_start / 3 / UC.unit;
@@ -50,7 +50,7 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_
   endif;
   FDTD = InitFDTD('EndCriteria', UC.EndCriteria);
   FDTD = SetGaussExcite(FDTD, 0.5*(UC.f_start+UC.f_stop),0.5*(UC.f_stop-UC.f_start));
-  BC = {'PMC', 'PMC', 'PEC', 'PEC', 'PML_8', 'PML_8'}; % boundary conditions
+  BC = {'PBC', 'PBC', 'PBC', 'PBC', 'PML_8', 'PML_8'}; % boundary conditions
   FDTD = SetBoundaryCond(FDTD, BC);
   rectangle.name = "backplate";
   rectangle.lx = UCDim;
@@ -81,7 +81,7 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_
 
   # circle
   dblring.name = "double rings";
-  dblring.lz = 0.05;
+  dblring.lz = 0.5;
   dblring.rotate = 0;
   dblring.material.name = "copperRings";
 #  dblring.material.Kappa = 56e6;
