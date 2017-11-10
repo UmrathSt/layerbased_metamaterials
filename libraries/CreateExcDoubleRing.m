@@ -30,8 +30,8 @@ function [CSX, params] = CreateExcDoubleRing(CSX, object, translate, rotate);
   CSX = AddCylindricalShell(CSX, ringmaterial, object.prio+1, 
         ring_start, ring_stop, R1-w1/2, w1,
         'Transform', {'Rotate_Z', rotate, 'Translate', translate});
-  ring_start = ring_start + [0, R2-R1, 0];
-  ring_stop = ring_stop + [0, R2-R1, 0];
+  ring_start = ring_start + [R2-R1,0, 0];
+  ring_stop = ring_stop + [R2-R1,0, 0];
   CSX = AddCylindricalShell(CSX, ringmaterial, object.prio+1, 
         ring_start, ring_stop, R2-w2/2, w2,
         'Transform', {'Rotate_Z', rotate, 'Translate', translate});
