@@ -1,12 +1,12 @@
-function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_refinement, complemential);
+function double_ring_PBC(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_refinement, complemential);
   physical_constants;
   UC.layer_td = 0;
   UC.layer_fd = 0;
-  UC.td_dumps = 0;
+  UC.td_dumps = 1;
   UC.fd_dumps = 0;
   UC.s_dumps = 1;
   UC.nf2ff = 0;
-  if strcmp(uname().nodename, "Xeon");
+  if uname().nodename == "Xeon";
     UC.s_dumps_folder = "~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse/SParameters";
   else;
     UC.s_dumps_folder = "~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters";
@@ -18,24 +18,24 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, "_comp");
   endif;
   UC.s11_filename = "Sparameters_";
-  UC.s11_subfolder = "double_ring";
+  UC.s11_subfolder = "double_ring_eps_sweep";
   UC.run_simulation = 1;
-  UC.show_geometry = 1;
+  UC.show_geometry = 0;
   UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 1e9;
-  UC.f_stop = 10e9;
+  UC.f_stop = 5e9;
   UC.lx = UCDim;
   UC.ly = UCDim;
   UC.lz = c0/ UC.f_start / 3 / UC.unit;
-  UC.dz = c0 / (UC.f_stop) / UC.unit / 15;
+  UC.dz = c0 / (UC.f_stop) / UC.unit / 20;
   UC.dx = UC.dz/3/mesh_refinement;
   UC.dy = UC.dx;
-  UC.dump_frequencies = [2.4e9];
+  UC.dump_frequencies = [2.4e9, 5.2e9, 16.5e9];
   UC.s11_delta_f = 10e6;
   UC.EndCriteria = 1e-3;
   UC.SimCSX = "geometry.xml";
-  if strcmp(uname().nodename, "Xeon");
+  if uname().nodename == "Xeon";
     display("Working on Xeon machine \n");
     UC.SimPath = ["/media/stefan/Daten/openEMS/" UC.s11_subfolder "/" UC.s11_filename_prefix];
     UC.ResultPath = ["~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse"];
@@ -50,7 +50,7 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_
   endif;
   FDTD = InitFDTD('EndCriteria', UC.EndCriteria);
   FDTD = SetGaussExcite(FDTD, 0.5*(UC.f_start+UC.f_stop),0.5*(UC.f_stop-UC.f_start));
-  BC = {'PMC', 'PMC', 'PEC', 'PEC', 'PML_8', 'PML_8'}; % boundary conditions
+  BC = {'PBC', 'PBC', 'PBC', 'PBC', 'PML_8', 'PML_8'}; % boundary conditions
   FDTD = SetBoundaryCond(FDTD, BC);
   rectangle.name = "backplate";
   rectangle.lx = UCDim;
@@ -110,7 +110,7 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_
   material_list = {substrate.material, rectangle.material, dblring.material, dblring.bmaterial};
   [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
   if UC.nf2ff == 0;
-    [CSX, port] = definePBCPorts(CSX, mesh, UC.f_start);
+    [CSX, port] = definePorts(CSX, mesh, UC.f_start);
   elseif UC.nf2ff == 1;
     [CSX, port, nf2ff] = definePortsNF2FF(CSX, mesh, UC);
     phase_center_z = 0
@@ -128,7 +128,7 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_
     CSXGeomPlot([UC.SimPath '/' UC.SimCSX]);
   endif;
   if UC.run_simulation;
-    openEMS_opts = '--engine=multithreaded --numThreads=2';#'-vvv';
+    openEMS_opts = '--engine=multithreaded --numThreads=4';#'-vvv';
     #Settings = ["--debug-PEC", "--debug-material"];
     Settings = [""];
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);
