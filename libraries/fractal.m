@@ -96,11 +96,29 @@ fractal.material.Kappa = 56e6;
 fractal.material.type = "const";
 fractal.prio = 2;
 fractal.xycenter = [0, 0];
+#
+hrectangle.UClx = UCDim;
+hrectangle.UCly = UCDim;
+hrectangle.lx = UCDim-4*dL;
+hrectangle.ly = UCDim-4*dL;
+hrectangle.dx = dL;
+hrectangle.dy = dL;
+hrectangle.lz = 0.05;
+hrectangle.translate = [0, 0, 0];
+hrectangle.rotate = 0;
+hrectangle.material.name = "copper";
+hrectangle.material.Kappa = 56e6;
+hrectangle.material.type = "const";
+hrectangle.bmaterial.name = "FR4";
+hrectangle.prio = 2;
+hrectangle.xycenter = [0, 0];
 
 
 
 
 layer_list = {{@CreateUC, UC}; {@CreateRect, rectangle}; 
+                               {@CreateRect, substrate};
+                               {@CreateHRectangle, hrectangle};
                                {@CreateRect, substrate};
                                {@CreateFractal, fractal}};
 material_list = {rectangle.material, substrate.material, fractal.material};

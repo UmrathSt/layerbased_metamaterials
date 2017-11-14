@@ -5,8 +5,7 @@ function [CSX, params] = CreateHRectangle(CSX, object, translate, rotate);
   box_stop = +diag;
   CSX = AddBox(CSX, object.material.name, object.prio+1, box_start, box_stop,
          'Transform', {'Rotate_Z', rotate, 'Translate', translate});
-  CSX = AddCylindricalShell(CSX, object.material.name, object.prio+1, [0,0,-object.lz/2],[0,0,object.lz/2],
-  object.lx/2.5,object.dx,'Transform', {'Rotate_Z', rotate, 'Translate', translate});
+
   diag = [object.UClx/2, object.UCly/2, object.lz/2];
   box_start = -diag;
   box_stop = +diag;
