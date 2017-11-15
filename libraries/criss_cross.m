@@ -13,7 +13,7 @@ function criss_cross(UCDim, fr4_thickness, eps_FR4, tand, complemential);
   end;
   UC.s11_filename = 'Sparameters_';
   UC.s11_subfolder = 'criss_cross';
-  UC.run_simulation = 0;
+  UC.run_simulation = 1;
   UC.show_geometry = 1;
   UC.grounded = 1;
   UC.unit = 1e-3;

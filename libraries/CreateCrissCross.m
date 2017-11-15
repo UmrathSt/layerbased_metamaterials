@@ -10,6 +10,8 @@ function [CSX, params] = CreateCrissCross(CSX, object, translate, rotate)
   Llarge = object.Llarge;
   UClx = object.UClx;
   UCly = object.UCly;
+  xshift = (object.a - 2*l2)/2;
+  yshift = xshift;
   
   %% top cross which can be rotated to the crosses in +-x and +-y
   start1 = [-l1/2, UCly/2, -lz/2];
@@ -22,6 +24,17 @@ function [CSX, params] = CreateCrissCross(CSX, object, translate, rotate)
       CSX = AddBox(CSX, object.material.name, object.prio+1, start2, stop2, 'Transform', {'Rotate_Z', alpha+rotate, 'Translate', translate});
   end;
   
+  b1_start = [-Lsmall/2, -Lsmall/2, -lz/2];
+  b1_stop  = -b1_start;
+  b2_start = [-Llarge/2, -Llarge/2, -lz/2];
+  b2_stop  = -b2_start;
+  for xs = [-xshift, xshift];
+      for ys = [-xshift, xshift];
+          transl = [xs, ys, 0]+translate;
+          CSX = AddBox(CSX, object.material.name, object.prio+1, b1_start, b1_stop, 'Transform', {'Rotate_Z', rotate, 'Translate', transl});
+          CSX = AddBox(CSX, object.material.name, object.prio+1, b2_start, b2_stop, 'Transform', {'Rotate_Z', rotate, 'Translate', transl});
+      end;
+  end;
   
   start = [-UClx/2, -UCly/2, -lz/2];
   stop  = -start;
