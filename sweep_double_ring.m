@@ -10,7 +10,7 @@ R2 = 5.1;
 w1 = 1.5;
 w2 = 0.5;
 
-UCDim = 20;
+UCDim = 40;
 complemential = 0;
 fr4_thickness = 2;
 
@@ -19,5 +19,5 @@ mesh_refinement = 1;
 swap = 1;
 eps_subs = 4.1;
 for fr4_thickness = [2];
-  double_ring_PBC(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_refinement, complemential, swap);
+  PEC_Plate_PBC(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_refinement, complemential);
 endfor;

@@ -18,5 +18,5 @@ tand = 0.015;
 mesh_refinement = 2;
 swap = 0;
 eps_subs = 4.1;
-  
-double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_refinement, complemential, swap);
+ 
+criss_cross(UCDim, fr4_thickness, eps_subs, tand, mesh_refinement, complemential);

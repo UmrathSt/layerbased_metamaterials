@@ -9,65 +9,63 @@ function [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
   zvals = [z];
   xvals = [];
   yvals = [];
-  layer_list = layer_list;
-  UC = layer_list{1}{1, 2};
-  UC_handler = layer_list{1}{1, 1};
-  param_str = ["# stacked metamaterial geometry \n# f [Hz], L [" num2str(UC.unit) " m]\n"];
+  UC = layer_list{1,2};
+  UC_handler = layer_list{1,1};
+  param_str = ['# stacked metamaterial geometry \n# f [Hz], L [' num2str(UC.unit) ' m]\n'];
   [CSX, params] = UC_handler(CSX, UC, [0, 0, 0], 0);
   param_str = horzcat(param_str, params);
   [CSX, params] = defineMaterials(CSX, material_list, param_str);
   param_str = horzcat(param_str, params);
-  for i = 2:(size(layer_list)(1)); % layer 1 is the Unit-Cell
-    for j = 1:(size(layer_list{i}(1)));    
-      object = layer_list{i}{j, 2};
-      object_handler = layer_list{i}{j, 1};      
-      refiner = 0;
-      #display(["working on " object.name]);
-      try;
-        refiner = object.lz/object.zrefinement;
-      end_try_catch;
+  for i = 2:size(layer_list, 1); % layer 1 is the Unit-Cell
+        object = layer_list{i, 2};
+        object_handler = layer_list{i, 1};
+        refiner = 0;
+        %display(['working on ' object.name]);
+        try;
+          refiner = object.lz/object.zrefinement;
+        end;
       if refiner;
         zvals = horzcat(zvals, linspace(zvals(end)-UC.dz/(1+refiner), zvals(end)-object.lz, object.lz/UC.dz*(1+refiner)));
       else;
         zvals = horzcat(zvals, [zvals(end)-object.lz]);
-      # old:
-      # zvals = horzcat(zvals, [zvals(end)-object.lz/2, zvals(end)-object.lz]);
+      % old:
+      % zvals = horzcat(zvals, [zvals(end)-object.lz/2, zvals(end)-object.lz]);
 
-      endif;
+      end;
       try;
         R = object.R1;
         w = object.w1;
         xvals = horzcat(xvals, [-(UC.lx/2+R)/2, -R, -R+w, R-w, R, (UC.lx/2+R)/2]);
         yvals = horzcat(yvals, [-(UC.ly/2+R)/2, -R, -R+w, R-w, R, (UC.ly/2+R)/2]);    
       catch lasterror;
-      end_try_catch;
+      end;
       try;
         R = object.R2;
         w = object.w2;
         xvals = horzcat(xvals, [-(UC.lx/2+R)/2, -R, -R+w, R-w, R, (UC.lx/2+R)/2]);
         yvals = horzcat(yvals, [-(UC.ly/2+R)/2, -R, -R+w, R-w, R, (UC.ly/2+R)/2]);    
       catch lasterror;
-      end_try_catch;
+      end;
       try;
         R = object.R;
         w = object.w;
         xvals = horzcat(xvals, [-(UC.lx/2+R)/2, -R, -R+w, R-w, R, (UC.lx/2+R)/2]);
         yvals = horzcat(yvals, [-(UC.ly/2+R)/2, -R, -R+w, R-w, R, (UC.ly/2+R)/2]);    
       catch lasterror;
-      end_try_catch;
-      %printf("creating object: %s \n", object.name);
+      end;
+      %printf('creating object: %s \n', object.name);
       add_trans = [0, 0, 0];
       try;
         add_trans = object.translate;
       catch lasterror;
-      end_try_catch;
-      translate = [object.xycenter(1:2), zvals(end-j+1)+object.lz/2]+ add_trans;
+      end;
+      translate = [object.xycenter(1:2), zvals(end-1)+object.lz/2]+ add_trans;
       rotate = object.rotate;
-      param_str = horzcat(param_str, ["# layer number " num2str(i-1) ":\n"]);
+      param_str = horzcat(param_str, ['# layer number ' num2str(i-1) ':\n']);
       [CSX, params] = object_handler(CSX, object, translate, rotate);
       param_str = horzcat(param_str, params);
-    endfor;
-  endfor;
+      end;
+      
   
   lastz = zvals(end);
   
@@ -77,7 +75,7 @@ function [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
     mesh.z = SmoothMeshLines([-UC.lz/2, zvals, UC.lz/2], UC.dz, 1.6);
   else;
     mesh.z = SmoothMeshLines([-7*UC.lz/8, zvals, 1*UC.lz/8], UC.dz, 1.3);
-  endif;
+  end;
   CSX = DefineRectGrid(CSX, UC.unit, mesh);
   mesh = AddPML(mesh, [0 0 0 0 8 8]);
-endfunction;
+      end
