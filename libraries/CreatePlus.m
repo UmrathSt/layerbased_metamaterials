@@ -1,4 +1,5 @@
-function [CSX, params] = CreatePlus(CSX, object, translate, rotate)
+function [CSX, params] = CreateCrissCross(CSX, object, translate, rotate)
+
   if !(nargin == 4);
     display("Falsche Parameterzahl für CreatePlus");
   end; 

@@ -12,13 +12,13 @@ function [CSX, port] = definePBCPorts(CSX, mesh, f_start, f0, unit, polarization
   if strcmp(polarization.name, "TE");
     display("TE POLARIZED PBC Excitation \n");
     E = [cos(polarization.angle), sin(polarization.angle), 0];
-    func_E{1} = ["(" num2str(cos(polarization.angle)) ")*cos((" num2str(k(1)) ")*x)"];
-    func_E{2} = ["(" num2str(sin(polarization.angle)) ")*cos((" num2str(k(2)) ")*y)"];
+    func_E{1} = ["(" num2str(cos(polarization.angle)) ")*cos((" num2str(k(1)) ")*x+(" num2str(k(2)) ")*y+(" num2str(k(3)) ")*z)"];
+    func_E{2} = ["(" num2str(sin(polarization.angle)) ")*cos((" num2str(k(1)) ")*x+(" num2str(k(2)) ")*y+(" num2str(k(3)) ")*z)"];
     func_E{3} = "0";
     H = cross(k, E);
-    func_H{1} = ["(" num2str(H(1)) ")*cos((" num2str(k(1)) ")*x)"];
-    func_H{2} = ["(" num2str(H(2)) ")*cos((" num2str(k(2)) ")*y)"];
-    func_H{3} = ["(" num2str(H(3)) ")*cos((" num2str(k(3)) ")*z)"];
+    func_H{1} = ["(" num2str(H(1)) ")*cos((" num2str(k(1)) ")*x+(" num2str(k(2)) ")*y+(" num2str(k(3)) ")*z)"];
+    func_H{2} = ["(" num2str(H(2)) ")*cos((" num2str(k(1)) ")*x+(" num2str(k(2)) ")*y+(" num2str(k(3)) ")*z)"];
+    func_H{3} = ["(" num2str(H(3)) ")*cos((" num2str(k(1)) ")*x+(" num2str(k(2)) ")*y+(" num2str(k(3)) ")*z)"];
   elseif strcmp(polarization.name, "TM");
     display("TM POLARIZED PBC Excitation \n");
     H = [cos(polarization.angle), sin(polarization.angle), 0];
