@@ -15,4 +15,4 @@ function [CSX, port] = definePorts(CSX, mesh, f_start);
   func_H{3} = 0;
   [CSX, port{1}] = AddWaveGuidePort(CSX, 10, 1, p1, p2, 2, func_E, func_H, 1, 1);
   [CSX, port{2}] = AddWaveGuidePort(CSX, 10, 2, p3, p4, 2, func_E, func_H, 1, 0);
-  endfunction;
+end

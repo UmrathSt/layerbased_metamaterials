@@ -59,7 +59,7 @@ function [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
         add_trans = object.translate;
       catch lasterror;
       end;
-      translate = [object.xycenter(1:2), zvals(end-1)+object.lz/2]+ add_trans;
+      translate = [object.xycenter(1:2), zvals(end)+object.lz/2]+ add_trans;
       rotate = object.rotate;
       param_str = horzcat(param_str, ['# layer number ' num2str(i-1) ':\n']);
       [CSX, params] = object_handler(CSX, object, translate, rotate);

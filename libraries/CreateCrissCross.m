@@ -10,19 +10,20 @@ function [CSX, params] = CreateCrissCross(CSX, object, translate, rotate)
   UCly = object.UCly;
   
   %% top cross which can be rotated to the crosses in +-x and +-y
-  start1 = [-l1/2, UCLy/2, -lz/2];
+  start1 = [-l1/2, UCly/2, -lz/2];
   stop1  = [+l1/2, UCly/2-w1, lz/2];
   start2 = [-w2/2, UCly/2, -lz/2];
   stop2  = [+w2/2, UCly/2-l2-w1, lz/2];
   z_angles = [0, pi/2, pi, 3*pi/2];
   for alpha = z_angles;
-      AddBox(CSX, object.name, 2, start1, stop1, 'Transform', {'Rotate_z', alpha});
-      AddBox(CSX, object.name, 2, start2, stop2, 'Transform', {'Rotate_z', alpha});
+      CSX = AddBox(CSX, object.material.name, 2, start1, stop1, 'Transform', {'Rotate_Z', alpha+rotate, 'Translate', translate});
+      CSX = AddBox(CSX, object.material.name, 2, start2, stop2, 'Transform', {'Rotate_Z', alpha+rotate, 'Translate', translate});
   end;
   
  
   
   ocenter = [object.xycenter, 0] + translate;
-  params = ["# criss-cross patch made of "  object.material.name  "\n"];
+  params = ['# criss-cross patch made of ',  object.material.name,  '\n'];
+  params = horzcat(params, get_geometry_info_string);
   return;
-endfunction
+end
