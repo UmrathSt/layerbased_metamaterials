@@ -14,7 +14,7 @@ function [CSX] = defineFieldDumps(CSX, mesh, layer_list, UC);
     for i = 1:size(z_xy,2);
       zval = z_xy(i);
       if layer_td;
-        name = strcat('t_dump_xy', num2str(i))
+        name = strcat('t_dump_xy', num2str(i));
         CSX = AddDump(CSX, name);
         CSX = AddBox(CSX, name, 1, [xMin, yMin, zval], [xMax, yMax, zval]);
       end;

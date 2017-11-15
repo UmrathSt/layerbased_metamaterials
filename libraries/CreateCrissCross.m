@@ -6,6 +6,8 @@ function [CSX, params] = CreateCrissCross(CSX, object, translate, rotate)
   l1 = object.l1;
   l2 = object.l2;
   lz = object.lz;
+  Lsmall = object.Lsmall;
+  Llarge = object.Llarge;
   UClx = object.UClx;
   UCly = object.UCly;
   
@@ -16,14 +18,19 @@ function [CSX, params] = CreateCrissCross(CSX, object, translate, rotate)
   stop2  = [+w2/2, UCly/2-l2-w1, lz/2];
   z_angles = [0, pi/2, pi, 3*pi/2];
   for alpha = z_angles;
-      CSX = AddBox(CSX, object.material.name, 2, start1, stop1, 'Transform', {'Rotate_Z', alpha+rotate, 'Translate', translate});
-      CSX = AddBox(CSX, object.material.name, 2, start2, stop2, 'Transform', {'Rotate_Z', alpha+rotate, 'Translate', translate});
+      CSX = AddBox(CSX, object.material.name, object.prio+1, start1, stop1, 'Transform', {'Rotate_Z', alpha+rotate, 'Translate', translate});
+      CSX = AddBox(CSX, object.material.name, object.prio+1, start2, stop2, 'Transform', {'Rotate_Z', alpha+rotate, 'Translate', translate});
   end;
   
- 
+  
+  start = [-UClx/2, -UCly/2, -lz/2];
+  stop  = -start;
+  CSX = AddBox(CSX, object.bmaterial.name, object.prio, start, stop, 'Transform', {'Translate', translate});
   
   ocenter = [object.xycenter, 0] + translate;
-  params = ['# criss-cross patch made of ',  object.material.name,  '\n'];
-  params = horzcat(params, get_geometry_info_string);
+  params = ['# Parameters for object ', object.name];
+  params = horzcat(params, ['\n# Crosses:', 'L1, L2 = ', num2str(object.Lsmall), ', ', object.Llarge ', ']);
+  params = horzcat(params, ['l1, l2, w1, w2 = ', num2str(l1), num2str(l2), num2str(object.w1), num2str(object.w2), '\n']);
+  params = horzcat(params, ['# background material is', object.bmaterial.name, '\n']);
   return;
 end
