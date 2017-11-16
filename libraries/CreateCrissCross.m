@@ -10,7 +10,7 @@ function [CSX, params] = CreateCrissCross(CSX, object, translate, rotate)
   Llarge = object.Llarge;
   UClx = object.UClx;
   UCly = object.UCly;
-  xshift = (object.a - 2*l2)/2;
+  xshift = (object.b - Lsmall)/2;
   yshift = xshift;
   
   %% top cross which can be rotated to the crosses in +-x and +-y
@@ -23,7 +23,7 @@ function [CSX, params] = CreateCrissCross(CSX, object, translate, rotate)
       CSX = AddBox(CSX, object.material.name, object.prio+1, start1, stop1, 'Transform', {'Rotate_Z', alpha+rotate, 'Translate', translate});
       CSX = AddBox(CSX, object.material.name, object.prio+1, start2, stop2, 'Transform', {'Rotate_Z', alpha+rotate, 'Translate', translate});
   end;
-  
+  %% add the four small square patches
   b1_start = [-Lsmall/2, -Lsmall/2, -lz/2];
   b1_stop  = -b1_start;
   b2_start = [-Llarge/2, -Llarge/2, -lz/2];
@@ -32,18 +32,22 @@ function [CSX, params] = CreateCrissCross(CSX, object, translate, rotate)
       for ys = [-xshift, xshift];
           transl = [xs, ys, 0]+translate;
           CSX = AddBox(CSX, object.material.name, object.prio+1, b1_start, b1_stop, 'Transform', {'Rotate_Z', rotate, 'Translate', transl});
-          CSX = AddBox(CSX, object.material.name, object.prio+1, b2_start, b2_stop, 'Transform', {'Rotate_Z', rotate, 'Translate', transl});
       end;
   end;
+  %% add the centered square patch
+  b_start = [-Llarge/2, -Llarge/2, -lz/2];
+  b_stop  = -b1_start; 
+  CSX = AddBox(CSX, object.material.name, object.prio+1, b_start, b_stop, 'Transform', {'Rotate_Z', rotate, 'Translate', translate});
   
   start = [-UClx/2, -UCly/2, -lz/2];
   stop  = -start;
   CSX = AddBox(CSX, object.bmaterial.name, object.prio, start, stop, 'Transform', {'Translate', translate});
   
   ocenter = [object.xycenter, 0] + translate;
-  params = ['# Parameters for object ', object.name];
-  params = horzcat(params, ['\n# Crosses:', 'L1, L2 = ', num2str(object.Lsmall), ', ', object.Llarge ', ']);
-  params = horzcat(params, ['l1, l2, w1, w2 = ', num2str(l1), num2str(l2), num2str(object.w1), num2str(object.w2), '\n']);
-  params = horzcat(params, ['# background material is', object.bmaterial.name, '\n']);
+  params = ['# Parameters for object ', object.name, 'thickness lz = ', num2str(lz)];
+  params = horzcat(params, ['\n# Crosses:', 'L1, L2 = ', num2str(object.Lsmall), ', ', num2str(object.Llarge), ', ']);
+  params = horzcat(params, ['l1, l2, w1, w2 = ', num2str(l1),', ', num2str(l2),', ', num2str(object.w1),', ', num2str(object.w2), '\n']);
+  params = horzcat(params, ['# squares: edge lengths = ', num2str(Lsmall),', ', num2str(Llarge), '\n']);
+  params = horzcat(params, ['# background material is ', object.bmaterial.name, '\n']);
   return;
 end

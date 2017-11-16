@@ -128,7 +128,7 @@ function double_ring_PBC(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, m
     CSXGeomPlot([UC.SimPath '/' UC.SimCSX]);
   endif;
   if UC.run_simulation;
-    openEMS_opts = '--engine=multithreaded --numThreads=4';#'-vvv';
+    openEMS_opts = '--engine=multithreaded --numThreads=4';%'-vvv';
     #Settings = ["--debug-PEC", "--debug-material"];
     Settings = [""];
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);

@@ -59,6 +59,16 @@ function [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
         add_trans = object.translate;
       catch lasterror;
       end;
+      try;
+          w1 = object.w1; % y
+          w2 = object.w2; % x
+          a = object.a;
+          b = object.b;
+          xvals = horzcat(xvals, [-(UC.lx/2-w1),-(UC.lx/2-(a-b)), -w2/2, w2/2, (UC.lx/2-(a-b)), (UC.lx/2-w1)/2]);
+          yvals = horzcat(yvals, [-(UC.ly/2-w1),-(UC.ly/2-(a-b)), -w2/2, w2/2, (UC.ly/2-(a-b)), (UC.ly/2-w1)/2]);
+          
+      catch lasterror;
+      end;
       translate = [object.xycenter(1:2), zvals(end)+object.lz/2]+ add_trans;
       rotate = object.rotate;
       param_str = horzcat(param_str, ['# layer number ' num2str(i-1) ':\n']);
