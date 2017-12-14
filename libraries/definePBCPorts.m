@@ -16,26 +16,38 @@ function [CSX, port] = definePBCPorts(CSX, mesh, f_start, f0, unit, polarization
   k = unit*k0*[sin(theta_z)*cos(phi_xy), sin(theta_z)*sin(phi_xy), cos(theta_z)];
   gamma = polarization.angle;
   if strcmp(polarization.name, 'TE')
-    printf('TE POLARIZED PBC Excitation');
+    fprintf('TE POLARIZED PBC Excitation');
     E = [cos(gamma), sin(gamma), 0];
-    func_E{1} = ['(' num2str(cos(polarization.angle)) ')*cos((' num2str(k(1)) ')*x+(' num2str(k(2)) ')*y+(' num2str(k(3)) ')*z)'];
-    func_E{2} = ['(' num2str(sin(polarization.angle)) ')*cos((' num2str(k(1)) ')*x+(' num2str(k(2)) ')*y+(' num2str(k(3)) ')*z)'];
-    func_E{3} = '0';
+    func_E_sin{1} = ['(' num2str(cos(gamma)) ')*sin((' num2str(k(1)) ')*x+(' num2str(k(2)) ')*y+(' num2str(k(3)) ')*z)'];
+    func_E_sin{2} = ['(' num2str(sin(gamma)) ')*sin((' num2str(k(1)) ')*x+(' num2str(k(2)) ')*y+(' num2str(k(3)) ')*z)'];
+    func_E_sin{3} = '0';
+    func_E_cos{1} = ['(' num2str(cos(gamma)) ')*cos((' num2str(k(1)) ')*x+(' num2str(k(2)) ')*y+(' num2str(k(3)) ')*z)'];
+    func_E_cos{2} = ['(' num2str(sin(gamma)) ')*cos((' num2str(k(1)) ')*x+(' num2str(k(2)) ')*y+(' num2str(k(3)) ')*z)'];
+    func_E_cos{3} = '0';
     H = cross(k, E);
-    func_H{1} = ['(' num2str(H(1)) ')*cos((' num2str(k(1)) ')*x+(' num2str(k(2)) ')*y+(' num2str(k(3)) ')*z)'];
-    func_H{2} = ['(' num2str(H(2)) ')*cos((' num2str(k(1)) ')*x+(' num2str(k(2)) ')*y+(' num2str(k(3)) ')*z)'];
-    func_H{3} = ['(' num2str(H(3)) ')*cos((' num2str(k(1)) ')*x+(' num2str(k(2)) ')*y+(' num2str(k(3)) ')*z)'];
+    func_H_sin{1} = ['(' num2str(H(1)) ')*sin((' num2str(k(1)) ')*x+(' num2str(k(2)) ')*y+(' num2str(k(3)) ')*z)'];
+    func_H_sin{2} = ['(' num2str(H(2)) ')*sin((' num2str(k(1)) ')*x+(' num2str(k(2)) ')*y+(' num2str(k(3)) ')*z)'];
+    func_H_sin{3} = ['(' num2str(H(3)) ')*sin((' num2str(k(1)) ')*x+(' num2str(k(2)) ')*y+(' num2str(k(3)) ')*z)'];
+    func_H_cos{1} = ['(' num2str(H(1)) ')*cos((' num2str(k(1)) ')*x+(' num2str(k(2)) ')*y+(' num2str(k(3)) ')*z)'];
+    func_H_cos{2} = ['(' num2str(H(2)) ')*cos((' num2str(k(1)) ')*x+(' num2str(k(2)) ')*y+(' num2str(k(3)) ')*z)'];
+    func_H_cos{3} = ['(' num2str(H(3)) ')*cos((' num2str(k(1)) ')*x+(' num2str(k(2)) ')*y+(' num2str(k(3)) ')*z)'];
   elseif strcmp(polarization.name, 'TM')
-    printf('TM POLARIZED PBC Excitation');
-    H = [cos(polarization.angle), sin(polarization.angle), 0];
-    func_H{1} = ['(' num2str(cos(polarization.angle)) ')*cos((' num2str(k(1)) ')*x)'];
-    func_H{2} = ['(' num2str(sin(polarization.angle)) ')*cos((' num2str(k(2)) ')*y)'];
-    func_H{3} = '0';
+    fprintf('TM POLARIZED PBC Excitation');
+    H = [cos(gamma), sin(gamma), 0];
+    func_H_sin{1} = ['(' num2str(cos(gamma)) ')*sin((' num2str(k(1)) ')*x+(' num2str(k(2)) ')*y+(' num2str(k(3)) ')*z)'];
+    func_H_sin{2} = ['(' num2str(sin(gamma)) ')*sin((' num2str(k(1)) ')*x+(' num2str(k(2)) ')*y+(' num2str(k(3)) ')*z)'];
+    func_H_sin{3} = '0';
+    func_H_cos{1} = ['(' num2str(cos(gamma)) ')*cos((' num2str(k(1)) ')*x+(' num2str(k(2)) ')*y+(' num2str(k(3)) ')*z)'];
+    func_H_cos{2} = ['(' num2str(sin(gamma)) ')*cos((' num2str(k(1)) ')*x+(' num2str(k(2)) ')*y+(' num2str(k(3)) ')*z)'];
+    func_H_cos{3} = '0';
     E = cross(H, k);
-    func_E{1} = ['-(' num2str(H(1)) ')*cos((' num2str(k(1)) ')*x)'];
-    func_E{2} = ['-(' num2str(H(2)) ')*cos((' num2str(k(2)) ')*y)'];
-    func_E{3} = ['-(' num2str(H(3)) ')*cos((' num2str(k(3)) ')*z)'];
+    func_E_sin{1} = ['-(' num2str(H(1)) ')*sin((' num2str(k(1)) ')*x)'];
+    func_E_sin{2} = ['-(' num2str(H(2)) ')*sin((' num2str(k(2)) ')*y)'];
+    func_E_sin{3} = ['-(' num2str(H(3)) ')*sin((' num2str(k(3)) ')*z)'];
+    func_E_cos{1} = ['-(' num2str(H(1)) ')*cos((' num2str(k(1)) ')*x)'];
+    func_E_cos{2} = ['-(' num2str(H(2)) ')*cos((' num2str(k(2)) ')*y)'];
+    func_E_cos{3} = ['-(' num2str(H(3)) ')*cos((' num2str(k(3)) ')*z)'];
   end
-  [CSX, port{1}] = AddPBCWaveGuidePort(CSX, 10, 1, p1, p2, 2, func_E, func_H, 1, 1);
-  [CSX, port{2}] = AddPBCWaveGuidePort(CSX, 10, 2, p3, p4, 2, func_E, func_H, 1, 0);
+  [CSX, port{1}] = AddPBCWaveGuidePort(CSX, 10, 1, p1, p2, 2, func_E_sin, func_E_cos, func_H_sin, func_H_cos, 1, 1);
+  [CSX, port{2}] = AddPBCWaveGuidePort(CSX, 10, 2, p3, p4, 2, func_E_sin, func_E_cos, func_H_sin, func_H_cos, func_H, 1, 0);
 end

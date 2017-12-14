@@ -50,7 +50,7 @@ function PEC_Plate_PBC(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, pol
   end
   FDTD = InitFDTD('EndCriteria', UC.EndCriteria);
   %FDTD = SetGaussExcite(FDTD, 0.5*(UC.f_start+UC.f_stop),0.5*(UC.f_stop-UC.f_start));
-  FDTD = SetGaussExcite(FDTD,(UC.f_start+UC.f_stop)/2, UC.f_stop-UC.f_start);
+  FDTD = SetPBCGaussExcite(FDTD,(UC.f_start+UC.f_stop)/2, UC.f_stop-UC.f_start);
   BC = {'PBC', 'PBC', 'PBC', 'PBC', 'PML_8', 'PML_8'}; % boundary conditions
   FDTD = SetBoundaryCond(FDTD, BC);
   % define the pbc properties which shall be read by openEMS from the
