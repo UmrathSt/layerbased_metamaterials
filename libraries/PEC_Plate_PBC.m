@@ -67,7 +67,7 @@ function PEC_Plate_PBC(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, pol
   rectangle.prio = 2;
   rectangle.xycenter = [0, 0];
   rectangle.material.name = 'copper';
-  rectangle.material.Kappa = 56e6;
+  rectangle.material.Kappa = 0;
   rectangle.material.type = 'const';
   %rectangle.material.Epsilon = 1;
 

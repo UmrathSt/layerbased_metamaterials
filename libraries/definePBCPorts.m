@@ -17,6 +17,7 @@ function [CSX, port] = definePBCPorts(CSX, mesh, f_start, f0, unit, polarization
   gamma = polarization.angle;
   if strcmp(polarization.name, 'TE')
     fprintf('TE POLARIZED PBC Excitation');
+    exc_type = 0;
     E = [cos(gamma), sin(gamma), 0];
     func_E_sin{1} = ['(' num2str(cos(gamma)) ')*sin((' num2str(k(1)) ')*x+(' num2str(k(2)) ')*y+(' num2str(k(3)) ')*z)'];
     func_E_sin{2} = ['(' num2str(sin(gamma)) ')*sin((' num2str(k(1)) ')*x+(' num2str(k(2)) ')*y+(' num2str(k(3)) ')*z)'];
@@ -33,6 +34,7 @@ function [CSX, port] = definePBCPorts(CSX, mesh, f_start, f0, unit, polarization
     func_H_cos{3} = ['(' num2str(H(3)) ')*cos((' num2str(k(1)) ')*x+(' num2str(k(2)) ')*y+(' num2str(k(3)) ')*z)'];
   elseif strcmp(polarization.name, 'TM')
     fprintf('TM POLARIZED PBC Excitation');
+    exc_type = 2;
     H = [cos(gamma), sin(gamma), 0];
     func_H_sin{1} = ['(' num2str(cos(gamma)) ')*sin((' num2str(k(1)) ')*x+(' num2str(k(2)) ')*y+(' num2str(k(3)) ')*z)'];
     func_H_sin{2} = ['(' num2str(sin(gamma)) ')*sin((' num2str(k(1)) ')*x+(' num2str(k(2)) ')*y+(' num2str(k(3)) ')*z)'];
@@ -48,6 +50,6 @@ function [CSX, port] = definePBCPorts(CSX, mesh, f_start, f0, unit, polarization
     func_E_cos{2} = ['-(' num2str(H(2)) ')*cos((' num2str(k(2)) ')*y)'];
     func_E_cos{3} = ['-(' num2str(H(3)) ')*cos((' num2str(k(3)) ')*z)'];
   end
-  [CSX, port{1}] = AddPBCWaveGuidePort(CSX, 10, 1, p1, p2, 2, func_E_sin, func_E_cos, func_H_sin, func_H_cos, 1, 1);
-  [CSX, port{2}] = AddPBCWaveGuidePort(CSX, 10, 2, p3, p4, 2, func_E_sin, func_E_cos, func_H_sin, func_H_cos, func_H, 1, 0);
+  [CSX, port{1}] = AddPBCWaveGuidePort(CSX, 10, 1, p1, p2, 2, func_E_sin, func_E_cos, func_H_sin, func_H_cos, 1, 1, exc_type);
+  [CSX, port{2}] = AddPBCWaveGuidePort(CSX, 10, 2, p3, p4, 2, func_E_sin, func_E_cos, func_H_sin, func_H_cos, 1, 0, exc_type);
 end
