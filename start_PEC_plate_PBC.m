@@ -20,7 +20,7 @@ swap = 1;
 eps_subs = 4.1;
 % Einfallswinkel der Welle
 phi_xy = 0; % -> xz-Ebene
-theta_z = 0*pi/180; % -> 20 Grad mit der z-Achse
+theta_z = 30*pi/180; % -> 20 Grad mit der z-Achse
 % ---------------------------
 polarization.name = 'TE';
 polarization.angle = pi/2; % angle phi in the xy-plane -> for pi/2: E = E * e_y

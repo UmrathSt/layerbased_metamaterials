@@ -29,7 +29,7 @@ function [CSX, port] = definePBCPorts(CSX, mesh, f_start, f0, unit, polarization
     func_E_cos{1} = ['(' num2str(cos(gamma)) ')*cos(' phase ')'];
     func_E_cos{2} = ['(' num2str(sin(gamma)) ')*cos(' phase ')'];
     func_E_cos{3} = '0';
-    H = cross(k_normalized, E);
+    H = cross(k_normalized, E)/c0;
     func_H_sin{1} = ['(' num2str(H(1)) ')*sin(' phase ')'];
     func_H_sin{2} = ['(' num2str(H(2)) ')*sin(' phase ')'];
     func_H_sin{3} = ['(' num2str(H(3)) ')*sin(' phase ')'];
@@ -38,14 +38,14 @@ function [CSX, port] = definePBCPorts(CSX, mesh, f_start, f0, unit, polarization
     func_H_cos{3} = ['(' num2str(H(3)) ')*cos(' phase ')'];
   elseif strcmp(polarization.name, 'TM')
     fprintf('TM POLARIZED PBC Excitation');
-    H = [cos(gamma), sin(gamma), 0];
+    H = [cos(gamma), sin(gamma), 0]/c0;
     func_H_sin{1} = ['(' num2str(cos(gamma)) ')*sin(' phase ')'];
     func_H_sin{2} = ['(' num2str(sin(gamma)) ')*sin(' phase ')'];
     func_H_sin{3} = '0';
     func_H_cos{1} = ['(' num2str(cos(gamma)) ')*cos(' phase ')'];
     func_H_cos{2} = ['(' num2str(sin(gamma)) ')*cos(' phase ')'];
     func_H_cos{3} = '0';
-    E = cross(H, k_normalized);
+    E = c0*cross(H, k_normalized);
     func_E_sin{1} = ['-(' num2str(H(1)) ')*sin((' num2str(k(1)) ')*x)'];
     func_E_sin{2} = ['-(' num2str(H(2)) ')*sin((' num2str(k(2)) ')*y)'];
     func_E_sin{3} = ['-(' num2str(H(3)) ')*sin((' num2str(k(3)) ')*z)'];
@@ -54,7 +54,7 @@ function [CSX, port] = definePBCPorts(CSX, mesh, f_start, f0, unit, polarization
     func_E_cos{3} = ['-(' num2str(H(3)) ')*cos((' num2str(k(3)) ')*z)'];
   end
   [CSX, port{1}] = AddPBCWaveGuidePort(CSX, 10, 1, p1, p2, 2, func_E_sin, func_E_cos, func_H_sin, func_H_cos, 1, 0);
-  [CSX, port{2}] = AddPBCWaveGuidePort(CSX, 10, 2, p1, p2, 2, func_E_sin, func_E_cos, func_H_sin, func_H_cos, 1, 2);
+  %[CSX, port{2}] = AddPBCWaveGuidePort(CSX, 10, 2, p1, p2, 2, func_E_sin, func_E_cos, func_H_sin, func_H_cos, 1, 2);
 
   
 
