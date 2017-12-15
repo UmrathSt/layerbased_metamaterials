@@ -48,5 +48,11 @@ function [CSX] = defineFieldDumps(CSX, mesh, layer_list, UC);
     name = 'Et_yz';
     CSX = AddDump(CSX, name);
     CSX = AddBox(CSX, name, 1, [0, yMin, zMin], [0, yMax, zMax]);    
+    name = 'Ht_xz';
+    CSX = AddDump(CSX, name, 'DumpType', 1);
+    CSX = AddBox(CSX, name, 1, [xMin, 0, zMin], [xMax, 0, zMax]);
+    name = 'Ht_yz';
+    CSX = AddDump(CSX, name, 'DumpType', 1);
+    CSX = AddBox(CSX, name, 1, [0, yMin, zMin], [0, yMax, zMax]);   
   end;
 end
