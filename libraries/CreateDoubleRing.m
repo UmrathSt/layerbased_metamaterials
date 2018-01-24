@@ -37,4 +37,4 @@ function [CSX, params] = CreateDoubleRing(CSX, object, translate, rotate);
   params = ['# circular rings made of ',  ringmaterial, ' at center position x = ', num2str(ocenter(1)), ' y = ', num2str(ocenter(2)), ' z = ' num2str(ocenter(3)), '\n' ...
             '# radius R1, R2=', num2str(R1) ', ' num2str(R2), ' ringwidths w1, w2=', num2str(w1), ', ', num2str(w2), ', background material ', bmaterial, '\n'];
   return;
-endfunction
+end

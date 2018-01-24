@@ -19,7 +19,7 @@ function criss_cross(scale, UCDim, fr4_thickness, eps_FR4, kappaS, complemential
   UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 1e9;
-  UC.f_stop = 30e9;
+  UC.f_stop = 20e9;
   UC.lx = UCDim;
   UC.ly = UCDim;
   UC.lz = c0/ UC.f_start /3/ UC.unit;

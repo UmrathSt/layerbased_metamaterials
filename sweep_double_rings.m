@@ -1,11 +1,11 @@
 clear;
 clc;
 physical_constants;
-addpath("./libraries");
+addpath('./libraries');
 
 rect_gap = 0;
-R1 = 9.6;
-R2 = 5.0;
+R1 = 9.8;
+R2 = 5.1;
 w1 = 1.5;
 w2 = 0.5;
 UCDim = 20;
@@ -14,8 +14,7 @@ mesh_refinement = 0;
 fr4_thickness = 2;
 eps_FR4 = 4.1;
 tand = 0.015;
-number = 10;
-fr4_thickness = 0.5;
-for fr4_thickness = [1.8, 2, 2.2];
-  double_ring_3layers(UCDim, fr4_thickness, R1, w1, R2, w2, eps_FR4, tand, mesh_refinement, complemential);
-endfor;
+fr4_thickness = 2;
+for kappa = [100, 200, 300, 400];
+  double_ring_ressheet(UCDim, fr4_thickness, kappa, R1, w1, R2, w2, eps_FR4, tand, mesh_refinement, complemential);
+end;
