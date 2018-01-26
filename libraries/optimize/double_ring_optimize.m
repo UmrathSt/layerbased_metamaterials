@@ -1,18 +1,21 @@
-function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_refinement, complemential);
+function val = double_ring_optimize(R1, w1, R2, w2, UCDim, fr4_thickness, eps_subs, tand, mesh_refinement, complemential, fcenter, fwidth);
+  display(['R1, w1, R2, w2 = ', num2str(R1,'%.12f'), ', ', num2str(w1,'%.12f'), ', ', num2str(R2,'%.12f'), ', ', num2str(w2,'%.12f'), '\n']);
   physical_constants;
+  global Giter;
+  Giter = Giter + 1;
   UC.layer_td = 0;
   UC.layer_fd = 0;
-  UC.td_dumps = 1;
+  UC.td_dumps = 0;
   UC.fd_dumps = 0;
   UC.s_dumps = 1;
   UC.nf2ff = 0;
   UC.s_dumps_folder = '~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters';
-  UC.s11_filename_prefix = ['UCDim_' num2str(UCDim) '_lz_' num2str(fr4_thickness) '_R1_' num2str(R1) '_w1_' num2str(w1) '_R2_' num2str(R2) '_w2_' num2str(w2) '_eps_' num2str(eps_subs) '_tand_' num2str(tand)];
+  UC.s11_filename_prefix = ['current_optimization_step_', num2str(Giter)];%['UCDim_' num2str(UCDim) '_lz_' num2str(fr4_thickness) '_R1_' num2str(R1) '_w1_' num2str(w1) '_R2_' num2str(R2) '_w2_' num2str(w2) '_eps_' num2str(eps_subs) '_tand_' num2str(tand)];
   if complemential;
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, '_comp');
   end;
   UC.s11_filename = 'Sparameters_';
-  UC.s11_subfolder = 'double_ring';
+  UC.s11_subfolder = 'double_ring_Rw_optimization';
   UC.run_simulation = 1;
   UC.show_geometry = 0;
   UC.grounded = 1;
@@ -32,6 +35,16 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_
   UC.SimCSX = 'geometry.xml';
   UC.ResultPath = ['~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse'];
   if UC.run_simulation;
+    Octave_running = 0;
+    try;
+      Octave_running = isOctave;
+    catch;
+    lasterr;
+  end_try_catch;
+  if Octave_running;
+    confirm_recursive_rmdir(0);
+    end;
+  
     [status, message, messageid] = rmdir(UC.SimPath, 's' ); % clear previous directory
     [status, message, messageid] = mkdir(UC.SimPath ); % create empty simulation folder
   end;
@@ -93,6 +106,8 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_
                                 @CreateDoubleRing, dblring1;
                                  };
   material_list = {substrate.material, rectangle.material, dblring1.material};
+  mesh = 0;
+  CSX = 0;
   [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
   
   [CSX, port] = definePorts(CSX, mesh, UC.f_start);
@@ -109,7 +124,8 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_
     Settings = [''];
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);
   end;
-  doPortDump(port, UC);
+  val = doPortDump_optimize(port, UC, fcenter, fwidth);
+  display(['The integrated value of abs(S11) was ', num2str(val, '%.4f')]);
   if UC.nf2ff == 1;
     freq = [2.4e9, 5.2e9, 12e9, 15e9];
     phi = linspace(0, 2*pi, 100);
@@ -124,4 +140,5 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_
       printf(['Far-field pattern for f = ' num2str(f0) ' written to *.vtk\n']);
     end;
   end;
+  return;
 end
