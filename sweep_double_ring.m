@@ -5,17 +5,17 @@ addpath('./libraries/');
 
 rect_gap = 0;
 scale = 1;
-R1 = 10.0;
-R2 = 10.8/2.8;%10.8/3;
-w1 = 4;
-w2 = 2.5;
+R1 = 9.8;
+R2 = 5.1
+w1 = 2;
+w2 = 0.5;
 
-UCDim = 21;
+UCDim = 20;
 complemential = 0;
 fr4_thickness = 2;
 
-tand = 0.015;
-mesh_refinement = 1.5;
+
+mesh_refinement = 2;
 swap = 1;
 eps_FR4 = 4.1;
 tand = 0.015;
