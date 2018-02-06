@@ -14,7 +14,7 @@ function val = doPortDump_optimize(port, UC, fcenter, fwidth);
       for i = numel(fcenter);
           a = fcenter(i)-fwidth(i)/2;
           b = fcenter(i)+fwidth(i)/2;
-          tmp = tmp + integrate_interval(f, absS11, a, b);
+          tmp = tmp + integrate_interval(f, absS11.**2, a, b);
           display(['i=', num2str(i)]);
           display(['tmp = ', num2str(tmp)]);
       end;
