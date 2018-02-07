@@ -1,4 +1,4 @@
-function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_refinement, complemential, kappaCU);
+function hexagon(UCly, fr4_thickness, Cu_thickness, L1, w1, eps_subs, tand, mesh_refinement, complemential);
   physical_constants;
   UC.layer_td = 0;
   UC.layer_fd = 0;
@@ -7,20 +7,20 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_
   UC.s_dumps = 1;
   UC.nf2ff = 0;
   UC.s_dumps_folder = '~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters';
-  UC.s11_filename_prefix = ['UCDim_' num2str(UCDim) '_lz_' num2str(fr4_thickness) '_R1_' num2str(R1) '_w1_' num2str(w1) '_R2_' num2str(R2) '_w2_' num2str(w2) '_eps_' num2str(eps_subs) '_tand_' num2str(tand) '_kappaCU_' num2str(kappaCU)];
+  UC.s11_filename_prefix = ['UCDim_' num2str(UCly) '_lz_' num2str(fr4_thickness) '_L1_' num2str(L1) '_w1_' num2str(w1) '_CuLz_' num2str(Cu_thickness) '_eps_' num2str(eps_subs) '_tand_' num2str(tand)];
   if complemential;
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, '_comp');
   end;
   UC.s11_filename = 'Sparameters_';
-  UC.s11_subfolder = 'double_ring';
+  UC.s11_subfolder = 'hexagon';
   UC.run_simulation = 1;
-  UC.show_geometry = 0;
+  UC.show_geometry = 1;
   UC.grounded = 1;
   UC.unit = 1e-3;
-  UC.f_start = 1e9;
+  UC.f_start = 0.5e9;
   UC.f_stop = 10e9;
-  UC.lx = UCDim;
-  UC.ly = UCDim;
+  UC.lx = UCly*sqrt(3);
+  UC.ly = UCly;
   UC.lz = c0/ UC.f_start / 2 / UC.unit;
   UC.dz = c0 / (UC.f_stop) / UC.unit / 20;
   UC.dx = UC.dz/3/mesh_refinement;
@@ -44,8 +44,8 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_
   BC = {'PMC', 'PMC', 'PEC', 'PEC', 'PML_8', 'PML_8'}; % boundary conditions
   FDTD = SetBoundaryCond(FDTD, BC);
   rectangle.name = 'backplate';
-  rectangle.lx = UCDim;
-  rectangle.ly = UCDim;
+  rectangle.lx = UC.lx;
+  rectangle.ly = UC.ly;
   rectangle.lz = 0.5;
   rectangle.rotate = 0;
   rectangle.prio = 2;
@@ -67,35 +67,33 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_
   substrate.material.type = 'const';
   substrate.material.Epsilon = eps_subs;
   substrate.material.tand = tand;
-  substrate.material.f0 = 10e9;
+  substrate.material.f0 = 5e9;
   substrate.zrefinement = sqrt(eps_subs);
 
   % circle
-  dblring1.name = 'double rings';
-  dblring1.lz = 0.1;
-  dblring1.rotate = 0;
-  dblring1.material.name = 'copperRings';
-  dblring1.material.Kappa = kappaCU;
-  dblring1.material.type = 'const';
-  dblring1.bmaterial.name = 'air';
-  dblring1.bmaterial.type = 'const';
-  dblring1.bmaterial.Epsilon = 1;
+  hexagon.name = 'Hexagon';
+  hexagon.lz = Cu_thickness;
+  hexagon.rotate = 0;
+  hexagon.material.name = 'CopperHexagon';
+  hexagon.material.Kappa = 56e6;
+  hexagon.material.type = 'const';
+  hexagon.bmaterial.name = 'air';
+  hexagon.bmaterial.type = 'const';
+  hexagon.bmaterial.Epsilon = 1;
 
-  dblring1.R1 = R1;
-  dblring1.R2 = R2;
-  dblring1.w1 = w1;
-  dblring1.w2 = w2;
-  dblring1.UClx = UCDim;
-  dblring1.UCly = UCDim;
-  dblring1.prio = 2;
-  dblring1.xycenter = [0, 0];
-  dblring1.complemential = complemential;
+  hexagon.Lhex = L1;
+  hexagon.whex = w1;
+  hexagon.UClx = UC.lx;
+  hexagon.UCly = UC.ly;
+  hexagon.prio = 2;
+  hexagon.xycenter = [0, 0];
+  hexagon.complemential = complemential;
   
   layer_list = {@CreateUC, UC; @CreateRect, rectangle;
                                @CreateRect, substrate;
-                               @CreateDoubleRing, dblring1;
+                               @CreateHEXagon, hexagon;
                                  };
-  material_list = {substrate.material, rectangle.material, dblring1.material, dblring1.bmaterial};
+  material_list = {substrate.material, rectangle.material, hexagon.material, hexagon.bmaterial};
   [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
   
   [CSX, port] = definePorts(CSX, mesh, UC.f_start);
