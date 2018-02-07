@@ -1,7 +1,7 @@
 function resistive_double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_refinement, complemential, Resistance);
   physical_constants;
   UC.layer_td = 0;
-  UC.layer_fd = 0;
+  UC.layer_fd = 1;
   UC.td_dumps = 0;
   UC.fd_dumps = 0;
   UC.s_dumps = 1;
@@ -14,11 +14,11 @@ function resistive_double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, t
   UC.s11_filename = 'Sparameters_';
   UC.s11_subfolder = 'resistive_double_ring';
   UC.run_simulation = 1;
-  UC.show_geometry = 1;
+  UC.show_geometry = 0;
   UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 1e9;
-  UC.f_stop = 10e9;
+  UC.f_stop = 15e9;
   UC.lx = UCDim;
   UC.ly = UCDim;
   UC.lz = c0/ UC.f_start / 2 / UC.unit;
@@ -80,16 +80,20 @@ function resistive_double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, t
   dblring1.bmaterial.name = 'air';
   dblring1.bmaterial.type = 'const';
   dblring1.bmaterial.Epsilon = 1;
-  dblring1.rmaterial.name = 'resistor';
-  dblring1.rmaterial.type = 'const';
-
+  dblring1.rmaterial1.name = 'resistor 1';
+  dblring1.rmaterial1.type = 'const';
+  dblring1.rmaterial2.name = 'resistor 2';
+  dblring1.rmaterial2.type = 'const';
 
   dblring1.R1 = R1;
   dblring1.R2 = R2;
   dblring1.w1 = w1;
   dblring1.w2 = w2;
+  dblring1.Lres1 = w1/2;
+  dblring1.Lres2 = w1/2;
   dblring1.Resistance = Resistance;
-  dblring1.rmaterial.Kappa = 1/(Resistance*dblring1.lz*UC.unit);
+  dblring1.rmaterial1.Kappa = dblring1.Lres1/(Resistance*dblring1.w1*dblring1.lz*UC.unit);
+  dblring1.rmaterial2.Kappa = dblring1.Lres2/(Resistance*dblring1.w2*dblring1.lz*UC.unit);
   dblring1.UClx = UCDim;
   dblring1.UCly = UCDim;
   dblring1.prio = 2;
@@ -100,7 +104,7 @@ function resistive_double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, t
                                @CreateRect, substrate;
                                @CreateResistiveDoubleRing, dblring1
                                  };
-  material_list = {substrate.material, rectangle.material, dblring1.material, dblring1.bmaterial, dblring1.rmaterial};
+  material_list = {substrate.material, rectangle.material, dblring1.material, dblring1.bmaterial, dblring1.rmaterial1, dblring1.rmaterial2};
   [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
   
   [CSX, port] = definePorts(CSX, mesh, UC.f_start);
