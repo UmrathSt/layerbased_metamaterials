@@ -1,5 +1,7 @@
-function rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, tand, mesh_refinement, complemential);
+function val = rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, tand, mesh_refinement, complemential, fcenter, fwidth);
   physical_constants;
+  global Giter;
+  Giter = Giter + 1;
   UC.layer_td = 1;
   UC.layer_fd = 1;
   UC.td_dumps = 0;
@@ -7,12 +9,12 @@ function rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, tand, m
   UC.s_dumps = 1;
   UC.nf2ff = 0;
   UC.s_dumps_folder = '~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters';
-  UC.s11_filename_prefix = ['UCDim_' num2str(UCDim) '_lz_' num2str(fr4_thickness) '_L1_' num2str(L1) '_w_' num2str(w1) '_L2_' num2str(L2) '_gap_' num2str(gap) '_eps_' num2str(eps_subs) '_tand_' num2str(tand)];
+  UC.s11_filename_prefix = ['current_optimization_step_', num2str(Giter)];
   if complemential;
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, '_comp');
   end;
   UC.s11_filename = 'Sparameters_';
-  UC.s11_subfolder = 'broadband_rect';
+  UC.s11_subfolder = 'broadband_rect_optimization';
   UC.run_simulation = 1;
   UC.show_geometry = 1;
   UC.grounded = 1;
@@ -113,7 +115,9 @@ function rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, tand, m
     Settings = [''];
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);
   end;
-  doPortDump(port, UC);
+  val = doPortDump_optimize(port, UC, fcenter, fwidth);
+  display(['The integrated value of abs(S11) was ', num2str(val, '%.4f')]);
+
   if UC.nf2ff == 1;
     freq = [2.4e9, 5.2e9, 12e9, 15e9];
     phi = linspace(0, 2*pi, 100);
