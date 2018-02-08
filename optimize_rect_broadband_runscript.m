@@ -7,7 +7,7 @@ addpath('./libraries/optimize');
 % the search vector will be [w1, R2, w2]
 
 
-maxiter = 40;
+maxiter = 100;
 global Giter = 0;
 global my_eps = 1e-4;
 % define fixed parameters of the double ring geometry
