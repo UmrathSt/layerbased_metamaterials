@@ -25,11 +25,11 @@ function val = rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, t
   UC.ly = UCDim;
   UC.lz = c0/ UC.f_start / 2 / UC.unit;
   UC.dz = c0 / (UC.f_stop) / UC.unit / 20;
-  UC.dx = UC.dz/3/mesh_refinement;
+  UC.dx = UC.dz/3.5/mesh_refinement;
   UC.dy = UC.dx;
   UC.dump_frequencies = linspace(5,15,41)*1e9;
   UC.s11_delta_f = 10e6;
-  UC.EndCriteria = 1e-2;
+  UC.EndCriteria = 5e-3;
   UC.SimPath = ['/mnt/hgfs/E/openEMS/layerbased_metamaterials/Simulation/' UC.s11_subfolder '/' UC.s11_filename_prefix];
   UC.SimCSX = 'geometry.xml';
   UC.ResultPath = ['~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse'];
@@ -70,7 +70,7 @@ function val = rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, t
   substrate.material.Epsilon = eps_subs;
   substrate.material.tand = tand;
   substrate.material.f0 = 10e9;
-  substrate.zrefinement = 8;
+  substrate.zrefinement = 5;
 
   % circle
   rect.name = 'rectangles';
@@ -82,7 +82,7 @@ function val = rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, t
   rect.bmaterial.name = 'air';
   rect.bmaterial.type = 'const';
   rect.bmaterial.Epsilon = 1;
-  rect.zrefinement = 3;
+  rect.zrefinement = 2;
 
   rect.L1 = L1;
   rect.L2 = L2;
@@ -110,7 +110,7 @@ function val = rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, t
     CSXGeomPlot([UC.SimPath '/' UC.SimCSX]);
   end;
   if UC.run_simulation;
-    openEMS_opts = '--engine=multithreaded --numThreads=3';%'-vvv';
+    openEMS_opts = '--engine=multithreaded --numThreads=2';%'-vvv';
     %Settings = ['--debug-PEC', '--debug-material'];
     Settings = [''];
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);
