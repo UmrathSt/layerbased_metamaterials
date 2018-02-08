@@ -1,25 +1,25 @@
-function val = rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, tand, mesh_refinement, complemential, fcenter, fwidth);
+function val = tree_absorber(UCDim, fr4_thickness, R, L1, w, L2, L3, Resistance, eps_subs, tand, mesh_refinement, complemential, fcenter, fwidth);
   physical_constants;
   global Giter;
   Giter = Giter + 1;
   UC.layer_td = 0;
-  UC.layer_fd = 1;
+  UC.layer_fd = 0;
   UC.td_dumps = 0;
   UC.fd_dumps = 0;
   UC.s_dumps = 1;
   UC.nf2ff = 0;
   UC.s_dumps_folder = '~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters';
-  UC.s11_filename_prefix = ['current_optimization_step_', num2str(Giter)];
+  UC.s11_filename_prefix = ['current_optimization_step_', num2str(Giter)];%['UCDim_' num2str(UCDim) '_lz_' num2str(fr4_thickness) '_R1_' num2str(R1) '_w1_' num2str(w1) '_R2_' num2str(R2) '_w2_' num2str(w2) '_eps_' num2str(eps_subs) '_tand_' num2str(tand)];
   if complemential;
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, '_comp');
   end;
   UC.s11_filename = 'Sparameters_';
-  UC.s11_subfolder = 'broadband_rect_optimization';
+  UC.s11_subfolder = 'tree_absorber_optimization';
   UC.run_simulation = 1;
   UC.show_geometry = 0;
   UC.grounded = 1;
   UC.unit = 1e-3;
-  UC.f_start = 2e9;
+  UC.f_start = 3e9;
   UC.f_stop = 20e9;
   UC.lx = UCDim;
   UC.ly = UCDim;
@@ -27,15 +27,15 @@ function val = rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, t
   UC.dz = c0 / (UC.f_stop) / UC.unit / 20;
   UC.dx = UC.dz/3/mesh_refinement;
   UC.dy = UC.dx;
-  UC.dump_frequencies = linspace(5,15,41)*1e9;
+  UC.dump_frequencies = [2.4e9, 5.2e9, 7.5e9];
   UC.s11_delta_f = 10e6;
-  UC.EndCriteria = 1e-2;
+  UC.EndCriteria = 1e-4;
   UC.SimPath = ['/mnt/hgfs/E/openEMS/layerbased_metamaterials/Simulation/' UC.s11_subfolder '/' UC.s11_filename_prefix];
   UC.SimCSX = 'geometry.xml';
   UC.ResultPath = ['~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse'];
   if UC.run_simulation;
     try;
-    confirm_recursive_rmdir(0);
+      confirm_recursive_rmdir(0);
     catch lasterror;
     end_try_catch;
     [status, message, messageid] = rmdir(UC.SimPath, 's' ); % clear previous directory
@@ -69,36 +69,61 @@ function val = rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, t
   substrate.material.type = 'const';
   substrate.material.Epsilon = eps_subs;
   substrate.material.tand = tand;
-  substrate.material.f0 = 10e9;
-  substrate.zrefinement = 8;
+  substrate.material.f0 = 8e9;
+  substrate.zrefinement = sqrt(eps_subs);
 
-  % circle
-  rect.name = 'rectangles';
-  rect.lz = 0.05;
-  rect.rotate = 0;
-  rect.material.name = 'rectangles';
-  rect.material.Kappa = 56e6;
-  rect.material.type = 'const';
-  rect.bmaterial.name = 'air';
-  rect.bmaterial.type = 'const';
-  rect.bmaterial.Epsilon = 1;
-  rect.zrefinement = 3;
-
-  rect.L1 = L1;
-  rect.L2 = L2;
-  rect.w1 = w1;
-  rect.gap = gap;
-  rect.UClx = UCDim;
-  rect.UCly = UCDim;
-  rect.prio = 2;
-  rect.xycenter = [0, 0];
-  rect.complemential = complemential;
+  % cross
+  cross.name = 'cross';
+  cross.lz = 0.05;
+  cross.rotate = 0;
+  cross.material.name = 'copper Cross';
+  cross.material.Kappa = 56e6;
+  cross.material.type = 'const';
+  cross.bmaterial.name = 'FR4';
+  cross.R = R;
+  cross.L = L3+R;
+  cross.w = w;
+  cross.vias_lz = fr4_thickness;
+  cross.UClx = UCDim;
+  cross.UCly = UCDim;
+  cross.prio = 2;
+  cross.xycenter = [0, 0];
+  cross.complemential = complemential;
+  
+  % tree
+  tree.name = 'copper tree';
+  tree.lz = 0.05;
+  tree.rotate = 0;
+  tree.material.name = 'copper tree';
+  tree.material.Kappa = 56e6;
+  tree.material.type = 'const';
+  tree.bmaterial.name = 'air';
+  tree.bmaterial.type = 'const';
+  tree.bmaterial.Epsilon = 1;
+  tree.tx = 0.5*L3/sqrt(2);
+  tree.ty = tree.tx;
+  tree.Lres = L3/sqrt(2)-L2-w; % length of the resistor // needed for Kappa
+  tree.R = R;
+  tree.L1 = L1;
+  tree.L2 = L2;
+  tree.w = w;
+  tree.resistor.name = 'resistor';
+  tree.resistor.type = 'const';
+  tree.resistor.Kappa = tree.Lres / (tree.lz*tree.w*UC.unit*Resistance); % 220 Ohm
+  tree.vias_lz = fr4_thickness+tree.lz/2;
+  tree.UClx = UCDim;
+  tree.UCly = UCDim;
+  tree.prio = 2;
+  tree.xycenter = [0, 0];
+  tree.complemential = complemential;
   
   layer_list = {@CreateUC, UC; @CreateRect, rectangle;
                                @CreateRect, substrate;
-                               @CreateBroadbandRect, rect;
+                               @CreatePlusVias, cross;
+                               @CreateRect, substrate;
+                               @CreateTreeVias, tree;
                                  };
-  material_list = {substrate.material, rectangle.material, rect.material, rect.bmaterial};
+  material_list = {substrate.material, cross.material, rectangle.material, tree.material, tree.resistor, tree.bmaterial};
   [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
   
   [CSX, port] = definePorts(CSX, mesh, UC.f_start);
@@ -116,8 +141,6 @@ function val = rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, t
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);
   end;
   val = doPortDump_optimize(port, UC, fcenter, fwidth);
-  display(['The integrated value of abs(S11) was ', num2str(val, '%.4f')]);
-
   if UC.nf2ff == 1;
     freq = [2.4e9, 5.2e9, 12e9, 15e9];
     phi = linspace(0, 2*pi, 100);

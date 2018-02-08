@@ -1,35 +1,33 @@
-function val = rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, tand, mesh_refinement, complemential, fcenter, fwidth);
+function val = double_hexagon(UCly, fr4_thickness, Cu_thickness, L1, w1, L2, w2, eps_subs, tand, mesh_refinement, complemential, fcenter, fwidth);
   physical_constants;
-  global Giter;
-  Giter = Giter + 1;
-  UC.layer_td = 0;
+  UC.layer_td = 1;
   UC.layer_fd = 1;
   UC.td_dumps = 0;
   UC.fd_dumps = 0;
   UC.s_dumps = 1;
   UC.nf2ff = 0;
   UC.s_dumps_folder = '~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters';
-  UC.s11_filename_prefix = ['current_optimization_step_', num2str(Giter)];
+  UC.s11_filename_prefix = ['UCDim_' num2str(UCly) '_lz_' num2str(fr4_thickness) '_L1_' num2str(L1) '_w1_' num2str(w1) '_L2_' num2str(L2) '_w2_' num2str(w2) '_CuLz_' num2str(Cu_thickness) '_eps_' num2str(eps_subs) '_tand_' num2str(tand)];
   if complemential;
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, '_comp');
   end;
   UC.s11_filename = 'Sparameters_';
-  UC.s11_subfolder = 'broadband_rect_optimization';
+  UC.s11_subfolder = 'double_hexagon';
   UC.run_simulation = 1;
-  UC.show_geometry = 0;
+  UC.show_geometry = 1;
   UC.grounded = 1;
   UC.unit = 1e-3;
-  UC.f_start = 2e9;
+  UC.f_start = 1.5e9;
   UC.f_stop = 20e9;
-  UC.lx = UCDim;
-  UC.ly = UCDim;
+  UC.lx = UCly*sqrt(3);
+  UC.ly = UCly;
   UC.lz = c0/ UC.f_start / 2 / UC.unit;
   UC.dz = c0 / (UC.f_stop) / UC.unit / 20;
   UC.dx = UC.dz/3/mesh_refinement;
   UC.dy = UC.dx;
-  UC.dump_frequencies = linspace(5,15,41)*1e9;
+  UC.dump_frequencies = linspace(8, 12, 9)*1e9;%, 5.2e9, 7.5e9];
   UC.s11_delta_f = 10e6;
-  UC.EndCriteria = 1e-2;
+  UC.EndCriteria = 1e-3;
   UC.SimPath = ['/mnt/hgfs/E/openEMS/layerbased_metamaterials/Simulation/' UC.s11_subfolder '/' UC.s11_filename_prefix];
   UC.SimCSX = 'geometry.xml';
   UC.ResultPath = ['~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse'];
@@ -46,8 +44,8 @@ function val = rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, t
   BC = {'PMC', 'PMC', 'PEC', 'PEC', 'PML_8', 'PML_8'}; % boundary conditions
   FDTD = SetBoundaryCond(FDTD, BC);
   rectangle.name = 'backplate';
-  rectangle.lx = UCDim;
-  rectangle.ly = UCDim;
+  rectangle.lx = UC.lx;
+  rectangle.ly = UC.ly;
   rectangle.lz = 0.5;
   rectangle.rotate = 0;
   rectangle.prio = 2;
@@ -69,36 +67,38 @@ function val = rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, t
   substrate.material.type = 'const';
   substrate.material.Epsilon = eps_subs;
   substrate.material.tand = tand;
-  substrate.material.f0 = 10e9;
-  substrate.zrefinement = 8;
+  substrate.material.f0 = 5e9;
+  substrate.zrefinement = 3;
 
   % circle
-  rect.name = 'rectangles';
-  rect.lz = 0.05;
-  rect.rotate = 0;
-  rect.material.name = 'rectangles';
-  rect.material.Kappa = 56e6;
-  rect.material.type = 'const';
-  rect.bmaterial.name = 'air';
-  rect.bmaterial.type = 'const';
-  rect.bmaterial.Epsilon = 1;
-  rect.zrefinement = 3;
+  hexagon.name = 'Hexagon';
+  hexagon.lz = Cu_thickness;
+  hexagon.rotate = 0;
+  hexagon.material.name = 'CopperHexagon';
+  hexagon.material.Kappa = 56e6;
+  hexagon.material.type = 'const';
+  hexagon.bmaterial.name = 'air';
+  hexagon.bmaterial.type = 'const';
+  hexagon.bmaterial.Epsilon = 1;
 
-  rect.L1 = L1;
-  rect.L2 = L2;
-  rect.w1 = w1;
-  rect.gap = gap;
-  rect.UClx = UCDim;
-  rect.UCly = UCDim;
-  rect.prio = 2;
-  rect.xycenter = [0, 0];
-  rect.complemential = complemential;
+  hexagon.Lhex1 = L1;
+  hexagon.whex1 = w1;
+  hexagon.Lhex2 = L2;
+  hexagon.whex2 = w2;
+  hexagon.UClx = UC.lx;
+  hexagon.UCly = UC.ly;
+  hexagon.prio = 2;
+  hexagon.xycenter = [0, 0];
+  hexagon.complemential = complemential;
+  hexagon.zrefinement = 3; % make three grid lines along the z-direction. 
+                           % two at the edges of the object and one in the middle
+
   
   layer_list = {@CreateUC, UC; @CreateRect, rectangle;
                                @CreateRect, substrate;
-                               @CreateBroadbandRect, rect;
+                               @CreateDoubleHEXagon, hexagon;
                                  };
-  material_list = {substrate.material, rectangle.material, rect.material, rect.bmaterial};
+  material_list = {substrate.material, rectangle.material, hexagon.material, hexagon.bmaterial};
   [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
   
   [CSX, port] = definePorts(CSX, mesh, UC.f_start);
@@ -116,8 +116,6 @@ function val = rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, t
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);
   end;
   val = doPortDump_optimize(port, UC, fcenter, fwidth);
-  display(['The integrated value of abs(S11) was ', num2str(val, '%.4f')]);
-
   if UC.nf2ff == 1;
     freq = [2.4e9, 5.2e9, 12e9, 15e9];
     phi = linspace(0, 2*pi, 100);
