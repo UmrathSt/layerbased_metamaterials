@@ -9,7 +9,7 @@ addpath('./libraries/optimize');
 
 maxiter = 100;
 global Giter = 0;
-global my_eps = 1e-4;
+global my_eps = 1e-2;
 % define fixed parameters of the double ring geometry
 % which shall not be optimized
 
@@ -20,7 +20,7 @@ tand = 0.02;
 mesh_refinement = 3;
 complemential = 0;
 L1 = 4.7;
-L2 = 1.9;
+L2 = 1.92;
 w1 = 0.6;
 gap = 0.3;
 fcenter = [10e9]; % try to minimize abs(S11) in an interval of +-fwidth/2 around
