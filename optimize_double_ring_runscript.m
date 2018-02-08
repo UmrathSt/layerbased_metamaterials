@@ -26,5 +26,5 @@ R1 = 9.8;
 fcenter = [7.5e9]; % try to minimize abs(S11) in an interval of +-fwidth/2 around
 fwidth = [4e9];    % the center frequency
 tol = 0.05; % the maximum/minimum value of phi is 1/0  
-phi = @(x) double_ring_optimize(R1, x(1), x(2), x(3), UCDim, fr4_thickness, eps_subs, tand, mesh_refinement, complemential, fcenter, fwidth);
+phi = @(x) rect_broadband_optimize(R1, x(1), x(2), x(3), UCDim, fr4_thickness, eps_subs, tand, mesh_refinement, complemential, fcenter, fwidth);
 [x, obj, info, iter, nf, lambda] = my_sqp (x0, phi, [], [], lb, ub, maxiter);
