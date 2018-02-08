@@ -20,6 +20,6 @@ fr4_thickness = [0.15]
 Cu_thickness = 0.1;
 
 for w1 = [0.55, 0.5, 0.45, 0.6, 0.75];
-  double_hexagon(UCly, fr4_thickness, Cu_thickness, L1, w1, L2, w2, eps_FR4, ...
+  asymmetric_double_hexagon(UCly, fr4_thickness, Cu_thickness, L1, w1, L2, w2, eps_FR4, ...
         tand, mesh_refinement, complemential);
 end;
