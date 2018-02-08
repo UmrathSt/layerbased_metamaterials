@@ -81,6 +81,8 @@ function [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
           w1 = object.w1;
           xvals = horzcat(xvals, [-L1/2, -L1/2+w1, -L2/2, L2/2, L1/2-w1, L1/2]);
           yvals = horzcat(xvals, [-L1/2, -L1/2+w1, -L2/2, L2/2, L1/2-w1, L1/2]);
+      catch lasterror;
+      end;
       try;
         Lres1 = object.Lres1;
         Lres2 = object.Lres2;
