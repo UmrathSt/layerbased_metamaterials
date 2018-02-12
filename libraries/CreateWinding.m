@@ -10,14 +10,7 @@ function [CSX, params] = CreateWinding(CSX, object, translate, rotate);
   material = object.material;
   bmaterial = object.bmaterial;
   priority = object.prio;
-  bstart = [-object.UClx/2, -object.UCly/2, -object.lz/2];
-  bstop  = [+object.UClx/2, +object.UCly/2, +object.lz/2];
-  if object.complemential;
-    material = object.bmaterial;
-    bmaterial = object.material;
-  endif;
-  CSX = AddBox(CSX, bmaterial.name, priority, bstart, bstop, 
-  'Transform', {'Rotate_Z', rotate, 'Translate', translate});
+
   
   start = [-object.L/2, -object.L/2, -object.lz/2];
   stop  = [-object.L/2+w, object.L/2, object.lz/2];

@@ -8,6 +8,8 @@ parser = argparse.ArgumentParser(description="Process the basefolder of the opti
 
 parser.add_argument('--folder', dest='folder', 
                      help='where is the base of the result files during optimization?)')
+parser.add_argument('--start', dest='start', type=int, 
+                     help='What is the lowest iteration step you want to display?')
 
 args = parser.parse_args()
 
@@ -16,6 +18,7 @@ print("I am trying to collect the files in folder: ", args.folder, " to compare 
 path = args.folder
 
 files = []
+start_idx = args.start
 
 for filename in os.listdir(path):
     if filename.endswith(".txt"):
@@ -26,7 +29,7 @@ for filename in os.listdir(path):
 files.sort()
 
 data = []
-for f in files:
+for f in files[start_idx:]:
     dat = np.loadtxt(f, delimiter=",")
     fS11 = np.zeros((dat.shape[0],2))
     fS11[:,0] = dat[:,0]

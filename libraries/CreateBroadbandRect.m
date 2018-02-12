@@ -45,10 +45,10 @@ function [CSX, params] = CreateBroadbandRect(CSX, object, translate, rotate);
 
   
   % now add the gap
-  gstart = [-sqrt(2)*gap/2, (L1-L2)/4+w1, -lz/2];
-  gstop  = [+sqrt(2)*gap/2,-(L1-L2)/4, +lz/2];
+  gstart = [-sqrt(2)*gap/2, (L1-L2)/4, -lz/2];
+  gstop  = [+sqrt(2)*gap/2,-(L1-L2)/4-w1, +lz/2];
   CSX = AddBox(CSX, material, object.prio+2, gstart, gstop, ...
-        'Transform', {'Rotate_Z', pi/4, 'Translate', translate+[-L1/4+w1/4,L1/4-w1/4,0]}); 
+        'Transform', {'Rotate_Z', pi/4, 'Translate', translate+[-(L1-w1+L2)/4,(L1-w1+L2)/4,0]}); 
   ocenter = [object.xycenter(1:2), 0] + translate;
   params = ['# broadband rect absorber made of ',  material, ' at center position x = ', num2str(ocenter(1)), ' y = ', num2str(ocenter(2)), ' z = ' num2str(ocenter(3)), '\n' ...
             '# edge lengths L1, w1=', num2str(L1,'%.4f') ', ' num2str(w1,'%.4f'), ' inner rect L=', num2str(L2,'%.4f'), ', ', ', gap =' num2str(gap, '%.4f'), ', background material ', bmaterial, '\n'];

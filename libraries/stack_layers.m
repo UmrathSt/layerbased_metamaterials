@@ -25,7 +25,6 @@ function [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
           refiner = object.zrefinement;
         end;
       if refiner;
-        display(['refining mesh in z-direction in object ' object.material.name]);
         zvals = horzcat(zvals, linspace(zvals(end), zvals(end)-object.lz, refiner));
       else;
         zvals = horzcat(zvals, [zvals(end)-object.lz]);

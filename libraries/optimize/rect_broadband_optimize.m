@@ -1,15 +1,15 @@
-function val = rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, tand, mesh_refinement, complemential, fcenter, fwidth);
+function val = rect_broadband_optimize(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, tand, mesh_refinement, complemential, fcenter, fwidth);
   physical_constants;
   global Giter;
   Giter = Giter + 1;
   UC.layer_td = 0;
-  UC.layer_fd = 1;
+  UC.layer_fd = 0;
   UC.td_dumps = 0;
   UC.fd_dumps = 0;
   UC.s_dumps = 1;
   UC.nf2ff = 0;
-  UC.s_dumps_folder = '~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters';
-  UC.s11_filename_prefix = ['current_optimization_step_', num2str(Giter)];
+  UC.s_dumps_folder = '~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse/SParameters';
+  UC.s11_filename_prefix = ['step_', num2str(Giter)];
   if complemential;
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, '_comp');
   end;
@@ -19,20 +19,29 @@ function val = rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, t
   UC.show_geometry = 0;
   UC.grounded = 1;
   UC.unit = 1e-3;
-  UC.f_start = 2e9;
+  UC.f_start = 1.5e9;
   UC.f_stop = 15e9;
   UC.lx = UCDim;
   UC.ly = UCDim;
   UC.lz = c0/ UC.f_start / 2 / UC.unit;
   UC.dz = c0 / (UC.f_stop) / UC.unit / 20;
-  UC.dx = UC.dz/3.5/mesh_refinement;
+  UC.dx = UC.dz/3/mesh_refinement;
   UC.dy = UC.dx;
   UC.dump_frequencies = linspace(5,15,41)*1e9;
   UC.s11_delta_f = 10e6;
-  UC.EndCriteria = 5e-3;
+  UC.EndCriteria = 1e-6;
   UC.SimPath = ['/mnt/hgfs/E/openEMS/layerbased_metamaterials/Simulation/' UC.s11_subfolder '/' UC.s11_filename_prefix];
-  UC.SimCSX = 'geometry.xml';
   UC.ResultPath = ['~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse'];
+  try;
+    if strcmp(uname.nodename, 'Xeon');
+        display('Running on Xeon');
+        UC.SimPath = ['/media/stefan/Daten/openEMS/' UC.s11_subfolder '/' UC.s11_filename_prefix];
+        UC.s_dumps_folder = '~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse/SParameters';
+        UC.ResultPath = ['~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse'];
+        end;
+    catch lasterror;
+  end;
+  UC.SimCSX = 'geometry.xml';
   if UC.run_simulation;
     try;
     confirm_recursive_rmdir(0);
@@ -110,13 +119,13 @@ function val = rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, t
     CSXGeomPlot([UC.SimPath '/' UC.SimCSX]);
   end;
   if UC.run_simulation;
-    openEMS_opts = '--engine=multithreaded --numThreads=2';%'-vvv';
+    openEMS_opts = '--engine=multithreaded --numThreads=6';%'-vvv';
     %Settings = ['--debug-PEC', '--debug-material'];
     Settings = [''];
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);
   end;
   val = doPortDump_optimize(port, UC, fcenter, fwidth);
-  display(['The integrated value of abs(S11) was ', num2str(val, '%.4f')]);
+  
 
   if UC.nf2ff == 1;
     freq = [2.4e9, 5.2e9, 12e9, 15e9];
@@ -132,4 +141,5 @@ function val = rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, t
       printf(['Far-field pattern for f = ' num2str(f0) ' written to *.vtk\n']);
     end;
   end;
+  display(['The integrated value of abs(S11) was ', num2str(val, '%.4f')]);
 end

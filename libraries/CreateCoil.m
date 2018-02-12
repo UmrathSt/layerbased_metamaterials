@@ -3,7 +3,16 @@ function [CSX, params] = CreateCoil(CSX, object, translate, rotate);
   L = object.L;
   w = object.w;
   g = object.g;
-  alpha = object.alpha;  
+  alpha = object.alpha; 
+  bmaterial = object.bmaterial; 
+  bstart = [-object.UClx/2, -object.UCly/2, -object.lz/2];
+  bstop  = [+object.UClx/2, +object.UCly/2, +object.lz/2];
+  if object.complemential;
+    material = object.bmaterial;
+    bmaterial = object.material;
+  endif;
+  CSX = AddBox(CSX, bmaterial.name, object.prio, bstart, bstop, 
+  'Transform', {'Rotate_Z', rotate, 'Translate', translate});
   for i = 1:N;
     [CSX, params] = CreateWinding(CSX, object, translate, alpha);
     object.L -= g*2;

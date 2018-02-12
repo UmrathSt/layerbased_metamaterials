@@ -1,6 +1,6 @@
 function rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, tand, mesh_refinement, complemential);
   physical_constants;
-  UC.layer_td = 1;
+  UC.layer_td = 0;
   UC.layer_fd = 1;
   UC.td_dumps = 0;
   UC.fd_dumps = 0;
@@ -14,10 +14,10 @@ function rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, tand, m
   UC.s11_filename = 'Sparameters_';
   UC.s11_subfolder = 'broadband_rect';
   UC.run_simulation = 1;
-  UC.show_geometry = 1;
+  UC.show_geometry = 0;
   UC.grounded = 1;
   UC.unit = 1e-3;
-  UC.f_start = 2e9;
+  UC.f_start = 1.5e9;
   UC.f_stop = 15e9;
   UC.lx = UCDim;
   UC.ly = UCDim;
@@ -27,10 +27,20 @@ function rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, tand, m
   UC.dy = UC.dx;
   UC.dump_frequencies = linspace(5,15,41)*1e9;
   UC.s11_delta_f = 10e6;
-  UC.EndCriteria = 1e-2;
+  UC.EndCriteria = 1e-5;
   UC.SimPath = ['/mnt/hgfs/E/openEMS/layerbased_metamaterials/Simulation/' UC.s11_subfolder '/' UC.s11_filename_prefix];
-  UC.SimCSX = 'geometry.xml';
   UC.ResultPath = ['~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse'];
+  try;
+    if strcmp(uname.nodename, 'Xeon');
+        display('Running on Xeon');
+        UC.SimPath = ['/media/stefan/Daten/openEMS/' UC.s11_subfolder '/' UC.s11_filename_prefix];
+        UC.s_dumps_folder = '~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse/SParameters';
+        UC.ResultPath = ['~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse'];
+        end;
+    catch lasterror;
+  end;
+  UC.SimCSX = 'geometry.xml';
+  
   if UC.run_simulation;
     try;
     confirm_recursive_rmdir(0);
@@ -108,7 +118,7 @@ function rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, tand, m
     CSXGeomPlot([UC.SimPath '/' UC.SimCSX]);
   end;
   if UC.run_simulation;
-    openEMS_opts = '--engine=multithreaded --numThreads=3';%'-vvv';
+    openEMS_opts = '--engine=multithreaded --numThreads=6';%'-vvv';
     %Settings = ['--debug-PEC', '--debug-material'];
     Settings = [''];
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);
