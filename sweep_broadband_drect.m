@@ -8,6 +8,7 @@ complemential = 0;
 
 eps_FR4 = 4.4;
 tand = 0.02;
+scale = 0.75;
 
 UCDim = 6;
 fr4_thickness = 0.2;

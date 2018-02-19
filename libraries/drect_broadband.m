@@ -90,7 +90,7 @@ function drect_broadband(UCDim, fr4_thickness, rubber_thickness, L1, w1, L2, w2,
   substrate.material.Epsilon = eps_subs;
   substrate.material.tand = tand;
   substrate.material.f0 = 10e9;
-  substrate.zrefinement = 8;
+  substrate.zrefinement = 5;
   
   % rubber
   rubber.name = 'rubber substrate';
@@ -148,7 +148,7 @@ function drect_broadband(UCDim, fr4_thickness, rubber_thickness, L1, w1, L2, w2,
     CSXGeomPlot([UC.SimPath '/' UC.SimCSX]);
   end;
   if UC.run_simulation;
-    openEMS_opts = '--engine=multithreaded --numThreads=6';%'-vvv';
+    openEMS_opts = '--engine=multithreaded --numThreads=2';%'-vvv';
     %Settings = ['--debug-PEC', '--debug-material'];
     Settings = [''];
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);

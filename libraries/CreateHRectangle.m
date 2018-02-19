@@ -19,6 +19,6 @@ function [CSX, params] = CreateHRectangle(CSX, object, translate, rotate);
          'Transform', {'Rotate_Z', rotate, 'Translate', translate});
 
   
-  params = ["# hollow rect patch made of "  object.material.name "in background material" object.bmaterial.name ". lx, ly, lz = " num2str(object.lx) ", " num2str(object.ly) ", " num2str(object.lz) " dx, dy=" num2str(object.dx) ", " num2str(object.dy) " at center position x = " num2str(ocenter(1)) " y = " num2str(ocenter(2)) " z = " num2str(ocenter(3)) "\n"];
+  params = ['# hollow rect patch made of '  object.material.name 'in background material' object.bmaterial.name '. lx, ly, lz = ' num2str(object.lx) ', ' num2str(object.ly) ', ' num2str(object.lz) ' dx, dy=' num2str(object.dx) ', ' num2str(object.dy) ' at center position x = ' num2str(ocenter(1)) ' y = ' num2str(ocenter(2)) ' z = ' num2str(ocenter(3)) '\n'];
   return;
 endfunction
