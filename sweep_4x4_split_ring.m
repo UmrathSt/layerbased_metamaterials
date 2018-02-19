@@ -13,7 +13,7 @@ gap = 1.5;
 
 UCDim = 24;
 complemential = 0;
-fr4_thickness = 2;
+fr4_thickness = 1.4;
 
 
 mesh_refinement = 2;

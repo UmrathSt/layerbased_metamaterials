@@ -1,13 +1,25 @@
-function drect_broadband(UCDim, fr4_thickness, rubber_thickness, L1, w1, L2, w2, L3, gap, eps_subs, tand, mesh_refinement, complemential);
+function drect_broadband(UCDim, fr4_thickness, rubber_thickness, L1, w1, L2, w2, L3, gap, eps_subs, tand, kappa, scale, mesh_refinement, complemential);
   physical_constants;
   UC.layer_td = 0;
   UC.layer_fd = 1;
   UC.td_dumps = 0;
   UC.fd_dumps = 0;
   UC.s_dumps = 1;
+  L1 = L1*scale;
+  L2 = L2*scale;
+  w1 = w1*scale;
+  w2 = w2*scale;
+  L3 = L3*scale;
+  gap = gap*scale;
   UC.nf2ff = 0;
   UC.s_dumps_folder = '~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters';
-  UC.s11_filename_prefix = ['UCDim_' num2str(UCDim) '_lz_' num2str(fr4_thickness) '_lzR_' num2str(rubber_thickness) '_L1_' num2str(L1) '_w1_' num2str(w1) '_L2_' num2str(L2) '_w2_' num2str(w2) '_L3_' num2str(L3) '_gap_' num2str(gap) '_eps_' num2str(eps_subs) '_tand_' num2str(tand)];
+  UC.s11_filename_prefix = ['UCDim_' num2str(UCDim) '_lz_' num2str(fr4_thickness) '_lzR_' num2str(rubber_thickness) '_L1_' num2str(L1) '_w1_' num2str(w1) '_L2_' num2str(L2) '_w2_' num2str(w2) '_L3_' num2str(L3) '_gap_' num2str(gap) '_eps_' num2str(eps_subs) '_tand_' num2str(tand) '_kappa_' num2str(kappa)];
+  try;
+    if ~strcmp(scale, 'None');
+        UC.s11_filename_prefix = ['scale_' num2str(scale)];
+    end;
+    catch lasterror;
+  end;
   if complemential;
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, '_comp');
   end;
@@ -91,8 +103,8 @@ function drect_broadband(UCDim, fr4_thickness, rubber_thickness, L1, w1, L2, w2,
   rubber.material.name = 'rubber';
   rubber.material.type = 'const';
   rubber.material.Epsilon = 2.5;
-  rubber.material.Kappa = 20;
-  rubber.zrefinement = 4;
+  rubber.material.Kappa = kappa;
+  rubber.zrefinement = 6;
 
   % circle
   rect.name = 'rectangles';
