@@ -40,18 +40,20 @@ function [CSX, params] = CreateSlottedRect(CSX, object, translate, rotate);
             'Transform', {'Rotate_Z', rotate, 'Translate', translate});
   end;
   
-  louter1 = [-L1/2, -L1/2, -lz/2];
-  louter2 = [+L1/2, -L1/2+w1, lz/2];
+  louter1 = [-L1/2, L1/2, -lz/2];
+  louter2 = [L1/2, L1/2-w1, lz/2];
   CSX = AddBox(CSX, material, object.prio+1,...
         louter1, louter2, 'Transform', {'Translate', translate,'Rotate_Z', rotate});
+  louter1 = [-L1/2,   L1/2, -lz/2];
+  louter2 = [-L1/2+w1,-L2/2, lz/2];
   CSX = AddBox(CSX, material, object.prio+1,...
-        louter1, louter2, 'Transform', {'Translate', translate,'Rotate_Z', rotate+pi/2});
-  souter1 = [-L1/2, L1/2, -lz/2];
-  souter2 = [L2/2, L1/2-w2, lz/2];        
+        louter1, louter2, 'Transform', {'Translate', translate,'Rotate_Z', rotate});
+  souter1 = [-L1/2, -L1/2, -lz/2];
+  souter2 = [L1/2, -L1/2+w2, lz/2];   
   CSX = AddBox(CSX, material, object.prio+1,...
         souter1, souter2, 'Transform', {'Translate', translate,'Rotate_Z', rotate});
-  souter1 = [-L1/2, L1/2, -lz/2];
-  souter2 = [-L1/2+w2, -L2/2, lz/2];        
+  souter1 = [L1/2,   L2/2, -lz/2];
+  souter2 = [L1/2-w2,-L1/2, lz/2];       
   CSX = AddBox(CSX, material, object.prio+1,...
         souter1, souter2, 'Transform', {'Translate', translate,'Rotate_Z', rotate});
 
@@ -62,15 +64,15 @@ function [CSX, params] = CreateSlottedRect(CSX, object, translate, rotate);
 
   
   % now add the gaps
-  gstart1 = [-sqrt(2)*gap/2, (L1-w2-L3)/sqrt(2), -lz/2];
-  gstop1  = [+sqrt(2)*gap/2,-(L1-L3)/4-w2/2, +lz/2];
+  gstart1 = [-sqrt(2)*gap/2, (L1-w1-L3)/sqrt(2), -lz/2];
+  gstop1  = [+sqrt(2)*gap/2,-(L1-L3)/4-w1/2, +lz/2];
 
   CSX = AddBox(CSX, material, object.prio+2, gstart1, gstop1, ...
-        'Transform', {'Rotate_Z', pi/4, 'Translate', translate+[-(L1-w1+L2)/4+w2,(L1-w1+L2)/4-w2,0]}); 
-  gstart2 = [-sqrt(2)*gap/2, (L1-L3)/4+w1/2, -lz/2];
-  gstop2  = [+sqrt(2)*gap/2,-(L1-w1-L3)/sqrt(2), +lz/2];
+        'Transform', {'Rotate_Z', pi/4, 'Translate', translate+[-(L1-w1+L3)/4+w1/sqrt(2),(L1-w1+L3)/4-w1/sqrt(2),0]}); 
+  gstart1 = [-sqrt(2)*gap/2, (L1-w2-L3)/sqrt(2), -lz/2];
+  gstop1  = [+sqrt(2)*gap/2,-(L1-L3)/4-w2/2, +lz/2];
   CSX = AddBox(CSX, material, object.prio+2, gstart1, gstop1, ...
-        'Transform', {'Rotate_Z', pi/4, 'Translate', translate+[(L1-w1+L2)/4-w1,-(L1-w1+L2)/4+w1,0]}); 
+        'Transform', {'Rotate_Z', +5*pi/4, 'Translate', translate+[(L1-w2+L3)/4-w2,-(L1-w2+L3)/4+w2,0]}); 
   ocenter = [object.xycenter(1:2), 0] + translate;
   params = ['# broadband double-rect absorber made of ',  material, ' at center position x = ', num2str(ocenter(1)), ' y = ', num2str(ocenter(2)), ' z = ' num2str(ocenter(3)), '\n' ...
             '# edge lengths L1, w1=', num2str(L1,'%.4f') ', ' num2str(w1,'%.4f'), 'edge lengths L2, w2=', num2str(L2,'%.4f') ', ' num2str(w2,'%.4f'), ' inner rect L=', num2str(L3,'%.4f'), ', ', ', gap =' num2str(gap, '%.4f'), ', background material ', bmaterial, '\n'];
