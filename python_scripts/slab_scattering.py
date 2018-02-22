@@ -20,7 +20,9 @@ class SlabStructure:
         rho_i = (self.Z[1:] - self.Z[0:-1]) / (self.Z[1:]+self.Z[0:-1])
         phase = self.k*self.l
         GammaM = rho_i[-1]
-        return get_gamma(rho_i[0:-1], GammaM, phase)
+        phase = phase[0:-2]
+        rho = rho_i[0:-2]
+        return get_gamma(rho, GammaM, phase)
         
 
 
@@ -38,7 +40,7 @@ def get_gamma(rho_i, gamma_ii, phase):
         Z0 | Z1 | ... | ZN
     """
     print("Gamma_i called with len(rho_i) = ", len(rho_i))
-    if len(phase) == 1:
+    if len(phase) == 0:
         return gamma_ii
     phase = np.exp(-2j*phase[-1])
     gamma = (rho_i[-1] + gamma_ii*phase) / ( 1 + rho_i[-1]*gamma_ii*phase )
@@ -49,4 +51,4 @@ if __name__ == "__main__":
     l = np.array([2,3])
     k = np.array([1,2])
     slabstack = SlabStructure(Zlist, l, k)
-    slabstack.build_gamma()
+    print(slabstack.build_gamma())
