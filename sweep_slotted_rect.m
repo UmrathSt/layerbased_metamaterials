@@ -22,7 +22,7 @@ L3 = 2.5*scale;
 gap = 0.45*scale;
 kappa = 0.5;
 for rubber_thickness = [3];
-for kappa = [0.25, 0.75, 1.25];
+for kappa = [1];
   slotted_rect(UCDim, fr4_thickness, rubber_thickness, kappa, L1, w1, L2, w2, L3, ...
           gap, eps_FR4, tand, mesh_refinement, complemential);
 end;end;

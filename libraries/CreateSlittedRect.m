@@ -3,6 +3,11 @@ function [CSX, params] = CreateSlittedRect(CSX, object, translate, rotate);
   box_start = -diag;
   box_stop = +diag;
   bmaterial = 'air';
+  do_it_randomly = 0;
+  try;
+      do_it_randomly = object.do_it_randomly;
+  catch lasterror;
+  end;
   slitL = object.slitL;
   slitW = object.slitW;
   slitNo = object.slitN;
@@ -12,12 +17,19 @@ function [CSX, params] = CreateSlittedRect(CSX, object, translate, rotate);
   gap = lgth/slitNo-slitW;
   lgth_elem = gap+slitW; % length of one element
   % To add N gaps of length L to the edges of the rectangle
-  startx = [-lgth/2+gap/2, -object.ly/2, -object.lz/2];
-  stopx  = [startx(1)+slitW, startx(2)+slitL, -startx(3)];
-  starty = [-object.lx/2, -lgth/2+gap/2, -object.lz/2];
-  stopy  = [starty(1)+slitL, starty(2)+slitW, -starty(3)];
+
   if ~(slitL==0);
-  for nxy = 0:slitNo-1;
+  for nxy = 0:slitNo;
+      W = slitW;
+      if do_it_randomly;
+          W = rand(1)*slitW;
+      end;
+        %startx = [-lgth/2+gap/2, -object.ly/2, -object.lz/2];
+        startx = [-lgth/2,     -object.ly/2,    -object.lz/2];
+        stopx  = [startx(1)+W, startx(2)+slitL, -startx(3)];
+        %starty = [-object.lx/2, -lgth/2+gap/2, -object.lz/2];
+        starty = [-object.lx/2,    -lgth/2,     -object.lz/2];
+        stopy  = [starty(1)+slitL, starty(2)+W, -starty(3)];
       % add the slits at negative y for all x
       CSX = AddBox(CSX, bmaterial, object.prio+2, startx, stopx,...
          'Transform', {'Rotate_Z', rotate, 'Translate', translate+[lgth_elem*nxy,0,0]});

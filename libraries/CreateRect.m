@@ -2,7 +2,7 @@ function [CSX, params] = CreateRect(CSX, object, translate, rotate);
   diag = [object.lx/2, object.ly/2, object.lz/2];
   box_start = -diag;
   box_stop = +diag;
-  bmaterial = 'Air';
+  bmaterial = 'air';
   try;
     bmaterial = object.bmaterial.name;
     bstart = [object.UClx/2, object.UCly/2, -object.lz/2];
