@@ -14,10 +14,10 @@ function split_ring(UCDim, fr4_thickness, R, w, phi0, DeltaPhi, eps_subs, tand, 
   UC.s11_filename = 'Sparameters_';
   UC.s11_subfolder = 'split_ring';
   UC.run_simulation = 1;
-  UC.show_geometry = 1;
+  UC.show_geometry = 0;
   UC.grounded = 1;
   UC.unit = 1e-3;
-  UC.f_start = 1.5e9;
+  UC.f_start = 0.5e9;
   UC.f_stop = 15e9;
   UC.lx = UCDim;
   UC.ly = UCDim;
@@ -30,7 +30,7 @@ function split_ring(UCDim, fr4_thickness, R, w, phi0, DeltaPhi, eps_subs, tand, 
   df = 1e8;
   UC.dump_frequencies = linspace(f_min, f_max, (f_max-f_min)/df+1);
   UC.s11_delta_f = 10e6;
-  UC.EndCriteria = 1e-3;
+  UC.EndCriteria = 1e-4;
   UC.SimPath = ['/mnt/hgfs/E/openEMS/layerbased_metamaterials/Simulation/' UC.s11_subfolder '/' UC.s11_filename_prefix];
   UC.ResultPath = ['~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse'];
   try;

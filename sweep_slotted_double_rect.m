@@ -23,7 +23,7 @@ w2 = 0.6;
 L3 = 2.5;
 gap = 0.45;
 kappa = 1;
-for fr4_thickness = [0.2, 0.36, 0.5];
+for fr4_thickness = [0.8, 1, 1.2];
 for rubber_thickness = [0.8, 1,1.2,1.4,1.6,1.8,2];
   for kappa = [1.45];
   slotted_double_rect(UCDim, fr4_thickness, rubber_thickness, kappa, L0, w0, L1, w1, L2, w2, L3, ...

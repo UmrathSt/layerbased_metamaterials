@@ -16,6 +16,8 @@ R = 9.8
 w = 1.5
 phi0 = 3*pi/4;
 DeltaPhi = pi/16;
-for L = [6];
+for DeltaPhi = [pi/20, pi/25];
   split_ring(UCDim, fr4_thickness, R, w, phi0, DeltaPhi, eps_FR4, tand, mesh_refinement, complemential);
 end;
+  % closed ring!
+% split_ring(UCDim, fr4_thickness, R, w, phi0, 0, eps_FR4, tand, mesh_refinement, complemential);

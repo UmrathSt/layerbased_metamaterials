@@ -25,11 +25,11 @@ function [CSX, params] = CreateSplitRing(CSX, object, translate, rotate);
         ring_start, ring_stop, R-w/2, w,
         'Transform', {'Rotate_Z', rotate, 'Translate', translate});
   %      z              x 
-  p(1,1) = -lz/2; p(2,1) = -R; 
-  p(1,2) = +lz/2; p(2,2) = -R;
-  p(1,3) = +lz/2; p(2,3) = -R+w; 
-  p(1,4) = -lz/2; p(2,4) = -R+w;
-  p(1,5) = -lz/2; p(2,5) = -R;
+  p(1,1) = -lz/2; p(2,1) = -R-w/4; 
+  p(1,2) = +lz/2; p(2,2) = -R-w/4;
+  p(1,3) = +lz/2; p(2,3) = -R+5*w/4; 
+  p(1,4) = -lz/2; p(2,4) = -R+5*w/4;
+  p(1,5) = -lz/2; p(2,5) = -R-w/4;
   if ~(DeltaPhi==0);
     CSX = AddRotPoly(CSX, bmaterial, object.prio+3, 1, p, 2, [phi0-DeltaPhi, phi0+DeltaPhi/2], 'CoordSystem',0,...
       'Transform', {'Rotate_Z', rotate, 'Translate', translate});
