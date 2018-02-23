@@ -49,6 +49,7 @@ def get_gamma(rho_i, gamma_ii, phase):
 if __name__ == "__main__":
     Zlist = np.array([1,2,3,4])
     l = np.array([2,3])
+
     k = np.array([1,2])
     slabstack = SlabStructure(Zlist, l, k)
-    print(slabstack.build_gamma())
+
