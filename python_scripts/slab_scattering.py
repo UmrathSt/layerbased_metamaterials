@@ -8,47 +8,45 @@ class SlabStructure:
                  l1 | l2 | ... | lN-1  
         """
         self.Z = Z
-        self.M = len(Z) - 1 # number of layers
+        self.M = len(Z) - 1 # number of interfaces 
         self.l = l
         self.k = k
-        assert len(Z)-2 == len(l) == len(k)
+        self.rho = (Z[1:,:]-Z[0:-1,:]) / (Z[1:,:]+Z[0:-1,:])
+        assert Z.shape[0]-2 == l.shape[0] == k.shape[0]
     
     def build_gamma(self):
         """ Get the scattering coefficient of the
             stacked structure by recursion
         """
-        rho_i = (self.Z[1:] - self.Z[0:-1]) / (self.Z[1:]+self.Z[0:-1])
+        rho = self.rho 
         phase = self.k*self.l
-        GammaM = rho_i[-1]
-        phase = phase[0:-2]
-        rho = rho_i[0:-2]
-        return get_gamma(rho, GammaM, phase)
+        GammaM = rho[-1,:]
+        for i in range(rho.shape[0]-2, -1, -1):
+            print("i=%i" %i)
+            phasefactor = np.exp(2j*phase[i,:])
+            GammaM = (rho[i,:] + GammaM*phasefactor) / (1 + rho[i,:]*GammaM*phasefactor )
+        return GammaM
         
 
 
 
-def rho(Z1, Z2):
-    """ Return the scattering coefficient of an impedance 
-        interface:
-        Z1 | Z2
-    """
-    return (Z2-Z1)/(Z2+Z1)
-
-def get_gamma(rho_i, gamma_ii, phase):
-    """ Return the scattering coefficient of a stacked 
-        slab-structure:
-        Z0 | Z1 | ... | ZN
-    """
-    print("Gamma_i called with len(rho_i) = ", len(rho_i))
-    if len(phase) == 0:
-        return gamma_ii
-    phase = np.exp(-2j*phase[-1])
-    gamma = (rho_i[-1] + gamma_ii*phase) / ( 1 + rho_i[-1]*gamma_ii*phase )
-    return get_gamma(rho_i[:-1], gamma, phase[:-1])
-
 if __name__ == "__main__":
-    Zlist = np.array([1,2,3,4])
-    l = np.array([2,3])
-    k = np.array([1,2])
+    from matplotlib import pyplot as plt
+    tand1 = 0.02
+    eps1 = 4.4
+    epsFR4 = eps1*(1 + tand1*1j)
+    eps2 = 9
+    tand2 = 0.111
+    epsRubber = eps2*(1 + tand2*1j)
+    eps = np.array([epsFR4])[:,np.newaxis]
+    f = (np.linspace(0,20,1000)*1e9)[np.newaxis,:]
+    Zlist = np.array([376.73,1/np.sqrt(epsFR4), 0])[:,np.newaxis]
+    l = np.array([3.58e-3])[:,np.newaxis]
+    k = np.sqrt(eps)*2*np.pi*f/3e8
     slabstack = SlabStructure(Zlist, l, k)
-    print(slabstack.build_gamma())
+    R = slabstack.build_gamma()
+    print(R.shape)
+    plt.plot(f[0,:]/1e9, 20*np.log10(np.abs(R)))
+    plt.xlabel("f [GHz]")
+    plt.ylabel("$20\log|S_{11}|)$")
+    plt.show()
