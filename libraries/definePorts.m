@@ -1,4 +1,4 @@
-function [CSX, port] = definePorts(CSX, mesh, f_start);
+function [CSX, port] = definePorts(CSX, mesh, f_start, polarization='y');
   physical_constants;
   n_cells_to_edge = 20;
   p1 = [mesh.x(1), mesh.y(1), mesh.z(n_cells_to_edge)];
@@ -13,6 +13,14 @@ function [CSX, port] = definePorts(CSX, mesh, f_start);
   func_H{1} = 1;
   func_H{2} = 0;
   func_H{3} = 0;
+  if strcmp(polarization, 'x');
+    func_E{1} = 1;
+    func_E{2} = 0;
+    func_E{3} = 0;
+    func_H{1} = 0;
+    func_H{2} = 1;
+    func_H{3} = 0;
+  end; 
   [CSX, port{1}] = AddWaveGuidePort(CSX, 10, 1, p1, p2, 2, func_E, func_H, 1, 1);
   [CSX, port{2}] = AddWaveGuidePort(CSX, 10, 2, p3, p4, 2, func_E, func_H, 1, 0);
 end
