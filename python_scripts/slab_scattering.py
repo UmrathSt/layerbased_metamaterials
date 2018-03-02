@@ -56,24 +56,24 @@ class SlabStructure:
 
 if __name__ == "__main__":
     from matplotlib import pyplot as plt
-    tand1 = 9.302e-3
-    eps1 = 2.795 
+    tand1 = 0.02
+    eps1 = 4.4 
     epsFR4 = eps1*(1 + tand1*1j)
     eps2 = 9
-    tand2 = 0
+    tand2 = 1/9
     Z0 = 376.3
     epsRubber = eps2*(1 + tand2*1j)
-    eps = np.array([1, epsFR4, 1])[:,np.newaxis]
-    f = (np.linspace(70,100,1000)*1e9)[np.newaxis,:]
-    Zlist = np.array([Z0,Z0/np.sqrt(epsFR4), Z0])[:,np.newaxis]
-    l = np.array([50e-3])[:,np.newaxis]
+    eps = np.array([1, epsFR4, epsRubber, 1000])[:,np.newaxis]
+    f = (np.linspace(0,20,1000)*1e9)[np.newaxis,:]
+    Zlist = np.array([Z0,Z0/np.sqrt(epsFR4), Z0/np.sqrt(epsRubber), 0])[:,np.newaxis]
+    l = np.array([0.5e-3, 1e-3])[:,np.newaxis]
     k = np.sqrt(eps)*2*np.pi*f/3e8
     slabstack = SlabStructure(Zlist, l, k)
     R = slabstack.build_gamma()
     print(R.shape)
     T = slabstack.build_tau()
-    plt.plot(f[0,:]/1e9, (np.abs(R)),"r-", label="R")
-    plt.plot(f[0,:]/1e9, (np.abs(T)),"b-", label="T")
+    plt.plot(f[0,:]/1e9, 20*np.log10(np.abs(R)),"r-", label="R")
+    plt.plot(f[0,:]/1e9, 20*np.log10(np.abs(T)),"b-", label="T")
     plt.legend(loc="best").draw_frame(False)
     plt.xlabel("f [GHz]")
     plt.ylabel("$20\log|S_{11}|)$")
