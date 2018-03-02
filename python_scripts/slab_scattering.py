@@ -9,40 +9,46 @@ class SlabStructure:
         """
         self.Z = Z
         self.M = len(Z) - 1 # number of interfaces 
-        self.l = l
+        assert Z.shape[0]-2 == l.shape[0] == k.shape[0]-2
         self.k = k
+        self.l = l
+        self.phase = self.k[1:-1]*self.l
         self.tau = Z[1:,:]*2/(Z[0:-1,:]+Z[1:,:])
         self.rho = (Z[1:,:]-Z[0:-1,:]) / (Z[1:,:]+Z[0:-1,:])
-        assert Z.shape[0]-2 == l.shape[0] == k.shape[0]
-    
+        self.Gammas = []
+        self.tau = []
+
     def build_gamma(self):
         """ Get the scattering coefficient of the
             stacked structure by recursion
         """
         rho = self.rho 
-        phase = self.k*self.l
+        phase = self.phase 
         GammaM = rho[-1,:]
+        self.Gammas.append(GammaM)
         for i in range(rho.shape[0]-2, -1, -1):
             print("i=%i" %i)
             phasefactor = np.exp(2j*phase[i,:])
             GammaM = (rho[i,:] + GammaM*phasefactor) / (1 + rho[i,:]*GammaM*phasefactor )
-        return GammaM
+            self.Gammas.append(GammaM)
+        return GammaM # the left-most scattering coefficient
         
     def build_tau(self):
         """ Get the left to right transmission 
             of the stacked structure
         """
-        Z = self.Z[-2::-1,:]
-        rho = -self.rho[-2::-1,:]
-        phase = (self.k*self.l)[-2::-1,:]
-        GammaM = rho[-1,:]
-        print("In build_tau: self.rho = ", self.rho)
-        print("In build_tau: GammaM = ", GammaM)
-        for i in range(rho.shape[0]-2, -1, -1):
+        rho = self.rho 
+        phase = self.phase
+        tauM = 1
+        print("len self.Gammas = ", len(self.Gammas))
+        for i in range(len(self.Gammas)-1, 0, -1):
             print("Building tau: i=%i" %i)
-            phasefactor = np.exp(2j*phase[i,:])
-            GammaM = (rho[i,:] + GammaM*phasefactor) / (1 + rho[i,:]*GammaM*phasefactor )
-        return 1 + 1/GammaM
+            phasefactor = np.exp(2j*phase[i-1,:])
+            tauM *= (1 + self.Gammas[i-1]) / (1 + self.Gammas[i]*phasefactor)
+            self.tau.append(tauM)
+        tauM *= 2*self.k[-1]/(self.k[-1] + self.k[-2])
+        self.tau.append(tauM)
+        return tauM
 
         
         
@@ -57,7 +63,7 @@ if __name__ == "__main__":
     tand2 = 0
     Z0 = 376.3
     epsRubber = eps2*(1 + tand2*1j)
-    eps = np.array([epsFR4])[:,np.newaxis]
+    eps = np.array([1, epsFR4, 1])[:,np.newaxis]
     f = (np.linspace(70,100,1000)*1e9)[np.newaxis,:]
     Zlist = np.array([Z0,Z0/np.sqrt(epsFR4), Z0])[:,np.newaxis]
     l = np.array([50e-3])[:,np.newaxis]
@@ -66,9 +72,9 @@ if __name__ == "__main__":
     R = slabstack.build_gamma()
     print(R.shape)
     T = slabstack.build_tau()
-    print("T = \n", T)
-    plt.plot(f[0,:]/1e9, 20*np.log10(np.abs(R)),"r-", label="R")
-#    plt.plot(f[0,:]/1e9, 20*np.log10(np.abs(T)),"b-", label="T")
+    plt.plot(f[0,:]/1e9, (np.abs(R)),"r-", label="R")
+    plt.plot(f[0,:]/1e9, (np.abs(T)),"b-", label="T")
+    plt.legend(loc="best").draw_frame(False)
     plt.xlabel("f [GHz]")
     plt.ylabel("$20\log|S_{11}|)$")
     plt.show()
