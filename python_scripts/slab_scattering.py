@@ -63,10 +63,10 @@ if __name__ == "__main__":
     tand2 = 1/9
     Z0 = 376.3
     epsRubber = eps2*(1 + tand2*1j)
-    eps = np.array([1, epsFR4, epsRubber, 1000])[:,np.newaxis]
-    f = (np.linspace(0,20,1000)*1e9)[np.newaxis,:]
+    eps = np.array([1, epsFR4, epsRubber, 1e6])[:,np.newaxis]
+    f = (np.linspace(0,40,1000)*1e9)[np.newaxis,:]
     Zlist = np.array([Z0,Z0/np.sqrt(epsFR4), Z0/np.sqrt(epsRubber), 0])[:,np.newaxis]
-    l = np.array([0.5e-3, 1e-3])[:,np.newaxis]
+    l = np.array([0.5e-3, 1.25e-3])[:,np.newaxis]
     k = np.sqrt(eps)*2*np.pi*f/3e8
     slabstack = SlabStructure(Zlist, l, k)
     R = slabstack.build_gamma()
