@@ -32,11 +32,11 @@ def epsilon_wrap(xparam, wi, fi):
 
 if __name__ == "__main__":
     from matplotlib import pyplot as plt
-    wS = np.array([7e9,      8e9,      9e9,      11e10,     1.3e10])
-    fS = np.array([4.4*(1+0.02j), 4.3*(1+0.02j), 4.2*(1+0.02j), 
-                   4.15*(1+0.02j), 4.1*(1+0.02j)])
-    x0 = np.array([6e9, 1e6, 3e8, 
-                   3e9, 0.5e9, 4e10,
+    wS = np.array([8e9,      9e9,      11e10,     1.2e10])
+    fS = np.array([4.4*(1+0.02j), 4.4*(1+0.02j), 
+                   4.4*(1+0.02j), 4.4*(1+0.02j)])
+    x0 = np.array([6e10, 1e6, 3e8, 
+                   3e9, 0.5e9, 4e9,
                    3e8, 20e9, 2e10,
                    8.5e11, 5e11, 1e12])
     n_params = len(x0)
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     ax1.semilogx(w, np.real(epsilon(w, x0)), "k--", label="Re(eps)")
     ax1.semilogx(w, np.real(epsilon(w, y_lsq.x)), "r-", label="Re(eps)")
     ax1.legend(loc="best").draw_frame(False)
-    ax1.set_ylim([0,5])
+    ax1.set_ylim([3,5])
     ax2.loglog(wS, np.imag(fS), "ko", label="aim")
     ax2.loglog(w, np.imag(epsilon(w, x0)), "k--", label="Im(eps)")
     ax2.loglog(w, np.imag(epsilon(w, y_lsq.x)), "b-", label="Im(eps)")
