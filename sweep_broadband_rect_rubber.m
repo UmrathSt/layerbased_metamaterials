@@ -20,7 +20,7 @@ w1 = 0.7;
 gap = 0.4;
 
 for fr4_thickness = [0.2];
-    for rubber_thickness = [1.9, 2, 2.1, 2.2, 2.3];
+    for rubber_thickness = [2];
     rect_broadband_rubber(UCDim, fr4_thickness, rubber_thickness, L1, w1, L2, ...
           gap, eps_FR4, tand, mesh_refinement, complemential);
     end;

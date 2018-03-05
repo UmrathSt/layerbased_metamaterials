@@ -37,7 +37,24 @@ function [CSX, param_str] = defineMaterials(CSX, material_list, param_str);
           CSX = SetMaterialProperty(CSX, material_list{i}.name, 'Kappa', material_list{i}.Epsilon*material_list{i}.tand*2*pi*EPS0*material_list{i}.f0); % real Permittivity
           fprintf(strcat('Using loss tangent for description of conductivity, f0 = ', num2str(material_list{i}.f0), '\n'));
       catch lasterror;
-      end;    
+      end;
+   % Use a Multi-Pole Lorentz-Model for the permittivity 
+   elseif strcmp(material_list{i}.type, 'Lorentz');
+   try;
+     printf(['Using Multi-Pole Lorentz material for: ' material_list{i}.name '\n']);
+     CSX = AddLorentzMaterial(CSX, material_list{i}.name);
+     CSX = SetMaterialProperty(CSX, material_list{i}.name, ...
+        'EpsilonPlasmaFrequency', material_list{i}.fp(1),...
+        'EpsilonLorPoleFrequency', material_list{i}.f0(1),...
+        'EpsilonRelaxTime', material_list{i}.tau(1)); 
+     for ii = 2:numel(material_list{i}.fplasma);
+        CSX = SetMaterialProperty(CSX, material_list{i}.name, ...
+        ['EpsilonPlasmaFrequency_' num2str(i)], material_list{i}.fplasma(ii),...
+        ['EpsilonLorPoleFrequency_' num2str(i)], material_list{i}.fpole(ii),...
+        ['EpsilonRelaxTime_' num2str(i)], material_list{i}.tau(ii)); 
+     end;
+   catch lasterror;
+   end; 
 
     elseif strcmp(material_list{i}.type, 'Drude');
       isdrude = 1;
@@ -48,22 +65,7 @@ function [CSX, param_str] = defineMaterials(CSX, material_list, param_str);
                  'EpsilonRelaxTime', material_list{i}.EpsilonRelaxTime, 'Kappa', material_list{i}.Kappa, 'Epsilon', 1); % conductivity
       catch lasterror;
       end;
-   elseif strcmp(material_list{i}.type, 'Lorentz');
-   try;
-     printf(['using Multi-Pole Lorentz material for: ' material_list{i}.name '\n']);
-     CSX = AddLorentzMaterial(CSX, material_list{i}.name);
-     CSX = SetMaterialProperty(CSX, material_list{i}.name, ...
-        'EpsilonPlasmaFrequency', material_list{i}.fp(1),...
-        'EpsilonLorPoleFrequency', material_list{i}.f0(1),...
-        'EpsilonRelaxTime', material_list{i}.tau(1)); 
-     for i = 1:numel(material_list{i}.fplasma)-1;
-        CSX = SetMaterialProperty(CSX, material_list{i}.name, ...
-        ['EpsilonPlasmaFrequency_' num2str(i)], material_list{i}.fplasma(1),...
-        ['EpsilonLorPoleFrequency_' num2str(i)], material_list{i}.fpole(1),...
-        ['EpsilonRelaxTime_' num2str(i)], material_list{i}.tau(1)); 
-     end;
-   catch lasterror;
-   end;
+
       continue;
       end;
   end;

@@ -1,4 +1,4 @@
-function rect_broadband_lorentz(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, tand, mesh_refinement, complemential);
+function rect_broadband_const(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, tand, mesh_refinement, complemential);
   physical_constants;
   UC.layer_td = 0;
   UC.layer_fd = 1;
@@ -7,14 +7,14 @@ function rect_broadband_lorentz(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs,
   UC.s_dumps = 1;
   UC.nf2ff = 0;
   UC.s_dumps_folder = '~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters';
-  UC.s11_filename_prefix = ['UCDim_' num2str(UCDim) '_lz_' num2str(fr4_thickness) '_L1_' num2str(L1) '_w_' num2str(w1) '_L2_' num2str(L2) '_gap_' num2str(gap) '_eps_' num2str(eps_subs) '_tand_' num2str(tand)  '_lorentz'];
+  UC.s11_filename_prefix = ['UCDim_' num2str(UCDim) '_lz_' num2str(fr4_thickness) '_L1_' num2str(L1) '_w_' num2str(w1) '_L2_' num2str(L2) '_gap_' num2str(gap) '_eps_' num2str(eps_subs) '_tand_' num2str(tand)  '_const'];
   if complemential;
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, '_comp');
   end;
   UC.s11_filename = 'Sparameters_';
   UC.s11_subfolder = 'broadband_rect';
   UC.run_simulation = 1;
-  UC.show_geometry = 1;
+  UC.show_geometry = 0;
   UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 1.5e9;
@@ -74,10 +74,9 @@ function rect_broadband_lorentz(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs,
   substrate.prio = 2;
   substrate.xycenter = [0, 0];
   substrate.material.name = 'FR4';
-  substrate.material.type = 'Lorentz';
-  substrate.material.fplasma = [2.06e11, 2.46e11, 2.99e9, 9.78e10];
-  substrate.material.fpole = [7.11e5, 1.37e11, 2.33e11, 1.25e10];
-  substrate.material.tau = [7.67e-10, 3.35e-10, 1.84e-10, 4.62e-12];
+  substrate.material.type = 'const';
+  substrate.material.Epsilon = eps_subs;
+  substrate.material.Kappa = 2*pi*10e9*eps_subs*tand*EPS0;
   substrate.zrefinement = 3;
   % rubber
   rubber.name = 'rubber';

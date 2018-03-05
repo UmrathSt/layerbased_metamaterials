@@ -14,7 +14,7 @@ function rect_broadband_rubber(UCDim, fr4_thickness, rubber_thickness, L1, w1, L
   UC.s11_filename = 'Sparameters_';
   UC.s11_subfolder = 'broadband_rect_rubber';
   UC.run_simulation = 1;
-  UC.show_geometry = 0;
+  UC.show_geometry = 1;
   UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 1.5e9;
