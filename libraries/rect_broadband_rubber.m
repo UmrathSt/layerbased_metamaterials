@@ -77,7 +77,7 @@ function rect_broadband_rubber(UCDim, fr4_thickness, rubber_thickness, L1, w1, L
   substrate.material.type = 'const';
   substrate.material.Epsilon = eps_subs;
   substrate.material.tand = tand;
-  substrate.material.f0 = 10e9;
+  substrate.material.f0 = 15e9;
   substrate.zrefinement = 8;
   
   rubber.name = 'rubber';
@@ -90,7 +90,7 @@ function rect_broadband_rubber(UCDim, fr4_thickness, rubber_thickness, L1, w1, L
   rubber.material.name = 'rubber';
   rubber.material.type = 'const';
   rubber.material.Epsilon = 2.5;
-  rubber.material.Kappa = 20;
+  rubber.material.Kappa = 1;
 
   rubber.zrefinement = 4;
 

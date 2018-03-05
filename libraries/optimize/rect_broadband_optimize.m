@@ -78,7 +78,7 @@ function val = rect_broadband_optimize(UCDim, fr4_thickness, L1, w1, L2, gap, ep
   substrate.material.type = 'const';
   substrate.material.Epsilon = eps_subs;
   substrate.material.tand = tand;
-  substrate.material.f0 = 10e9;
+  substrate.material.f0 = 15e9;
   substrate.zrefinement = 5;
 
   % circle
