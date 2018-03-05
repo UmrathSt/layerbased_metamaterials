@@ -3,7 +3,7 @@ clc;
 physical_constants;
 addpath('./libraries');
 
-scale = 0.5;
+scale = 1;
 
 UCDim = 20*scale;
 complemential = 0;

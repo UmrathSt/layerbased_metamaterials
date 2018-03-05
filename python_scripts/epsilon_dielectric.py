@@ -51,7 +51,7 @@ if __name__ == "__main__":
     ax2 = fig.add_subplot(212)
     w = np.logspace(-1,1.5,100)*1e9
     ax1.semilogx(wS, np.real(fS), "ko", label="aim")
-    ax1.semilogx(y_lsq.x[1::3], np.ones(n_params//3), "ro", label="poles")
+    ax1.semilogx(y_lsq.x[1::3], 4.4*np.ones(n_params//3), "ro", label="poles")
     ax1.semilogx(w, np.real(epsilon(w, x0)), "k--", label="Re(eps)")
     ax1.semilogx(w, np.real(epsilon(w, y_lsq.x)), "r-", label="Re(eps)")
     ax1.legend(loc="best").draw_frame(False)
