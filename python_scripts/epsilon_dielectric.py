@@ -29,16 +29,23 @@ def epsilon_wrap(xparam, wi, fi):
     eps = epsilon(wi, xparam)
     return (eps.real-fi.real)**2 + (eps.imag-fi.imag)**2
 
+def epsilon_wrap_openems(xparam, wi, fi):
+    """ Define the numpy arrays of function values
+        fi which shall come out at the given xi values
+    """
+    eps = epsilon_openems(wi, xparam)
+    return (eps.real-fi.real)**2 + (eps.imag-fi.imag)**2
+
+
 
 if __name__ == "__main__":
     from matplotlib import pyplot as plt
-    wS = np.array([8e9,      9e9,      11e10,     1.2e10])
-    fS = np.array([4.4*(1+0.02j), 4.4*(1+0.02j), 
-                   4.4*(1+0.02j), 4.4*(1+0.02j)])
-    x0 = np.array([6e10, 1e6, 3e8, 
-                   3e9, 0.5e9, 4e9,
-                   3e8, 20e9, 2e10,
-                   8.5e11, 5e11, 1e12])
+    wS = np.array([
+                   10e9
+                   ])
+    fS = np.array([4.2*(1+0.02j)])
+    x0 = np.array([1.84e10,2.3e11, 3.1e9])
+                   
     n_params = len(x0)
     bnd = (np.ones(n_params)*0, np.ones(n_params)*np.inf)
     y_lsq = least_squares(epsilon_wrap, x0, args=(wS, fS), bounds=bnd)
@@ -46,6 +53,9 @@ if __name__ == "__main__":
     print("fp: \n", (y_lsq.x)[::3]/(2*np.pi))
     print("f0: \n", (y_lsq.x)[1::3]/(2*np.pi))
     print("tau: \n", ((y_lsq.x)[2::3]/(2*np.pi))**(-1))
+    print("wp: \n", (y_lsq.x)[::3])
+    print("w0: \n", (y_lsq.x)[1::3])
+    print("gamma: \n", ((y_lsq.x)[2::3]))
     fig = plt.figure()
     ax1 = fig.add_subplot(211)
     ax2 = fig.add_subplot(212)

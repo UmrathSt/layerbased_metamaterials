@@ -14,7 +14,7 @@ function rect_broadband_lorentz(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs,
   UC.s11_filename = 'Sparameters_';
   UC.s11_subfolder = 'broadband_rect';
   UC.run_simulation = 1;
-  UC.show_geometry = 1;
+  UC.show_geometry = 0;
   UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 1.5e9;
@@ -75,25 +75,25 @@ function rect_broadband_lorentz(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs,
   substrate.xycenter = [0, 0];
   substrate.material.name = 'FR4';
   substrate.material.type = 'Lorentz';
-%  substrate.material.fplasma = [2.06e11, 2.46e11, 2.99e9, 9.78e10];
-%  substrate.material.fpole = [7.11e5, 1.37e11, 2.33e11, 1.25e10];
-%  substrate.material.tau = [7.67e-10, 3.35e-10, 1.84e-10, 4.62e-12];
-  substrate.material.fplasma = [5e9];
-  substrate.material.fpole = [10e9];
-  substrate.material.tau = [5e-9];
+  substrate.material.fplasma = [2.06e11, 2.46e11, 2.99e9, 9.78e10];
+  substrate.material.fpole = [7.11e5, 1.37e11, 2.33e11, 1.25e10];
+  substrate.material.tau = [7.67e-10, 3.35e-10, 1.84e-10, 4.62e-12];
+%  substrate.material.fplasma = [5e9];
+%  substrate.material.fpole = [10e9];
+%  substrate.material.tau = [5e-9];
   substrate.zrefinement = 3;
   % rubber
   rubber.name = 'rubber';
   rubber.lx = UC.lx;
   rubber.ly = UC.ly;
-  rubber.lz = 1.6;
+  rubber.lz = 1.4;
   rubber.rotate = 0;
   rubber.prio = 2;
   rubber.xycenter = [0, 0];
   rubber.material.name = 'rubber';
   rubber.material.type = 'const';
   rubber.material.Epsilon = 2.5;
-  rubber.material.Kappa = 0.5;
+  rubber.material.Kappa = 1;
   rubber.zrefinement = 8;
 
   % circle
@@ -136,7 +136,14 @@ function rect_broadband_lorentz(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs,
     CSXGeomPlot([UC.SimPath '/' UC.SimCSX]);
   end;
   if UC.run_simulation;
-    openEMS_opts = '--engine=multithreaded --numThreads=6';%'-vvv';
+    numthreads = 2;
+    try;
+      if strcmp(uname.nodename, 'Xeon');
+        numthreads = 6;
+      end;
+    catch lasterror;
+    end;
+    openEMS_opts = '--engine=multithreaded --numThreads=2';%'-vvv';
     %Settings = ['--debug-PEC', '--debug-material'];
     Settings = [''];
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);

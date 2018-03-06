@@ -43,6 +43,14 @@ function [CSX, param_str] = defineMaterials(CSX, material_list, param_str);
    try;
      printf(['Using a ' num2str(numel(material_list{i}.fplasma)) '-Pole Lorentz material for: ' material_list{i}.name '\n']);
      CSX = AddLorentzMaterial(CSX, material_list{i}.name);
+     try;
+        CSX = SetMaterialProperty(CSX, material_list{i}.name, 'Epsilon', material_list{i}.Epsilon);
+     catch lasterror;
+     end;
+     try;
+        CSX = SetMaterialProperty(CSX, material_list{i}.name, 'Kappa', material_list{i}.Kappa);
+     catch lasterror;
+     end;
      for ii = 1:numel(material_list{i}.fplasma);
         CSX = SetMaterialProperty(CSX, material_list{i}.name, ...
         ['EpsilonPlasmaFrequency_' num2str(ii)], material_list{i}.fplasma(ii),...
