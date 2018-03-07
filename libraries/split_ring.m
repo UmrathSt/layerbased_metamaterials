@@ -16,10 +16,10 @@ function split_ring(UCDim, fr4_thickness, R, w, phi0, DeltaPhi, eps_subs, tand, 
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, '_comp');
   end;
   UC.s11_filename = 'Sparameters_';
-  UC.s11_subfolder = 'split_ring_transmission';
+  UC.s11_subfolder = 'split_ring'; % split_ring_transmission
   UC.run_simulation = 1;
   UC.show_geometry = 0;
-  UC.grounded = 0;
+  UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 0.5e9;
   UC.f_stop = 15e9;
@@ -68,7 +68,7 @@ function split_ring(UCDim, fr4_thickness, R, w, phi0, DeltaPhi, eps_subs, tand, 
   rectangle.prio = 2;
   rectangle.xycenter = [0, 0];
   rectangle.material.name = 'copper';
-  %rectangle.material.Kappa = 56e6;
+
   rectangle.material.type = 'const';
   rectangle.material.Kappa = 56e6;
 
@@ -109,11 +109,11 @@ function split_ring(UCDim, fr4_thickness, R, w, phi0, DeltaPhi, eps_subs, tand, 
   splitring.xycenter = [0, 0];
   splitring.complemential = complemential;
   
-  layer_list = {@CreateUC, UC;  %@CreateRect, rectangle;
-                                %@CreateRect, substrate;
+  layer_list = {@CreateUC, UC;  @CreateRect, rectangle;
+                                @CreateRect, substrate;
                                 @CreateSplitRing, splitring;
                                  };
-  material_list = {substrate.material, splitring.material, splitring.bmaterial};
+  material_list = {rectangle.material, substrate.material, splitring.material, splitring.bmaterial};
   [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
   
   [CSX, port] = definePorts(CSX, mesh, UC.f_start, polarization);

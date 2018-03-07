@@ -1,4 +1,4 @@
-function rect_broadband_rubber(UCDim, fr4_thickness, rubber_thickness, L1, w1, L2, gap, eps_subs, tand, mesh_refinement, complemential);
+function srect_broadband_rubber(UCDim, fr4_thickness, rubber_thickness, L1, w1, L2, gap, split_gap, eps_subs, tand, mesh_refinement, complemential);
   physical_constants;
   UC.layer_td = 0;
   UC.layer_fd = 0;
@@ -7,14 +7,14 @@ function rect_broadband_rubber(UCDim, fr4_thickness, rubber_thickness, L1, w1, L
   UC.s_dumps = 1;
   UC.nf2ff = 0;
   UC.s_dumps_folder = '~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters';
-  UC.s11_filename_prefix = ['UCDim_' num2str(UCDim) '_lz_' num2str(fr4_thickness) '_rubber_' num2str(rubber_thickness) '_L1_' num2str(L1) '_w_' num2str(w1) '_L2_' num2str(L2) '_gap_' num2str(gap) '_eps_' num2str(eps_subs) '_tand_' num2str(tand)];
+  UC.s11_filename_prefix = ['UCDim_' num2str(UCDim) '_lz_' num2str(fr4_thickness) '_rubber_' num2str(rubber_thickness) '_L1_' num2str(L1) '_w_' num2str(w1) '_L2_' num2str(L2) '_gap_' num2str(gap) '_sgap_' num2str(split_gap) '_eps_' num2str(eps_subs) '_tand_' num2str(tand)];
   if complemential;
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, '_comp');
   end;
   UC.s11_filename = 'Sparameters_';
-  UC.s11_subfolder = 'broadband_rect_rubber';
+  UC.s11_subfolder = 'broadband_srect_rubber';
   UC.run_simulation = 1;
-  UC.show_geometry = 1;
+  UC.show_geometry = 0;
   UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 1.5e9;
@@ -77,7 +77,7 @@ function rect_broadband_rubber(UCDim, fr4_thickness, rubber_thickness, L1, w1, L
   substrate.material.type = 'const';
   substrate.material.Epsilon = eps_subs;
   substrate.material.tand = tand;
-  substrate.material.f0 = 15e9;
+  substrate.material.f0 = 10e9;
   substrate.zrefinement = 8;
   
   rubber.name = 'rubber';
@@ -111,6 +111,7 @@ function rect_broadband_rubber(UCDim, fr4_thickness, rubber_thickness, L1, w1, L
   rect.L2 = L2;
   rect.w1 = w1;
   rect.gap = gap;
+  rect.split_gap = split_gap;
   rect.UClx = UCDim;
   rect.UCly = UCDim;
   rect.prio = 2;
@@ -120,7 +121,7 @@ function rect_broadband_rubber(UCDim, fr4_thickness, rubber_thickness, L1, w1, L
   layer_list = {@CreateUC, UC; @CreateRect, rectangle;
                                @CreateRect, rubber;
                                @CreateRect, substrate;
-                               @CreateBroadbandRect, rect;
+                               @CreateBroadbandSRect, rect;
                                  };
   material_list = {substrate.material, rectangle.material, rubber.material, rect.material, rect.bmaterial};
   [CSX, mesh, param_str] = stack_layers(layer_list, material_list);

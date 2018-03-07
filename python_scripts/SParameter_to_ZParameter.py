@@ -6,6 +6,12 @@ def get_Z_from_S(S11, S21):
     denumerator = (1-S11**2)**2 - S21**2
     return numerator/denumerator
 
+def get_ZM_from_S11(S11, Z0):
+    
+    numerator = (1-S11**2)**2 + S21**2
+    denumerator = (1-S11**2)**2 - S21**2
+    return numerator/denumerator
+
 
 
 if __name__ == "__main__":
