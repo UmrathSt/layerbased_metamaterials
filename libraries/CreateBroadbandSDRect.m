@@ -19,6 +19,7 @@ function [CSX, params] = CreateBroadbandSDRect(CSX, object, translate, rotate);
   lz = object.lz;
   material = object.material.name;
   bmaterial = object.bmaterial.name;
+  resistivegap = object.resistivegap.name;
   Outer1 = [-L0/2, -L0/2, -lz/2];
   Outer2 = [+L0/2, -L0/2+w0, lz/2];
   outer1 = [-L1/2, -L1/2, -lz/2];
@@ -66,7 +67,7 @@ function [CSX, params] = CreateBroadbandSDRect(CSX, object, translate, rotate);
   gstop  = [+sqrt(2)*gap/2,-(L0-L1)/4, +lz/2];
   CSX = AddBox(CSX, material, object.prio+2, gstart, gstop, ...
         'Transform', {'Rotate_Z', -pi/4, 'Translate', translate+[-(L0-w0+L1)/4,-(L0-w0+L1)/4,0]});   
-  % now add the insulating gap
+  % now add the resistive gap
   gstart = [-sqrt(2)*split_gap/2, w1*1.4, -lz/2];
   gstop  = [+sqrt(2)*split_gap/2,-w1*0.7, +lz/2];
   CSX = AddBox(CSX, bmaterial, object.prio+2, gstart, gstop, ...
