@@ -21,6 +21,6 @@ gap = 0.4/scale;
 for fr4_thickness = [0.5, 1, 1.5, 2];
   for rubber_thickness = [0.5, 0.75 ];
 srect_broadband_rubber(UCDim, fr4_thickness, rubber_thickness, L1, w1, L2, ...
-          gap, gap, eps_FR4, tand, mesh_refinement, complemential);
+          gap, gap/2, eps_FR4, tand, mesh_refinement, complemential);
 end;end;
     

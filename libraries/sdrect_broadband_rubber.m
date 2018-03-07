@@ -116,6 +116,7 @@ function sdrect_broadband_rubber(UCDim, fr4_thickness, rubber_thickness, L0, w0,
   rect.split_gap = split_gap;
   rect.UClx = UCDim;
   rect.UCly = UCDim;
+  rect.outer_angle = pi/2;
   rect.prio = 2;
   rect.xycenter = [0, 0];
   rect.complemential = complemential;

@@ -20,8 +20,8 @@ L2 = 1.8/scale;
 w1 = 0.7/scale;
 
 gap = 0.4/scale;
-for fr4_thickness = [0.5];
-for rubber_thickness = [1];
+for fr4_thickness = [0.2];
+for rubber_thickness = [1.4, 1.2];
 sdrect_broadband_rubber(UCDim, fr4_thickness, rubber_thickness, L0, w0, ...
       L1, w1, L2, gap, gap, eps_FR4, tand, mesh_refinement, complemential);
 end;end;

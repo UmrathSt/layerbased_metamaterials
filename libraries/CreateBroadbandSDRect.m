@@ -9,6 +9,11 @@ function [CSX, params] = CreateBroadbandSDRect(CSX, object, translate, rotate);
   L1 = object.L1;
   w1 = object.w1;
   L2 = object.L2;
+  outer_angle = pi/4;
+  try; 
+    outer_angle = object.outer_angle;
+  catch lasterror;
+  end;
   split_gap = object.split_gap;
   gap  = object.gap;
   lz = object.lz;
@@ -57,17 +62,18 @@ function [CSX, params] = CreateBroadbandSDRect(CSX, object, translate, rotate);
   CSX = AddBox(CSX, material, object.prio+2, gstart, gstop, ...
         'Transform', {'Rotate_Z', pi/4, 'Translate', translate+[-(L1-w1+L2)/4,(L1-w1+L2)/4,0]}); 
   % now add the gap for the outer rects
-  gstart = [-sqrt(2)*gap/2, (L0-L1)/4, -lz/2];
-  gstop  = [+sqrt(2)*gap/2,-(L0-L1)/4-w0, +lz/2];
+  gstart = [-sqrt(2)*gap/2, (L0-L1)/4+w0, -lz/2];
+  gstop  = [+sqrt(2)*gap/2,-(L0-L1)/4, +lz/2];
   CSX = AddBox(CSX, material, object.prio+2, gstart, gstop, ...
-        'Transform', {'Rotate_Z', pi/4, 'Translate', translate+[-(L0-w0+L1)/4,(L0-w0+L1)/4,0]});   
+        'Transform', {'Rotate_Z', -pi/4, 'Translate', translate+[-(L0-w0+L1)/4,-(L0-w0+L1)/4,0]});   
   % now add the insulating gap
   gstart = [-sqrt(2)*split_gap/2, w1*1.4, -lz/2];
-  gstop  = [+sqrt(2)*split_gap/2,-w1*0.75, +lz/2];
+  gstop  = [+sqrt(2)*split_gap/2,-w1*0.7, +lz/2];
   CSX = AddBox(CSX, bmaterial, object.prio+2, gstart, gstop, ...
         'Transform', {'Rotate_Z', pi/4, 'Translate', translate+[(L1-w1)/2,-(L1-w1)/2,0]}); 
   ocenter = [object.xycenter(1:2), 0] + translate;
   params = ['# broadband splitted double-rect absorber made of ',  material, ' at center position x = ', num2str(ocenter(1)), ' y = ', num2str(ocenter(2)), ' z = ' num2str(ocenter(3)), '\n' ...
-            '# edge lengths L0, w0=', num2str(L0,'%.4f') ', ' num2str(w0,'%.4f'), ', L1, w1 =', num2str(L1,'%.4f') ', ' num2str(w1,'%.4f'),' inner rect L=', num2str(L2,'%.4f'), ', ', ', gap =' num2str(gap, '%.4f'), ' split_gap = ' num2str(split_gap), 'background material ', bmaterial, '\n'];
+            '# edge lengths L0, w0=', num2str(L0,'%.4f') ', ' num2str(w0,'%.4f'), ', L1, w1 =', num2str(L1,'%.4f') ', ' num2str(w1,'%.4f'),' inner rect L=', num2str(L2,'%.4f'), ', ', ', gap =' num2str(gap, '%.4f'), ' split_gap = ' num2str(split_gap), 'background material ', bmaterial, '\n'...
+            '# outer angle = ' num2str(outer_angle*180/pi) 'degree. \n'];
   return;
 end
