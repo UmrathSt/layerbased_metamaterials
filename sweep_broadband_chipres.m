@@ -18,6 +18,17 @@ c = 0.5;
 rho = 3;
 Res = 150;
 
+for Ohm = [130, 120, 110, 100];
+  broadband_chipres(UCDim, fr4_thickness, R, w, rho, c,...
+    Ohm, eps_subs, tand, mesh_refinement, complemential);
+end;
 
-    broadband_chipres(UCDim, fr4_thickness, R, w, rho, c,...
+for lz = [13, 15];
+  broadband_chipres(UCDim, lz, R, w, rho, c,...
     Res, eps_subs, tand, mesh_refinement, complemential);
+end;
+
+for gapwidth = [0.5, 0.7];
+  broadband_chipres(UCDim, fr4_thickness, R, gapwidth, rho, c,...
+    Res, eps_subs, tand, mesh_refinement, complemential);
+end;
