@@ -1,4 +1,4 @@
-function val = rect_broadband_chipres(UCDim, fr4_thickness, R, gapwidth, L, reswidth, s, Res, eps_subs, tand, mesh_refinement, complemential, fcenter, fwidth);
+function val = optimize_rect_broadband_chipres(UCDim, fr4_thickness, R, gapwidth, L, reswidth, s, Res, eps_subs, tand, mesh_refinement, complemential, fcenter, fwidth);
   physical_constants;
   UC.layer_td = 0;
   UC.layer_fd = 1;
