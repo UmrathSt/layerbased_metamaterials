@@ -1,4 +1,4 @@
-function rect_broadband_chipres(UCDim, fr4_thickness, R, gapwidth, L, reswidth, s, Res, eps_subs, tand, mesh_refinement, complemential);
+function val = rect_broadband_chipres(UCDim, fr4_thickness, R, gapwidth, L, reswidth, s, Res, eps_subs, tand, mesh_refinement, complemential, fcenter, fwidth);
   physical_constants;
   UC.layer_td = 0;
   UC.layer_fd = 1;
@@ -137,7 +137,8 @@ function rect_broadband_chipres(UCDim, fr4_thickness, R, gapwidth, L, reswidth, 
     Settings = [''];
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);
   end;
-  doPortDump(port, UC);
+
+  val = doPortDump_optimize(port, UC, fcenter, fwidth);
   if UC.nf2ff == 1;
     freq = [2.4e9, 5.2e9, 12e9, 15e9];
     phi = linspace(0, 2*pi, 100);
