@@ -6,24 +6,33 @@ function [CSX, params] = CreateRectBroadbandChipres(CSX, object, translate, rota
   UClx = object.UClx;
   UCly = object.UCly;
   L = object.L;
-  w = object.w;
   R = object.R;
-  a = object.a;
+  reswidth = object.reswidth;
+  gapwidth = object.gapwidth;
+  s = object.s;
+  dphi = pi/4;
+  try;
+    dphi = object.dphi;
+  catch lasterror;
+  end;
   
   lz = object.lz;
   material = object.material.name;
   bmaterial = object.bmaterial.name;
   resistormaterial = object.resistormaterial.name;
-  gap1 = [+a/2, -a/2, -lz/2];
-  gap2 = [R*1.44, +a/2, +lz/2];
+  gap1 = [+gapwidth/2, -gapwidth/2, -lz/2];
+  gap2 = [R, +gapwidth/2, +lz/2];
+  irect1 = [-s/2, -s/2, -lz/2];
+  irect2 = [s/2, s/2, lz/2];
   
-  resistor1 = [L, -a/2, -lz/2];
-  resistor2 = [L+a, a/2, lz/2];
+  
+  resistor1 = [L, -gapwidth/2, -lz/2];
+  resistor2 = [L+reswidth, gapwidth/2, lz/2];
 
   bstart = [-object.UClx/2, -object.UCly/2, -object.lz/2];
   bstop  = -bstart;
   CSX = AddBox(CSX, bmaterial, object.prio, bstart, bstop,...
-            'Transform', {'Rotate_Z', rotate, 'Translate', translate});
+            'Transform', {'Translate', translate});
   if object.complemential;
     try;
     CSX = AddMaterial(CSX, 'air');
@@ -40,12 +49,14 @@ function [CSX, params] = CreateRectBroadbandChipres(CSX, object, translate, rota
   CSX = AddBox(CSX, material, object.prio, [-R,-R,-lz/2],[R,R,lz/2], ...
   'Transform', {'Rotate_Z', rotate, 'Translate', translate});
 
-  for rot = (0:3)*pi/2+pi/4;
+  for rot = (0:3)*pi/2+dphi;
     CSX = AddBox(CSX, bmaterial, object.prio+1,...
         gap1, gap2, 'Transform', {'Rotate_Z', rotate+rot, 'Translate', translate});
     CSX = AddBox(CSX, resistormaterial, object.prio+2, resistor1, resistor2,'Transform', {'Rotate_Z', rotate+rot, 'Translate', translate});
   
   end;
+  CSX = AddBox(CSX, material, object.prio+4, irect1, irect2,...
+  'Transform', {'Rotate_Z', rotate, 'Translate', translate});
     
  
   ocenter = [object.xycenter(1:2), 0] + translate;

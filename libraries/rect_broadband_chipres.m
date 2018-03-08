@@ -1,4 +1,4 @@
-function rect_broadband_chipres(UCDim, fr4_thickness, R, w, L, a, Res, eps_subs, tand, mesh_refinement, complemential);
+function rect_broadband_chipres(UCDim, fr4_thickness, R, gapwidth, L, reswidth, s, Res, eps_subs, tand, mesh_refinement, complemential);
   physical_constants;
   UC.layer_td = 0;
   UC.layer_fd = 1;
@@ -7,14 +7,14 @@ function rect_broadband_chipres(UCDim, fr4_thickness, R, w, L, a, Res, eps_subs,
   UC.s_dumps = 1;
   UC.nf2ff = 0;
   UC.s_dumps_folder = '~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters';
-  UC.s11_filename_prefix = ['UCDim_' num2str(UCDim) '_lz_' num2str(fr4_thickness) '_R_' num2str(R) '_w_' num2str(w) '_L_' num2str(L) '_a_' num2str(a) '_Res_' num2str(Res) '_eps_' num2str(eps_subs) '_tand_' num2str(tand)];
+  UC.s11_filename_prefix = ['UCDim_' num2str(UCDim) '_lz_' num2str(fr4_thickness) '_R_' num2str(R) '_gapw_' num2str(gapwidth) '_L_' num2str(L) '_resw_' num2str(reswidth) '_s_' num2str(s) '_Res_' num2str(Res) '_eps_' num2str(eps_subs) '_tand_' num2str(tand)];
   if complemential;
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, '_comp');
   end;
   UC.s11_filename = 'Sparameters_';
   UC.s11_subfolder = 'rect_broadband_chipres';
   UC.run_simulation = 1;
-  UC.show_geometry = 0;
+  UC.show_geometry = 1;
   UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 2e9;
@@ -84,7 +84,7 @@ function rect_broadband_chipres(UCDim, fr4_thickness, R, w, L, a, Res, eps_subs,
   % chipres
   chipres.name = 'rectangles';
   chipres.lz = 0.05;
-  chipres.rotate = 0;
+  chipres.rotate = pi/4;
   chipres.material.name = 'rectangles';
   chipres.material.Kappa = 56e6;
   chipres.material.type = 'const';
@@ -92,13 +92,15 @@ function rect_broadband_chipres(UCDim, fr4_thickness, R, w, L, a, Res, eps_subs,
   chipres.bmaterial.type = 'const';
   chipres.bmaterial.Epsilon = 1;
   chipres.zrefinement = 3;
+  chipres.dphi = 0;
   chipres.resistormaterial.name = 'chipresistor';
-  chipres.resistormaterial.Kappa = 1/(Res*chipres.lz*UC.unit);
+  chipres.resistormaterial.Kappa = gapwidth/(Res*reswidth*chipres.lz*UC.unit);
   chipres.resistormaterial.type = 'const';
 
   chipres.R = R;
-  chipres.w = w;
-  chipres.a = a;
+  chipres.s = s;
+  chipres.gapwidth = gapwidth;
+  chipres.reswidth = reswidth;
   chipres.L = L;
   chipres.Res = Res;
   chipres.UClx = UCDim;
