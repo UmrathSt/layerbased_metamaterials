@@ -17,7 +17,7 @@ function val = optimize_rect_broadband_chipres(UCDim, fr4_thickness, R, gapwidth
   UC.show_geometry = 0;
   UC.grounded = 1;
   UC.unit = 1e-3;
-  UC.f_start = 2e9;
+  UC.f_start = 3.e9;
   UC.f_stop = 15e9;
   UC.lx = UCDim;
   UC.ly = UCDim;
@@ -25,9 +25,9 @@ function val = optimize_rect_broadband_chipres(UCDim, fr4_thickness, R, gapwidth
   UC.dz = c0 / (UC.f_stop) / UC.unit / 20;
   UC.dx = UC.dz/3/mesh_refinement;
   UC.dy = UC.dx;
-  UC.dump_frequencies = linspace(5,15,41)*1e9;
+  UC.dump_frequencies = linspace(4,14,101)*1e9;
   UC.s11_delta_f = 10e6;
-  UC.EndCriteria = 1e-4;
+  UC.EndCriteria = 1e-5;
   UC.SimPath = ['/mnt/hgfs/E/openEMS/layerbased_metamaterials/Simulation/' UC.s11_subfolder '/' UC.s11_filename_prefix];
   UC.ResultPath = ['~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse'];
   try;
@@ -78,7 +78,7 @@ function val = optimize_rect_broadband_chipres(UCDim, fr4_thickness, R, gapwidth
   substrate.material.Epsilon = eps_subs;
   substrate.material.tand = tand;
   substrate.material.f0 = 10e9;
-  substrate.zrefinement = 3;
+  substrate.zrefinement = 6;
 
 
   % chipres
@@ -108,6 +108,7 @@ function val = optimize_rect_broadband_chipres(UCDim, fr4_thickness, R, gapwidth
   chipres.prio = 2;
   chipres.xycenter = [0, 0];
   chipres.complemential = complemential;
+  chipres.zrefinement = 2;
   
   layer_list = {@CreateUC, UC; @CreateRect, rectangle;
                                @CreateRect, substrate;
@@ -125,7 +126,7 @@ function val = optimize_rect_broadband_chipres(UCDim, fr4_thickness, R, gapwidth
     CSXGeomPlot([UC.SimPath '/' UC.SimCSX]);
   end;
   if UC.run_simulation;
-    num_threads = 4;
+    num_threads = 2;
     try;
       if strcmp(uname.nodename, 'Xeon');
         num_threads = 6;

@@ -17,7 +17,7 @@ function broadband_chipres(UCDim, fr4_thickness, R, w, L, a, Res, eps_subs, tand
   UC.show_geometry = 0;
   UC.grounded = 1;
   UC.unit = 1e-3;
-  UC.f_start = 2e9;
+  UC.f_start = 3e9;
   UC.f_stop = 15e9;
   UC.lx = UCDim;
   UC.ly = UCDim;
@@ -106,6 +106,7 @@ function broadband_chipres(UCDim, fr4_thickness, R, w, L, a, Res, eps_subs, tand
   chipres.prio = 2;
   chipres.xycenter = [0, 0];
   chipres.complemential = complemential;
+  chipres.zrefinement = 3;
   
   layer_list = {@CreateUC, UC; @CreateRect, rectangle;
                                @CreateRect, substrate;
@@ -123,10 +124,10 @@ function broadband_chipres(UCDim, fr4_thickness, R, w, L, a, Res, eps_subs, tand
     CSXGeomPlot([UC.SimPath '/' UC.SimCSX]);
   end;
   if UC.run_simulation;
-    num_threads = 4;
+    num_threads = 2;
     try;
       if strcmp(uname.nodename, 'Xeon');
-        num_threads = 6;
+        num_threads = 8;
       end;
     catch lasterror;
     end;
