@@ -59,13 +59,13 @@ if __name__ == "__main__":
     print("Zslab.shape", Zslab[0].shape)
     print("Zmeta.shape", Zmeta[0].shape)
     R = get_R(Z0, Zslab, Zmeta, thickness)
-    #for idx in [400, 600, 800]:
-    #    plt.plot(theta[0,:]*180/np.pi, 20*np.log10(np.abs(R[0][idx,:])))
-    #    plt.plot(theta[0,:]*180/np.pi, 20*np.log10(np.abs(R[1][idx,:])))
     colors = ["r", "b", "g"]
-    for c, idx in zip(colors, [0,50,99]):
-        plt.plot(f[:,0]/1e9, 20*np.log10(np.abs(R[0][:,idx])), 
-                color=c, linestyle="-", label=r"$\theta=%.1f$" %(theta[0,idx]*180/np.pi))
-        plt.plot(f[:,0]/1e9, 20*np.log10(np.abs(R[1][:,idx])), color=c, linestyle="--")
-    plt.legend(loc="best").draw_frame(False)
+    for idx in [400, 600, 800]:
+        plt.plot(theta[0,:]*180/np.pi, 20*np.log10(np.abs(R[0][idx,:])))
+        plt.plot(theta[0,:]*180/np.pi, 20*np.log10(np.abs(R[1][idx,:])))
+    #for c, idx in zip(colors, [0,50,99]):
+    #    plt.plot(f[:,0]/1e9, 20*np.log10(np.abs(R[0][:,idx])), 
+    #            color=c, linestyle="-", label=r"$\theta=%.1f$" %(theta[0,idx]*180/np.pi))
+    #    plt.plot(f[:,0]/1e9, 20*np.log10(np.abs(R[1][:,idx])), color=c, linestyle="--")
+    #plt.legend(loc="best").draw_frame(False)
     plt.show()
