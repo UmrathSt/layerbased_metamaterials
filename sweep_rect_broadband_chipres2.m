@@ -25,13 +25,16 @@ Res2 = 15;
 fcenter = [8.5e9];
 fwidth = [4e9];
 absorption = [];
+L0 = 4;
+w0 = 0.6;
+g0 = 0.6;
 
 
 for UCDim = [14.5];
 for Res1 = [350];
-for Res2 = [30, 25, 20];
+for Res2 = [30];
   absorption = [absorption, ...
-  optimize_rect_broadband_chipres1(UCDim, fr4_thickness, L1, L2, rho, gapwidth, gapwidth2,...
+  optimize_rect_broadband_chipres2(UCDim, fr4_thickness, L0, w0, g0, L1, L2, rho, gapwidth, gapwidth2,...
 reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential, fcenter, fwidth)];
 end;
 end;end;
