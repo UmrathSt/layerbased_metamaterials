@@ -49,10 +49,9 @@ function [CSX, params] = CreateRectBroadbandChipres2(CSX, object, translate, rot
   % add the center copper rectangle
   irect1 = [-L3/2, -L3/2, -lz/2];
   irect2 = [L3/2, L3/2, lz/2];
-  outerL1 = [g0/2, length/2+g0, -lz/2];
-  outerL2 = [g0/2+L0, length/2+g0+w0, -lz/2];
-  outerL3 = [length/2+g0, g0/2 -lz/2];
-  outerL4 = [length/2+g0+w0, g0/2+L0, -lz/2];
+
+  outerL1 = [length/2+g0,L0/2 -lz/2];
+  outerL2 = [length/2+g0+w0,-L0/2 lz/2];
   CSX = AddBox(CSX, material, object.prio+4, irect1, irect2,...
   'Transform', {'Rotate_Z', rotate+pi/4, 'Translate', translate});
   if object.complemential;
@@ -83,10 +82,9 @@ function [CSX, params] = CreateRectBroadbandChipres2(CSX, object, translate, rot
         'Transform', {'Rotate_Z', rotate+rot, 'Translate', translate});
     CSX = AddBox(CSX, resistormaterial1, object.prio+2, Oresistor1, Oresistor2,'Transform', {'Rotate_Z', rotate+rot, 'Translate', translate});
     CSX = AddBox(CSX, resistormaterial2, object.prio+3, Iresistor1, Iresistor2,'Transform', {'Rotate_Z', rotate+rot-pi/4, 'Translate', translate});
+
     CSX = AddBox(CSX, material, object.prio+5, outerL1, outerL2, ...
-    'Transform', {'Rotate_Z', rotate+rot, 'Translate', translate});
-    CSX = AddBox(CSX, material, object.prio+5, outerL3, outerL4, ...
-    'Transform', {'Rotate_Z', rotate+rot, 'Translate', translate});
+    'Transform', {'Rotate_Z', rotate+rot-pi/2, 'Translate', translate});
   end;
 
     

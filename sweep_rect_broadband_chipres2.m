@@ -9,7 +9,7 @@ complemential = 0;
 eps_subs = 4.4;
 tand = 0.02;
 
-UCDim = 14.0;
+UCDim = 18.;
 fr4_thickness = 3.2;
 mesh_refinement = 2;
 L1 = 4;
@@ -25,12 +25,12 @@ Res2 = 15;
 fcenter = [8.5e9];
 fwidth = [4e9];
 absorption = [];
-L0 = 4;
-w0 = 0.6;
-g0 = 0.6;
+L0 = 9;
+w0 = 0;
+g0 = 1.5;
 
 
-for UCDim = [14.5];
+for UCDim = [18];
 for Res1 = [350];
 for Res2 = [30];
   absorption = [absorption, ...

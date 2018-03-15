@@ -45,7 +45,7 @@ def get_R(Z0, Zs, Zm, theta):
 
 
 if __name__ == "__main__":
-    epsr = 4.4*(1-0.02j)
+    epsr = 4.4*(1+0.02j)
     thickness = 3.2e-3
     data = np.loadtxt("metamaterial_data.txt", delimiter=",")
     R0 = data[:,1]+1j*data[:,2]
