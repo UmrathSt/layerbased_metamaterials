@@ -12,6 +12,7 @@ function [CSX, params] = CreateRectBroadbandChipres1(CSX, object, translate, rot
   rho = object.rho;
   Resistor1 = object.Resistor1.name;
   Resistor2 = object.Resistor2.name;
+  RL = object.RL;
   gap1 = object.gapwidth;
   gap2 = object.gapwidth2;
   reswidth = object.reswidth;
@@ -33,12 +34,20 @@ function [CSX, params] = CreateRectBroadbandChipres1(CSX, object, translate, rot
 
 
   
-  Oresistor1 = [rho, -gap1/2, -lz/2];
-  Oresistor2 = [rho+reswidth, gap1/2, lz/2];
+  Oresistor1 = [rho, -gap1/2+(gap1-RL)/2, -lz/2];
+  Oresistor2 = [rho+reswidth, gap1/2-(gap1-RL)/2, lz/2];
+  ObarL1 = [rho, -gap1/2, -lz/2];
+  ObarL2 = [rho+reswidth, -gap1/2+(gap1-RL)/2, lz/2];
+  ObarR1 = [rho, gap1/2, -lz/2];
+  ObarR2 = [rho+reswidth, gap1/2-(gap1-RL)/2, lz/2];
   %Ires_length = (L1-L2)/sqrt(2);
   Ires_length = gap1;
-  Iresistor1 = [L3/2, reswidth/2, -lz/2];
-  Iresistor2 = [L3/2+Ires_length, -reswidth/2, lz/2];
+  Iresistor1 = [L3/2+RL/2, reswidth/2, -lz/2];
+  Iresistor2 = [L3/2+Ires_length-RL/2, -reswidth/2, lz/2];
+  IbarL1 = [L3/2, reswidth/2, -lz/2];
+  IbarL2 = [L3/2+RL/2, -reswidth/2, lz/2];
+  IbarR1 = [L3/2+Ires_length, -reswidth/2, -lz/2];
+  IbarR2 = [L3/2+Ires_length-RL/2, reswidth/2, lz/2];
 
   bstart = [-object.UClx/2, -object.UCly/2, -object.lz/2];
   bstop  = -bstart;
@@ -77,6 +86,11 @@ function [CSX, params] = CreateRectBroadbandChipres1(CSX, object, translate, rot
         'Transform', {'Rotate_Z', rotate+rot, 'Translate', translate});
     CSX = AddBox(CSX, resistormaterial1, object.prio+2, Oresistor1, Oresistor2,'Transform', {'Rotate_Z', rotate+rot, 'Translate', translate});
     CSX = AddBox(CSX, resistormaterial2, object.prio+3, Iresistor1, Iresistor2,'Transform', {'Rotate_Z', rotate+rot-pi/4, 'Translate', translate});
+    % Add the conducting bars such the the 0402 SMD Pads are modelled correctly
+    CSX = AddBox(CSX, material, object.prio+2, ObarL1, ObarL2,'Transform', {'Rotate_Z', rotate+rot, 'Translate', translate});
+    CSX = AddBox(CSX, material, object.prio+2, ObarR1, ObarR2,'Transform', {'Rotate_Z', rotate+rot, 'Translate', translate});
+    CSX = AddBox(CSX, material, object.prio+3, IbarL1, IbarL2,'Transform', {'Rotate_Z', rotate+rot-pi/4, 'Translate', translate});
+    CSX = AddBox(CSX, material, object.prio+3, IbarR1, IbarR2,'Transform', {'Rotate_Z', rotate+rot-pi/4, 'Translate', translate});
 
   end;
 

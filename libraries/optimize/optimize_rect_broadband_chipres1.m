@@ -15,10 +15,10 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   UC.s11_filename = 'Sparameters_';
   UC.s11_subfolder = 'rect_broadband_chipres1';
   UC.run_simulation = 1;
-  UC.show_geometry = 0;
+  UC.show_geometry = 1;
   UC.grounded = 1;
   UC.unit = 1e-3;
-  UC.f_start = 3.e9;
+  UC.f_start = 2.e9;
   UC.f_stop = 15e9;
   UC.lx = UCDim;
   UC.ly = UCDim;
@@ -57,7 +57,7 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   rectangle.name = 'backplate';
   rectangle.lx = UCDim;
   rectangle.ly = UCDim;
-  rectangle.lz = 0.5;
+  rectangle.lz = 0.05;
   rectangle.rotate = 0;
   rectangle.prio = 2;
   rectangle.xycenter = [0, 0];
@@ -94,13 +94,6 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   chipres.bmaterial.Epsilon = 1;
   chipres.zrefinement = 3;
   chipres.dphi = 0;
-  chipres.Resistor1.name = 'chipresistor1';
-  chipres.Resistor1.Kappa = gapwidth/(Res1*reswidth*chipres.lz*UC.unit);
-  chipres.Resistor1.type = 'const';
-  chipres.Resistor2.name = 'chipresistor2';
-  chipres.Resistor2.Kappa = gapwidth/(Res2*reswidth*chipres.lz*UC.unit);
-  chipres.Resistor2.type = 'const';
-
   chipres.L1 = L1;
   chipres.L2 = L2;
 
@@ -108,21 +101,31 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   chipres.gapwidth = gapwidth;
   chipres.gapwidth2 = gapwidth2;
   chipres.reswidth = reswidth;
-
+  chipres.RL = 0.3;
   chipres.Res1 = Res1;
   chipres.Res2 = Res2;
   chipres.UClx = UCDim;
   chipres.UCly = UCDim;
   chipres.prio = 2;
+  chipres.Resistor1.name = 'chipresistor1';
+  chipres.Resistor1.Kappa = chipres.RL/(Res1*reswidth*chipres.lz*UC.unit);
+  chipres.Resistor1.type = 'const';
+  chipres.Resistor2.name = 'chipresistor2';
+  chipres.Resistor2.Kappa = chipres.RL/(Res2*reswidth*chipres.lz*UC.unit);
+  chipres.Resistor2.type = 'const';
+
+
   chipres.xycenter = [0, 0];
   chipres.complemential = complemential;
   chipres.zrefinement = 2;
+
+
   
   layer_list = {@CreateUC, UC; @CreateRect, rectangle;
                                @CreateRect, substrate;
-                               @CreateRectBroadbandChipres1, chipres;
-                                 };
-  material_list = {substrate.material, rectangle.material, chipres.material, chipres.bmaterial, chipres.Resistor1, chipres.Resistor2};
+                               @CreateRectBroadbandChipres1, chipres; 
+                               };
+  material_list = {substrate.material,loetstopp.material, rectangle.material, chipres.material, chipres.bmaterial, chipres.Resistor1, chipres.Resistor2};
   [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
   
   [CSX, port] = definePorts(CSX, mesh, UC.f_start);
