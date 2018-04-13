@@ -13,13 +13,13 @@ UCDim = 14.0;
 fr4_thickness = 3.2;
 mesh_refinement = 2;
 L1 = 4;
-L2 = 3;
+L2 = 2.5;
 
 gapwidth = 0.60;
-gapwidth2 = gapwidth;
+gapwidth2 = 0.6;
 reswidth = 0.5;
 
-rho = 2;
+rho = 2.5;
 Res1 = 210;
 Res2 = 15;
 fcenter = [9.25e9];
@@ -28,8 +28,8 @@ absorption = [];
 
 
 for UCDim = [14.25];
-for Res1 = [300];
-for Res2 = [30];
+for Res1 = [400, 600];
+for Res2 = [50];
   absorption = [absorption, ...
   optimize_rect_broadband_chipres1(UCDim, fr4_thickness, L1, L2, rho, gapwidth, gapwidth2,...
 reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential, fcenter, fwidth)];

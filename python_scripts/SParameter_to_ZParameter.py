@@ -15,7 +15,7 @@ def get_ZM_from_S11(S11, Z0):
 
 
 if __name__ == "__main__":
-    dat = np.loadtxt("/home/stefan_dlr/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse/SParameters/broadband_rect_transmission/S11_f_UCDim_7_L1_5.1_w_0.7_L2_1.85_gap_0.4.txt", delimiter=",")
+    dat = np.loadtxt("/home/stefan_dlr/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse/SParameters/squares/S11_f_UCDim_20_lz_2_L1_16_L2_0_epsFR4_Lorentz_4.6.txt", delimiter=",")
     S11 = dat[:,1]+dat[:,2]*1j
     S21 = dat[:,3]+dat[:,4]*1j
     f = dat[:,0]/1e9 # converstion to GHz

@@ -1,11 +1,11 @@
 function squares(UCDim, fr4_thickness, L1, L2, eps_FR4, complemential);
   physical_constants;
-  UC.layer_td = 1;
-  UC.layer_fd = 1;
-  UC.td_dumps = 1;
-  UC.fd_dumps = 1;
+  UC.layer_td = 0;
+  UC.layer_fd = 0;
+  UC.td_dumps = 0;
+  UC.fd_dumps = 0;
   UC.s_dumps = 1;
-  UC.s_dumps_folder = '~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters';
+  UC.s_dumps_folder = '~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse/SParameters';
   UC.s11_filename_prefix = ['UCDim_' num2str(UCDim) '_lz_' num2str(fr4_thickness) '_L1_' num2str(L1) '_L2_' num2str(L2) '_epsFR4_Lorentz_' num2str(eps_FR4)];
   complemential = complemential;
   if complemential;
@@ -14,10 +14,10 @@ function squares(UCDim, fr4_thickness, L1, L2, eps_FR4, complemential);
   UC.s11_filename = 'Sparameters_';
   UC.s11_subfolder = 'squares';
   UC.run_simulation = 1;
-  UC.show_geometry = 1;
-  UC.grounded = 1;
+  UC.show_geometry = 0;
+  UC.grounded = 0;
   UC.unit = 1e-3;
-  UC.f_start = 1e9;
+  UC.f_start = 2e9;
   UC.f_stop = 20e9;
   UC.lx = UCDim;
   UC.ly = UCDim;
@@ -25,14 +25,26 @@ function squares(UCDim, fr4_thickness, L1, L2, eps_FR4, complemential);
   UC.dz = c0 / (UC.f_stop) / UC.unit / 20;
   UC.dx = UC.dz/3;
   UC.dy = UC.dx;
-  UC.dump_frequencies = [2.4e9, 5.2e9, 16.5e9];
+  UC.dump_frequencies = [2.4e9, 5.2e9];
   UC.s11_delta_f = 10e6;
-  UC.EndCriteria = 5e-4;
+  UC.EndCriteria = 5e-6;
   UC.SimPath = ['/mnt/hgfs/E/openEMS/layerbased_metamaterials/Simulation/' UC.s11_subfolder '/' UC.s11_filename_prefix];
-  UC.SimCSX = 'geometry.xml';
   UC.ResultPath = ['~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse'];
+  try;
+    if strcmp(uname.nodename, 'Xeon');
+        display('Running on Xeon');
+        UC.SimPath = ['/media/stefan/Daten/openEMS/' UC.s11_subfolder '/' UC.s11_filename_prefix];
+        UC.s_dumps_folder = '~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse/SParameters';
+        UC.ResultPath = ['~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse'];
+        end;
+    catch lasterror;
+  end;
+  UC.SimCSX = 'geometry.xml';
   if UC.run_simulation;
+    try;
     confirm_recursive_rmdir(0);
+    catch lasterror;
+    end_try_catch;
     [status, message, messageid] = rmdir(UC.SimPath, 's' ); % clear previous directory
     [status, message, messageid] = mkdir(UC.SimPath ); % create empty simulation folder
   end;
@@ -50,8 +62,7 @@ function squares(UCDim, fr4_thickness, L1, L2, eps_FR4, complemential);
   rectangle.material.name = 'copper';
   #rectangle.material.Kappa = 56e6;
   rectangle.material.type = 'const';
-  rectangle.material.EpsilonPlasmaFrequency = 2.5e14;
-  rectangle.material.EpsilonRelaxTime = 1.6e-13;
+
   rectangle.material.Kappa = 56e6;
   squares.name = 'squares';
   squares.lx1 = L1; 
@@ -64,8 +75,7 @@ function squares(UCDim, fr4_thickness, L1, L2, eps_FR4, complemential);
   squares.xycenter = [0, 0];
   squares.material.name = 'copperSquares';
   squares.material.type = 'const';
-  squares.material.EpsilonPlasmaFrequency = 2.5e14;
-  squares.material.EpsilonRelaxTime = 1.6e-13;
+
   squares.material.Kappa = 56e6;
   
 
@@ -77,17 +87,20 @@ function squares(UCDim, fr4_thickness, L1, L2, eps_FR4, complemential);
   substrate.rotate = 0;
   substrate.prio = 2;
   substrate.xycenter = [0, 0];
-  substrate.material.name = 'FR4_Lorentz';
+  substrate.material.name = 'FR4';
   substrate.material.Epsilon = eps_FR4;
+  substrate.material.Kappa = 2*pi*5e9*EPS0*0.02*4.4;
+  substrate.material.type = 'const';
+  substrate.materila.f0 = 5e9;
 
 
 
 
-  layer_list = {{@CreateUC, UC}; {@CreateRect, rectangle};
-                                 {@CreateRect, substrate};
-                                 {@CreateSquares, squares};
+  layer_list = {@CreateUC, UC; %@CreateRect, rectangle;
+                               %@CreateRect, substrate;
+                               @CreateSquares, squares;
                                  };
-  material_list = {substrate.material, squares.material, rectangle.material};
+  material_list = {squares.material, rectangle.material, substrate.material};
   [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
   [CSX, port] = definePorts(CSX, mesh, UC.f_start);
   UC.param_str = param_str;
@@ -97,9 +110,9 @@ function squares(UCDim, fr4_thickness, L1, L2, eps_FR4, complemential);
     CSXGeomPlot([UC.SimPath '/' UC.SimCSX]);
   end;
   if UC.run_simulation;
-    openEMS_opts = '';#'-vvv';
+    openEMS_opts = '--numThreads=6';#'-vvv';
     #Settings = ['--debug-PEC', '--debug-material'];
-    Settings = ['--numThreads=3'];
+    Settings = [''];
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);
   end;
   doPortDump(port, UC);
