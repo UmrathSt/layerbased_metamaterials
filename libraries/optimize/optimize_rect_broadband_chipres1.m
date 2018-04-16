@@ -15,7 +15,7 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   UC.s11_filename = 'Sparameters_';
   UC.s11_subfolder = 'rect_broadband_chipres1';
   UC.run_simulation = 1;
-  UC.show_geometry = 1;
+  UC.show_geometry = 0;
   UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 2.e9;
@@ -125,7 +125,7 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
                                @CreateRect, substrate;
                                @CreateRectBroadbandChipres1, chipres; 
                                };
-  material_list = {substrate.material,loetstopp.material, rectangle.material, chipres.material, chipres.bmaterial, chipres.Resistor1, chipres.Resistor2};
+  material_list = {substrate.material, rectangle.material, chipres.material, chipres.bmaterial, chipres.Resistor1, chipres.Resistor2};
   [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
   
   [CSX, port] = definePorts(CSX, mesh, UC.f_start);
@@ -137,7 +137,7 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
     CSXGeomPlot([UC.SimPath '/' UC.SimCSX]);
   end;
   if UC.run_simulation;
-    num_threads = 2;
+    num_threads = 4;
     try;
       if strcmp(uname.nodename, 'Xeon');
         num_threads = 6;
