@@ -9,7 +9,7 @@ complemential = 0;
 eps_subs = 4.4;
 tand = 0.02;
 
-UCDim = 14.0;
+UCDim = 14.25;
 fr4_thickness = 3.2;
 mesh_refinement = 2;
 L1 = 4;
@@ -19,7 +19,11 @@ gapwidth = 0.60;
 gapwidth2 = 0.6;
 reswidth = 0.5;
 
+<<<<<<< HEAD
 rho = 2.5;
+=======
+rho = 2.0;
+>>>>>>> 3e42c069ce9344dc9da6d5d4fa7c273d1ce5ac76
 Res1 = 210;
 Res2 = 15;
 fcenter = [9.25e9];
