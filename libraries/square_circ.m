@@ -61,8 +61,11 @@ function square_circ(UCDim, fr4_thickness, L1, R1, eps_FR4, complemential);
   substrate.rotate = 0;
   substrate.prio = 2;
   substrate.xycenter = [0, 0];
-  substrate.material.name = "FR4_Lorentz";
+  substrate.material.name = "FR4";
   substrate.material.Epsilon = eps_FR4;
+  substrate.material.Kappa = 2*pi*10e9*EPS0*eps_FR4*0.02;
+  substrate.material.type = "const";
+  
 
   # circular slotted squares
   
@@ -79,11 +82,12 @@ function square_circ(UCDim, fr4_thickness, L1, R1, eps_FR4, complemential);
   squares.bmaterial.name = "air";
   squares.bmaterial.type = "const";
   squares.bmaterial.Epsilon = 1;
+  squares.refinement = 8;
 
 
   layer_list = {@CreateUC, UC; @CreateRect, rectangle;
                                @CreateRect, substrate;
-                               @CreateSquareCirc, squares;
+                               %@CreateSquareCirc, squares;
                                  };
   material_list = {rectangle.material, substrate.material,squares.material, squares.bmaterial};
   [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
