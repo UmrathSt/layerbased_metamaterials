@@ -6,7 +6,7 @@ function square_circ(UCDim, fr4_thickness, L1, R1, eps_FR4, complemential);
   UC.fd_dumps = 0;
   UC.s_dumps = 1;
   UC.s_dumps_folder = "~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters";
-  UC.s11_filename_prefix = ["UCDim_" num2str(UCDim) "_lz_" num2str(fr4_thickness) "_L1_" num2str(L1) "_R1_" num2str(R1) "_epsFR4_Lorentz_" num2str(eps_FR4)];
+  UC.s11_filename_prefix = ["fss_" num2str(R1)];
   complemential = complemential;
   if complemential;
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, "_comp");
@@ -14,8 +14,8 @@ function square_circ(UCDim, fr4_thickness, L1, R1, eps_FR4, complemential);
   UC.s11_filename = "Sparameters_";
   UC.s11_subfolder = "square_circ";
   UC.run_simulation = 1;
-  UC.show_geometry = 1;
-  UC.grounded = 1;
+  UC.show_geometry = 0;
+  UC.grounded = 0;
   UC.unit = 1e-3;
   UC.f_start = 1e9;
   UC.f_stop = 20e9;
@@ -65,6 +65,7 @@ function square_circ(UCDim, fr4_thickness, L1, R1, eps_FR4, complemential);
   substrate.material.Epsilon = eps_FR4;
   substrate.material.Kappa = 2*pi*10e9*EPS0*eps_FR4*0.02;
   substrate.material.type = "const";
+  substrate.zrefinement = 7;
   
 
   # circular slotted squares
@@ -82,12 +83,12 @@ function square_circ(UCDim, fr4_thickness, L1, R1, eps_FR4, complemential);
   squares.bmaterial.name = "air";
   squares.bmaterial.type = "const";
   squares.bmaterial.Epsilon = 1;
-  squares.refinement = 8;
+  squares.refinement = 3;
 
 
-  layer_list = {@CreateUC, UC; @CreateRect, rectangle;
-                               @CreateRect, substrate;
-                               %@CreateSquareCirc, squares;
+  layer_list = {@CreateUC, UC; #@CreateRect, rectangle;
+                               #@CreateRect, substrate;
+                               @CreateSquareCirc, squares;
                                  };
   material_list = {rectangle.material, substrate.material,squares.material, squares.bmaterial};
   [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
