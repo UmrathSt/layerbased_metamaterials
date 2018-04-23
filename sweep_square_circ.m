@@ -4,7 +4,7 @@ physical_constants;
 addpath('./libraries');
 
 UCDim = 10;
-fr4_thickness = 4;
+fr4_thickness = 0.4;
 L1 = 9.;
 R1 = 3.35;
 eps_FR4 = 4.4;

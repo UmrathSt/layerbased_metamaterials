@@ -5,14 +5,16 @@ function [port] = dumpS11(port, UC);
   s11_filename = UC.s11_filename;
   s11_subfolder = UC.s11_subfolder;
   params = UC.param_str;
-  port{1} = calcPort(port{1}, Sim_Path, freq, 'RefImpedance', 376.73, 'RefPlaneShift', UC.unit*port{1}.zcoordinate*2);%, 'RefImpedance', 130
+  port{1} = calcPort(port{1}, Sim_Path, freq, 'RefImpedance', 376.73);%, 'RefImpedance', 130
   port{2} = calcPort(port{2}, Sim_Path, freq, 'RefImpedance', 376.73);%, 'RefImpedance', 130
   Z1 = port{1}.uf.tot ./ port{1}.if.tot;
   s11 = port{1}.uf.ref ./ (port{1}.uf.inc);
   Z2 = port{2}.uf.tot ./ port{2}.if.tot;
   s22 = port{2}.uf.ref ./ (port{2}.uf.inc);
   s21 = port{2}.uf.inc./port{1}.uf.inc;
-  Zin = port{1}.uf.tot ./ port{1}.if.tot;
+  display("\nCalculating impedance from S11-Parameter\n");
+  G = s11.* exp(-1j*UC.unit*port{1}.zcoordinate*2* freq*2*pi/3e8);
+  Zin = 376.73 .* (1+G) ./ (1-G);
   U1 = port{2}.uf.tot;
   I1 = port{2}.if.tot;
   s11_filename = ['S11_f_' s11_filename_prefix '.txt'];
@@ -28,6 +30,7 @@ function [port] = dumpS11(port, UC);
   end;
   outfile = fopen([s_folder '/' s11_filename], 'w+');
   fprintf(outfile, [params]);
+  fprintf(outfile, ['# Distance from port to z = 0:' num2str(port{1}.zcoordinate) ' m times ' num2str(UC.unit) '\n']);
   fprintf(outfile, '# Re/Im parts of the scattering parameters S11 (refl.) and S21 (transm.) and the real and imaginary part of the impedance as a function of frequency \n');
   fprintf(outfile, '# first column is frequency, second and third columns are Re/Im of S11 and S21, respectively.\n');
   for i=1:size(s11,2);

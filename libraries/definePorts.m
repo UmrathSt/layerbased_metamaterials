@@ -23,5 +23,6 @@ function [CSX, port] = definePorts(CSX, mesh, f_start, polarization='y');
   end; 
   [CSX, port{1}] = AddWaveGuidePort(CSX, 10, 1, p1, p2, 2, func_E, func_H, 1, 1);
   port{1}.zcoordinate = p2(end);
+  display(port{1}.zcoordinate);
   [CSX, port{2}] = AddWaveGuidePort(CSX, 10, 2, p3, p4, 2, func_E, func_H, 1, 0);
 end
