@@ -3,7 +3,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-data = np.loadtxt("slab_0.4_2.25.txt", delimiter=",") # 0.4 mm FR4 file with increasing meshing
+data = np.loadtxt("slab_0.4_3.35.txt", delimiter=",") # 0.4 mm FR4 file with increasing meshing
 #data = np.loadtxt("slab_4_2.25.txt", delimiter=",") # 4 mm FR4 file 
 
 
@@ -20,8 +20,8 @@ Zslab = 1j*377/np.sqrt(epsFR4)*np.tan(2*np.pi*f/3e8*np.sqrt(epsFR4)*lz)
 
 plt.plot(f/1e9, np.real((1+S11)/(1-S11))*377, "b-", label="Re(Z) from S")
 plt.plot(f/1e9, np.imag((1+S11)/(1-S11))*377, "r-", label="Im(Z) from S")
-#plt.plot(f/1e9, np.real(Z), "bo", markersize=2,label="Re(Z)")
-#plt.plot(f/1e9, np.imag(Z), "ro", markersize=2,label="Im(Z)")
+plt.plot(f/1e9, np.real(Z), "bo", markersize=2,label="Re(Z)")
+plt.plot(f/1e9, np.imag(Z), "ro", markersize=2,label="Im(Z)")
 plt.plot(f/1e9, np.real(Zslab), "c-", label="Re(Z) analytic")
 plt.plot(f/1e9, np.imag(Zslab), "m-", label="Im(Z) analytic")
 
