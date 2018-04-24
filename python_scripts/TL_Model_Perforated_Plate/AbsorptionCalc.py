@@ -18,9 +18,12 @@ lz = 0.4e-3 # fr4 thickness
 Zslab = 1j*377/np.sqrt(epsFR4)*np.tan(2*np.pi*f/3e8*np.sqrt(epsFR4)*lz)
 Zfss = fss[:,5] + 1j*fss[:,6] 
 Zmeta = Zfss*Zslab/(Zfss+Zslab)
+S11abs = absorber[:,1] + 1j*absorber[:,2]
+Zabs = absorber[:,5] + 1j*absorber[:,6]
 
-plt.plot(f/1e9, np.abs(absorber[:,1]+1j*absorber[:,2])**2, "r-", label="FDTD")
-plt.plot(f/1e9, np.abs((Zmeta - 377) / (Zmeta + 377))**2, "b-", label="analytic")
+plt.plot(f/1e9, np.abs(S11abs)**2, "r-", label="FDTD")
+plt.plot(f/1e9, np.abs((Zabs-377)/(Zabs+377))**2, "m--", label="FDTD from Z")
+plt.plot(f/2e9, np.abs((Zmeta - 377) / (Zmeta + 377))**2, "b-", label="analytic")
 plt.xlabel("f [GHz]")
 plt.ylabel("|S11|")
 plt.legend()

@@ -6,7 +6,7 @@ function square_circ(UCDim, fr4_thickness, L1, R1, eps_FR4, complemential);
   UC.fd_dumps = 0;
   UC.s_dumps = 1;
   UC.s_dumps_folder = "~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters";
-  UC.s11_filename_prefix = ["slab_" num2str(R1)];
+  UC.s11_filename_prefix = ["absorber_" num2str(R1)];
   complemential = complemential;
   if complemential;
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, "_comp");
@@ -95,12 +95,12 @@ function square_circ(UCDim, fr4_thickness, L1, R1, eps_FR4, complemential);
   squares.refinement = 3;
 
 
-  layer_list = {@CreateUC, UC; %@CreateRect, rectangle;
+  layer_list = {@CreateUC, UC; @CreateRect, rectangle;
                                @CreateRect, substrate;
-                               %@CreateSquareCirc, squares;
+                               @CreateSquareCirc, squares;
                                  };
   material_list = {rectangle.material, substrate.material,squares.material, squares.bmaterial};
-  [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
+  [CSX, mesh, param_str, UC] = stack_layers(layer_list, material_list);
   [CSX, port] = definePorts(CSX, mesh, UC.f_start);
   UC.param_str = param_str;
   [CSX] = defineFieldDumps(CSX, mesh, layer_list, UC);

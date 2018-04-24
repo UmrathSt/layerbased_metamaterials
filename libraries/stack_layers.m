@@ -1,4 +1,4 @@
-function [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
+function [CSX, mesh, param_str, UC] = stack_layers(layer_list, material_list);
  %% takes a list of structures describing layers. Example:
  %% layer_list = [(@CreateRect, rectangle_object),
  %%               (@CreateCircle, circle_object)]
@@ -172,6 +172,7 @@ function [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
       
   
   lastz = zvals(end);
+  UC.lastz = lastz;
   
   mesh.x = SmoothMeshLines([-UC.lx/2, xvals, UC.lx/2], UC.dx, 1.3);
   mesh.y = SmoothMeshLines([-UC.ly/2, yvals, UC.ly/2], UC.dy, 1.3);
