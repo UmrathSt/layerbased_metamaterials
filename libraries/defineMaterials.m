@@ -14,7 +14,7 @@ function [CSX, param_str] = defineMaterials(CSX, material_list, param_str);
     if strcmp(material_list{i}.name, 'PEC')
       CSX = AddMetal(CSX, 'PEC');
     elseif strcmp(material_list{i}.name, 'FR4_Lorentz');
-      printf('Using Lorentz Oscillator Model for FR4. \n');
+      %printf('Using Lorentz Oscillator Model for FR4. \n');
       CSX = AddLorentzMaterial(CSX, 'FR4_Lorentz');
       CSX = SetMaterialProperty(CSX, 'FR4_Lorentz', 'Epsilon', 4.096, 'Kappa', 2.294e-3, 'EpsilonPlasmaFrequency', 8.84e9, 'EpsilonRelaxTime', 7.96e-13);
       try; 
@@ -22,7 +22,7 @@ function [CSX, param_str] = defineMaterials(CSX, material_list, param_str);
       catch lasterror;
       end;
     elseif strcmp(material_list{i}.type, 'const');
-      fprintf(strcat('Using Material with frequency independent epsilon/conducivity for ', material_list{i}.name, '\n'));
+      %fprintf(strcat('Using Material with frequency independent epsilon/conducivity for ', material_list{i}.name, '\n'));
       CSX = AddMaterial(CSX, material_list{i}.name);
       try;
         CSX = SetMaterialProperty(CSX, material_list{i}.name, 'Kappa', material_list{i}.Kappa);
@@ -35,7 +35,7 @@ function [CSX, param_str] = defineMaterials(CSX, material_list, param_str);
       end;
       try;
           CSX = SetMaterialProperty(CSX, material_list{i}.name, 'Kappa', material_list{i}.Epsilon*material_list{i}.tand*2*pi*EPS0*material_list{i}.f0); % real Permittivity
-          fprintf(strcat('Using loss tangent for description of conductivity, f0 = ', num2str(material_list{i}.f0), '\n'));
+          %fprintf(strcat('Using loss tangent for description of conductivity, f0 = ', num2str(material_list{i}.f0), '\n'));
       catch lasterror;
       end;
    % Use a Multi-Pole Lorentz-Model for the permittivity 

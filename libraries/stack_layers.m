@@ -55,6 +55,16 @@ function [CSX, mesh, param_str, UC] = stack_layers(layer_list, material_list);
         yvals = horzcat(yvals, vals);    
       catch lasterror;
       end;
+      try;
+        L = object.Lr;
+        w = object.wr;
+        l = object.lr;
+        steps = object.refinement;
+        discr = linspace(-l/2, l/2, steps);
+        xvals = horzcat(xvals, [-(UC.lx+L)/4, -L/2, -L/2+w, discr, L/2-w, L/2, (UC.lx+L)/4]);
+        yvals = horzcat(yvals, [-(UC.ly+L)/4, -L/2, -L/2+w, discr, L/2-w, L/2, (UC.ly+L)/4]);      
+      catch lasterror;
+      end;
 
       try;
         R = object.R1;
