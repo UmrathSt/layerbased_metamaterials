@@ -17,8 +17,8 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_
   UC.show_geometry = 1;
   UC.grounded = 1;
   UC.unit = 1e-3;
-  UC.f_start =10e9;
-  UC.f_stop = 200e9;
+  UC.f_start =1e9;
+  UC.f_stop = 20e9;
   UC.lx = UCDim;
   UC.ly = UCDim;
   UC.lz = c0/ UC.f_start / 2 / UC.unit;
@@ -75,7 +75,7 @@ function double_ring(UCDim, fr4_thickness, R1, w1, R2, w2, eps_subs, tand, mesh_
   dblring1.lz = 0.05;
   dblring1.rotate = 0;
   dblring1.material.name = 'copperRings';
-  dblring1.material.Kappa = 56e1*0.5;
+  dblring1.material.Kappa = 56e6;
   dblring1.material.type = 'const';
   dblring1.bmaterial.name = 'air';
   dblring1.bmaterial.type = 'const';

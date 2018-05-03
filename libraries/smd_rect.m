@@ -6,7 +6,7 @@ function smd_rect(UCDim, fr4_thickness, L1, w1, Res, Cap, eps_FR4, complemential
   UC.fd_dumps = 0;
   UC.s_dumps = 1;
   UC.s_dumps_folder = "~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters";
-  UC.s11_filename_prefix = ["slab_L_" num2str(L1) "_w_" num2str(w1) "_Ohm_" num2str(Res) "_Cap_" num2str(Cap)];
+  UC.s11_filename_prefix = ["fss_L_" num2str(L1) "_w_" num2str(w1) "_Ohm_" num2str(Res) "_Cap_" num2str(Cap)];
   complemential = complemential;
   if complemential;
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, "_comp");
@@ -15,7 +15,7 @@ function smd_rect(UCDim, fr4_thickness, L1, w1, Res, Cap, eps_FR4, complemential
   UC.s11_subfolder = "smd_rect";
   UC.run_simulation = 1;
   UC.show_geometry = 0;
-  UC.grounded = 1;
+  UC.grounded = 0;
   UC.unit = 1e-3;
   UC.f_start = 1e9;
   UC.f_stop = 20e9;
@@ -95,16 +95,22 @@ function smd_rect(UCDim, fr4_thickness, L1, w1, Res, Cap, eps_FR4, complemential
   rectring.resmaterial.name = "SMDResistor";
   rectring.resmaterial.type = "const";
   rectring.resmaterial.Kappa = rectring.lr/(Res*w1*rectring.lz*UC.unit);
-  rectring.resmaterial.Epsilon = Cap*rectring.lr/(w1*rectring.lz*UC.unit*EPS0);
+  if (strcmp(Cap, 'no'));
+    rectring.resmaterial.Epsilon = 1;
+    rectring.refinement = 3;
+  else;
+    rectring.resmaterial.Epsilon = Cap*rectring.lr/(w1*rectring.lz*UC.unit*EPS0);
+    rectring.refinement = 15;
+  end;
   rectring.bmaterial.name = "air";
   rectring.bmaterial.type = "const";
   rectring.bmaterial.Epsilon = 1;
-  rectring.refinement = 15;
+  
 
 
-  layer_list = {@CreateUC, UC; @CreateRect, rectangle;
-                               @CreateRect, substrate;
-                               @CreateRectRing, rectring;
+  layer_list = {@CreateUC, UC;  %@CreateRect, rectangle;
+                                                        %@CreateRect, substrate;
+                                                        @CreateRectRing, rectring;
                                  };
   material_list = {rectangle.material, substrate.material,rectring.material, rectring.bmaterial, rectring.resmaterial};
   [CSX, mesh, param_str, UC] = stack_layers(layer_list, material_list);
