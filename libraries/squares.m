@@ -1,4 +1,4 @@
-function squares(UCDim, fr4_thickness, L1, L2, eps_FR4, complemential);
+function squares(UCDim, fr4_thickness, L1, L2, eps_FR4, Rsq, complemential);
   physical_constants;
   UC.layer_td = 0;
   UC.layer_fd = 0;
@@ -6,7 +6,7 @@ function squares(UCDim, fr4_thickness, L1, L2, eps_FR4, complemential);
   UC.fd_dumps = 0;
   UC.s_dumps = 1;
   UC.s_dumps_folder = '~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse/SParameters';
-  UC.s11_filename_prefix = ['UCDim_' num2str(UCDim) '_lz_' num2str(fr4_thickness) '_L1_' num2str(L1) '_L2_' num2str(L2) '_epsFR4_Lorentz_' num2str(eps_FR4)];
+  UC.s11_filename_prefix = ['absorber_UCDim_' num2str(UCDim) '_lz_' num2str(fr4_thickness) '_L1_' num2str(L1) '_L2_' num2str(L2) '_Rsq_' num2str(Rsq) '_epsFR4_Lorentz_' num2str(eps_FR4)];
   complemential = complemential;
   if complemential;
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, '_comp');
@@ -15,9 +15,9 @@ function squares(UCDim, fr4_thickness, L1, L2, eps_FR4, complemential);
   UC.s11_subfolder = 'squares';
   UC.run_simulation = 1;
   UC.show_geometry = 0;
-  UC.grounded = 0;
+  UC.grounded = 1;
   UC.unit = 1e-3;
-  UC.f_start = 2e9;
+  UC.f_start = 1e9;
   UC.f_stop = 20e9;
   UC.lx = UCDim;
   UC.ly = UCDim;
@@ -75,8 +75,13 @@ function squares(UCDim, fr4_thickness, L1, L2, eps_FR4, complemential);
   squares.xycenter = [0, 0];
   squares.material.name = 'copperSquares';
   squares.material.type = 'const';
+  squares.imaterial.name = "Icopper";
+  squares.imaterial.type = "const";
+  squares.imaterial.Kappa = 56e6;
+  squares.omaterial.name = "OcopperSquares";
+  squares.omaterial.type = 'const';
 
-  squares.material.Kappa = 56e6;
+  squares.omaterial.Kappa = 1/(squares.lz*Rsq*UC.unit);
   
 
   # Substrate
@@ -91,16 +96,16 @@ function squares(UCDim, fr4_thickness, L1, L2, eps_FR4, complemential);
   substrate.material.Epsilon = eps_FR4;
   substrate.material.Kappa = 2*pi*5e9*EPS0*0.02*4.4;
   substrate.material.type = 'const';
-  substrate.materila.f0 = 5e9;
+  substrate.material.f0 = 5e9;
 
 
 
 
-  layer_list = {@CreateUC, UC; %@CreateRect, rectangle;
-                               %@CreateRect, substrate;
+  layer_list = {@CreateUC, UC; @CreateRect, rectangle;
+                               @CreateRect, substrate;
                                @CreateSquares, squares;
                                  };
-  material_list = {squares.material, rectangle.material, substrate.material};
+  material_list = {squares.imaterial, squares.omaterial, rectangle.material, substrate.material};
   [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
   [CSX, port] = definePorts(CSX, mesh, UC.f_start);
   UC.param_str = param_str;

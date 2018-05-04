@@ -1,33 +1,33 @@
-function single_ring(UCDim, fr4_thickness, R1, w1, eps_subs, tand, mesh_refinement, complemential);
+function csquares(UCDim, fr4_thickness, L1, L2, eps_FR4, Rsq, complemential);
   physical_constants;
   UC.layer_td = 0;
   UC.layer_fd = 0;
   UC.td_dumps = 0;
   UC.fd_dumps = 0;
   UC.s_dumps = 1;
-  UC.nf2ff = 0;
-  UC.s_dumps_folder = '~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters';
-  UC.s11_filename_prefix = ['UCDim_' num2str(UCDim) '_lz_' num2str(fr4_thickness) '_R1_' num2str(R1) '_w1_' num2str(w1) '_eps_' num2str(eps_subs) '_tand_' num2str(tand)];
+  UC.s_dumps_folder = '~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse/SParameters';
+  UC.s11_filename_prefix = ['absorber_UCDim_' num2str(UCDim) '_lz_' num2str(fr4_thickness) '_L1_' num2str(L1) '_L2_' num2str(L2) '_Rsq_' num2str(Rsq) '_epsFR4_Lorentz_' num2str(eps_FR4)];
+  complemential = complemential;
   if complemential;
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, '_comp');
   end;
   UC.s11_filename = 'Sparameters_';
-  UC.s11_subfolder = 'single_ring';
+  UC.s11_subfolder = 'csquares';
   UC.run_simulation = 1;
   UC.show_geometry = 0;
   UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 1e9;
-  UC.f_stop = 10e9;
+  UC.f_stop = 20e9;
   UC.lx = UCDim;
   UC.ly = UCDim;
   UC.lz = c0/ UC.f_start / 2 / UC.unit;
   UC.dz = c0 / (UC.f_stop) / UC.unit / 20;
-  UC.dx = UC.dz/3/mesh_refinement;
+  UC.dx = UC.dz/3;
   UC.dy = UC.dx;
-  UC.dump_frequencies = [2.4e9, 5.2e9, 7.5e9];
+  UC.dump_frequencies = [2.4e9, 5.2e9];
   UC.s11_delta_f = 10e6;
-  UC.EndCriteria = 1e-5;
+  UC.EndCriteria = 5e-6;
   UC.SimPath = ['/mnt/hgfs/E/openEMS/layerbased_metamaterials/Simulation/' UC.s11_subfolder '/' UC.s11_filename_prefix];
   UC.ResultPath = ['~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse'];
   try;
@@ -40,7 +40,6 @@ function single_ring(UCDim, fr4_thickness, R1, w1, eps_subs, tand, mesh_refineme
     catch lasterror;
   end;
   UC.SimCSX = 'geometry.xml';
-  UC.ResultPath = ['~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse'];
   if UC.run_simulation;
     try;
     confirm_recursive_rmdir(0);
@@ -61,11 +60,31 @@ function single_ring(UCDim, fr4_thickness, R1, w1, eps_subs, tand, mesh_refineme
   rectangle.prio = 2;
   rectangle.xycenter = [0, 0];
   rectangle.material.name = 'copper';
-  %rectangle.material.Kappa = 56e6;
+  #rectangle.material.Kappa = 56e6;
   rectangle.material.type = 'const';
-  rectangle.material.Kappa = 56e6;
 
-  % Substrate
+  rectangle.material.Kappa = 56e6;
+  squares.name = 'squares';
+  squares.lx1 = L1; 
+  squares.lx2 = L2; 
+  squares.ly1 = L1; 
+  squares.ly2 = L2; 
+  squares.lz = 0.05;
+  squares.rotate = 0;
+  squares.prio = 2;
+  squares.xycenter = [0, 0];
+  squares.material.name = 'copperSquares';
+  squares.material.type = 'const';
+  squares.imaterial.name = "Icopper";
+  squares.imaterial.type = "const";
+  squares.omaterial.Kappa = 56e6;
+  squares.omaterial.name = "Ocopper";
+  squares.omaterial.type = 'const';
+
+  squares.imaterial.Kappa = 1/(squares.lz*Rsq*UC.unit);
+  
+
+  # Substrate
   substrate.name = 'FR4 substrate';
   substrate.lx = UC.lx;
   substrate.ly = UC.ly;
@@ -74,42 +93,21 @@ function single_ring(UCDim, fr4_thickness, R1, w1, eps_subs, tand, mesh_refineme
   substrate.prio = 2;
   substrate.xycenter = [0, 0];
   substrate.material.name = 'FR4';
+  substrate.material.Epsilon = eps_FR4;
+  substrate.material.Kappa = 2*pi*5e9*EPS0*0.02*4.4;
   substrate.material.type = 'const';
-  substrate.material.Epsilon = eps_subs;
-  substrate.material.Kappa = 2*pi*10e9*0.02*4.4*EPS0;
-  substrate.zrefinement = sqrt(eps_subs);
+  substrate.material.f0 = 5e9;
 
-  % circle
-  dblring1.name = 'double rings';
-  dblring1.lz = 0.1;
-  dblring1.rotate = 0;
-  dblring1.material.name = 'copperRings';
-  dblring1.material.Kappa = 56e6;
-  dblring1.material.type = 'const';
-  dblring1.bmaterial.name = 'air';
-  dblring1.bmaterial.type = 'const';
-  dblring1.bmaterial.Epsilon = 1;
-  dblring1.bmaterial.tand = 0;
-  dblring1.bmaterial.f0 = 10e9;
-  dblring1.R1 = R1;
-  dblring1.R2 = 0;
-  dblring1.w1 = w1;
-  dblring1.w2 = 0;
-  dblring1.UClx = UCDim;
-  dblring1.UCly = UCDim;
-  dblring1.prio = 2;
-  dblring1.xycenter = [0, 0];
-  dblring1.complemential = complemential;
-  
+
+
+
   layer_list = {@CreateUC, UC; @CreateRect, rectangle;
                                @CreateRect, substrate;
-                               @CreateDoubleRing, dblring1;
+                               @CreateCSquares, squares;
                                  };
-  material_list = {substrate.material, rectangle.material, dblring1.material, dblring1.bmaterial};
-  [CSX, mesh, param_str, UC] = stack_layers(layer_list, material_list);
-  
+  material_list = {squares.imaterial, squares.omaterial, rectangle.material, substrate.material};
+  [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
   [CSX, port] = definePorts(CSX, mesh, UC.f_start);
-
   UC.param_str = param_str;
   [CSX] = defineFieldDumps(CSX, mesh, layer_list, UC);
   WriteOpenEMS([UC.SimPath '/' UC.SimCSX], FDTD, CSX);
@@ -117,31 +115,10 @@ function single_ring(UCDim, fr4_thickness, R1, w1, eps_subs, tand, mesh_refineme
     CSXGeomPlot([UC.SimPath '/' UC.SimCSX]);
   end;
   if UC.run_simulation;
-    num_threads = 4;
-    try;
-      if strcmp(uname.nodename, 'Xeon');
-        num_threads = 6;
-      end;
-    catch lasterror;
-    end;
-    openEMS_opts = ['--engine=multithreaded --numThreads=' num2str(num_threads)];%'-vvv';
-    %Settings = ['--debug-PEC', '--debug-material'];
+    openEMS_opts = '--numThreads=6';#'-vvv';
+    #Settings = ['--debug-PEC', '--debug-material'];
     Settings = [''];
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);
   end;
   doPortDump(port, UC);
-  if UC.nf2ff == 1;
-    freq = [2.4e9, 5.2e9, 12e9, 15e9];
-    phi = linspace(0, 2*pi, 100);
-    theta = linspace(0, pi, 100);
-    for f0 = freq;
-      printf(['calculating 3D far field for f=' num2str(f0) '\n']);
-      printf(['Using phase center x=0, y=0, z=' num2str(phase_center_z) '\n']);
-      nf2ff = CalcNF2FF(nf2ff, UC.SimPath, f0, theta, phi, 'Mode', UC.run_simulation, 'Center', [0, 0, phase_center_z*2]);
-      printf(['WARNING: Shifted the phase-center by a factor of two for optical reasons \n']);
-      E_far_normalized = nf2ff.E_norm{1}/max(nf2ff.E_norm{1}(:));
-      DumpFF2VTK([UC.SimPath '/NF2FF_f_' num2str(f0/1e9) '_GHz.vtk'],E_far_normalized,theta*180/pi, phi*180/pi,'scale',1e-2);
-      printf(['Far-field pattern for f = ' num2str(f0) ' written to *.vtk\n']);
-    end;
-  end;
 end
