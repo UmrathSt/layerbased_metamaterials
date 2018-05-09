@@ -1,5 +1,6 @@
-function [CSX, port, UC] = definePorts(CSX, UC, mesh, f_start, polarization='y');
+function [CSX, port, UC] = definePorts(CSX, mesh, UC, polarization='y');
   physical_constants;
+  f_start = UC.f_start;
   n_cells_to_edge = 20;
   p1 = [mesh.x(1), mesh.y(1), mesh.z(n_cells_to_edge)];
   lambda_max = C0/f_start;
