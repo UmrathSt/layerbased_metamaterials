@@ -180,7 +180,6 @@ function [CSX, mesh, param_str, UC] = stack_layers(layer_list, material_list);
       param_str = horzcat(param_str, params);
       end;
       
-  
   lastz = zvals(end);
   UC.lastz = lastz;
   
