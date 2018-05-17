@@ -101,7 +101,7 @@ if show_geometry;
   CSXGeomPlot([Sim_Path '/' Sim_CSX]);
 endif;
 settings = [''];
-openEMS_opts = ['--engine=multithreaded --numThreads=6'];
+openEMS_opts = ['--engine=multithreaded --numThreads=4'];
 if !(post_processing_only);
     RunOpenEMS( Sim_Path, Sim_CSX, openEMS_opts, settings);
 endif;

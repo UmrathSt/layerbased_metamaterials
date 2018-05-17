@@ -18,17 +18,17 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   UC.show_geometry = 0;
   UC.grounded = 1;
   UC.unit = 1e-3;
-  UC.f_start = 1.5e9;
+  UC.f_start = 5e9;
   UC.f_stop = 15e9;
   UC.lx = UCDim;
   UC.ly = UCDim;
-  UC.lz = c0/ UC.f_start / 2 / UC.unit;
+  UC.lz = c0/ UC.f_start / 1 / UC.unit;
   UC.dz = c0 / (UC.f_stop) / UC.unit / 20;
-  UC.dx = UC.dz/3/mesh_refinement;
+  UC.dx = UC.dz/4/mesh_refinement;
   UC.dy = UC.dx;
   UC.dump_frequencies = linspace(4,14,101)*1e9;
   UC.s11_delta_f = 10e6;
-  UC.EndCriteria = 1e-5;
+  UC.EndCriteria = 5e-6;
   UC.SimPath = ['/mnt/hgfs/E/openEMS/layerbased_metamaterials/Simulation/' UC.s11_subfolder '/' UC.s11_filename_prefix];
   UC.ResultPath = ['~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse'];
   try;
@@ -120,17 +120,12 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   
   layer_list = {@CreateUC, UC; @CreateRect, rectangle;
                                @CreateRect, substrate;
-<<<<<<< HEAD
-                               @CreateRectBroadbandChipres1, chipres;
-                                 };
-=======
                                @CreateRectBroadbandChipres1, chipres; 
                                };
->>>>>>> 3e42c069ce9344dc9da6d5d4fa7c273d1ce5ac76
   material_list = {substrate.material, rectangle.material, chipres.material, chipres.bmaterial, chipres.Resistor1, chipres.Resistor2};
-  [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
+  [CSX, mesh, param_str, UC] = stack_layers(layer_list, material_list);
   
-  [CSX, port] = definePorts(CSX, mesh, UC.f_start);
+  [CSX, port, UC] = definePorts(CSX, mesh, UC);
 
   UC.param_str = param_str;
   [CSX] = defineFieldDumps(CSX, mesh, layer_list, UC);
