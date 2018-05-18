@@ -1,4 +1,4 @@
-function val = optimize_rect_broadband_chipres2(UCDim, fr4_thickness, L0, w0, g0, L1, L2, rho, gapwidth, ...
+function val = optimize_rect_broadband_chipres2(UCDim, fr4_thickness, L1, L2, rho, gapwidth, ...
 gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential, fcenter, fwidth);
   physical_constants;
   UC.layer_td = 0;
@@ -8,17 +8,17 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   UC.s_dumps = 1;
   UC.nf2ff = 0;
   UC.s_dumps_folder = '~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters';
-  UC.s11_filename_prefix = ['UCDim_' num2str(UCDim) '_lz_' num2str(fr4_thickness) '_L0_' num2str(L0) '_w0_' num2str(w0) '_g0_' num2str(g0) '_L1_' num2str(L1) '_L2_' num2str(L2) '_rho_' num2str(rho) '_gapw1_' num2str(gapwidth) '_gapw2_' num2str(gapwidth2) '_resw_' num2str(reswidth) '_Res1_' num2str(Res1) '_Res2_' num2str(Res2)  '_eps_' num2str(eps_subs) '_tand_' num2str(tand)];
+  UC.s11_filename_prefix = ['meta_UCDim_' num2str(UCDim) '_lz_' num2str(fr4_thickness) '_L1_' num2str(L1) '_L2_' num2str(L2) '_rho_' num2str(rho) '_gapw1_' num2str(gapwidth) '_gapw2_' num2str(gapwidth2) '_resw_' num2str(reswidth) '_Res1_' num2str(Res1) '_Res2_' num2str(Res2)  '_eps_' num2str(eps_subs) '_tand_' num2str(tand)];
   if complemential;
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, '_comp');
   end;
   UC.s11_filename = 'Sparameters_';
   UC.s11_subfolder = 'rect_broadband_chipres2';
   UC.run_simulation = 1;
-  UC.show_geometry = 1;
+  UC.show_geometry = 0;
   UC.grounded = 1;
   UC.unit = 1e-3;
-  UC.f_start = 3.e9;
+  UC.f_start = 5.0e9;
   UC.f_stop = 15e9;
   UC.lx = UCDim;
   UC.ly = UCDim;
@@ -77,9 +77,8 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   substrate.material.name = 'FR4';
   substrate.material.type = 'const';
   substrate.material.Epsilon = eps_subs;
-  substrate.material.tand = tand;
-  substrate.material.f0 = 10e9;
-  substrate.zrefinement = 6;
+  substrate.material.Kappa = 2*pi*12e9*EPS0*tand*eps_subs;
+  substrate.zrefinement = 5;
 
 
   % chipres
@@ -100,9 +99,7 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   chipres.Resistor2.name = 'chipresistor2';
   chipres.Resistor2.Kappa = gapwidth/(Res2*reswidth*chipres.lz*UC.unit);
   chipres.Resistor2.type = 'const';
-  chipres.L0 = L0;
-  chipres.w0 = w0;
-  chipres.g0 = g0;
+
   chipres.L1 = L1;
   chipres.L2 = L2;
 
@@ -110,24 +107,25 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   chipres.gapwidth = gapwidth;
   chipres.gapwidth2 = gapwidth2;
   chipres.reswidth = reswidth;
-
-  chipres.Res1 = Res1;
+  chipres.RL = 0.5; % additional small pad island narrowing the gap left and 
+  chipres.Res1 = Res1; % right to the resistors
   chipres.Res2 = Res2;
   chipres.UClx = UCDim;
   chipres.UCly = UCDim;
   chipres.prio = 2;
   chipres.xycenter = [0, 0];
   chipres.complemential = complemential;
-  chipres.zrefinement = 2;
+  %chipres.zrefinement = 3;
   
   layer_list = {@CreateUC, UC; @CreateRect, rectangle;
                                @CreateRect, substrate;
-                               @CreateRectBroadbandChipres2, chipres;
+                               @CreateRectBroadbandChipres2, chipres
                                  };
+
   material_list = {substrate.material, rectangle.material, chipres.material, chipres.bmaterial, chipres.Resistor1, chipres.Resistor2};
-  [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
+  [CSX, mesh, param_str, UC] = stack_layers(layer_list, material_list);
   
-  [CSX, port] = definePorts(CSX, mesh, UC.f_start);
+  [CSX, port, UC] = definePorts(CSX, mesh, UC);
 
   UC.param_str = param_str;
   [CSX] = defineFieldDumps(CSX, mesh, layer_list, UC);
@@ -136,7 +134,7 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
     CSXGeomPlot([UC.SimPath '/' UC.SimCSX]);
   end;
   if UC.run_simulation;
-    num_threads = 2;
+    num_threads = 4;
     try;
       if strcmp(uname.nodename, 'Xeon');
         num_threads = 6;

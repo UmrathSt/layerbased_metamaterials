@@ -6,14 +6,13 @@ function [CSX, params] = CreateRectBroadbandChipres2(CSX, object, translate, rot
 
   UClx = object.UClx;
   UCly = object.UCly;
-  L0 = object.L0;
-  w0 = object.w0;
-  g0 = object.g0;
+
   L2 = object.L2;
   L1 = object.L1;
   rho = object.rho;
   Resistor1 = object.Resistor1.name;
   Resistor2 = object.Resistor2.name;
+  RL = object.RL;
   gap1 = object.gapwidth;
   gap2 = object.gapwidth2;
   reswidth = object.reswidth;
@@ -31,16 +30,15 @@ function [CSX, params] = CreateRectBroadbandChipres2(CSX, object, translate, rot
   bmaterial = object.bmaterial.name;
   resistormaterial1 = object.Resistor1.name;
   resistormaterial2 = object.Resistor2.name;
-
-
-
   
   Oresistor1 = [rho, -gap1/2, -lz/2];
   Oresistor2 = [rho+reswidth, gap1/2, lz/2];
+
   %Ires_length = (L1-L2)/sqrt(2);
   Ires_length = gap1;
   Iresistor1 = [L3/2, reswidth/2, -lz/2];
-  Iresistor2 = [L3/2+Ires_length, -reswidth/2, lz/2];
+  Iresistor2 = [L3/2+gap2, -reswidth/2, lz/2];
+
 
   bstart = [-object.UClx/2, -object.UCly/2, -object.lz/2];
   bstop  = -bstart;
@@ -49,9 +47,6 @@ function [CSX, params] = CreateRectBroadbandChipres2(CSX, object, translate, rot
   % add the center copper rectangle
   irect1 = [-L3/2, -L3/2, -lz/2];
   irect2 = [L3/2, L3/2, lz/2];
-
-  outerL1 = [length/2+g0,L0/2 -lz/2];
-  outerL2 = [length/2+g0+w0,-L0/2 lz/2];
   CSX = AddBox(CSX, material, object.prio+4, irect1, irect2,...
   'Transform', {'Rotate_Z', rotate+pi/4, 'Translate', translate});
   if object.complemential;
@@ -83,8 +78,7 @@ function [CSX, params] = CreateRectBroadbandChipres2(CSX, object, translate, rot
     CSX = AddBox(CSX, resistormaterial1, object.prio+2, Oresistor1, Oresistor2,'Transform', {'Rotate_Z', rotate+rot, 'Translate', translate});
     CSX = AddBox(CSX, resistormaterial2, object.prio+3, Iresistor1, Iresistor2,'Transform', {'Rotate_Z', rotate+rot-pi/4, 'Translate', translate});
 
-    CSX = AddBox(CSX, material, object.prio+5, outerL1, outerL2, ...
-    'Transform', {'Rotate_Z', rotate+rot-pi/2, 'Translate', translate});
+
   end;
 
     
