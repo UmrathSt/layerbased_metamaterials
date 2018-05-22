@@ -6,7 +6,7 @@ function smd_rect(UCDim, fr4_thickness, L1, w1, Res, Cap, eps_FR4, complemential
   UC.fd_dumps = 0;
   UC.s_dumps = 1;
   UC.s_dumps_folder = "~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters";
-  UC.s11_filename_prefix = ["fss_L_" num2str(L1) "_w_" num2str(w1) "_Ohm_" num2str(Res) "_Cap_" num2str(Cap)];
+  UC.s11_filename_prefix = ["fss_lz_" num2str(fr4_thickness) "_L_" num2str(L1) "_w_" num2str(w1) "_Ohm_" num2str(Res) "_Cap_" num2str(Cap)];
   complemential = complemential;
   if complemential;
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, "_comp");
@@ -15,15 +15,15 @@ function smd_rect(UCDim, fr4_thickness, L1, w1, Res, Cap, eps_FR4, complemential
   UC.s11_subfolder = "smd_rect";
   UC.run_simulation = 1;
   UC.show_geometry = 0;
-  UC.grounded = 0;
+  UC.grounded = 1;
   UC.unit = 1e-3;
-  UC.f_start = 1e9;
+  UC.f_start = 2e9;
   UC.f_stop = 20e9;
   UC.lx = UCDim;
   UC.ly = UCDim;
   UC.lz = c0/ UC.f_start / 3 / UC.unit;
   UC.dz = c0 / (UC.f_stop) / UC.unit / 20;
-  UC.dx = UC.dz/5;
+  UC.dx = UC.dz/8;
   UC.dy = UC.dx;
   UC.dump_frequencies = [2.4e9, 5.2e9, 16.5e9];
   UC.s11_delta_f = 10e6;
@@ -108,13 +108,13 @@ function smd_rect(UCDim, fr4_thickness, L1, w1, Res, Cap, eps_FR4, complemential
   
 
 
-  layer_list = {@CreateUC, UC;  %@CreateRect, rectangle;
-                                                        %@CreateRect, substrate;
+  layer_list = {@CreateUC, UC;  @CreateRect, rectangle;
+                                                        @CreateRect, substrate;
                                                         @CreateRectRing, rectring;
                                  };
   material_list = {rectangle.material, substrate.material,rectring.material, rectring.bmaterial, rectring.resmaterial};
   [CSX, mesh, param_str, UC] = stack_layers(layer_list, material_list);
-  [CSX, port] = definePorts(CSX, mesh, UC.f_start);
+  [CSX, port, UC] = definePorts(CSX, mesh, UC);
   UC.param_str = param_str;
   [CSX] = defineFieldDumps(CSX, mesh, layer_list, UC);
   WriteOpenEMS([UC.SimPath '/' UC.SimCSX], FDTD, CSX);
