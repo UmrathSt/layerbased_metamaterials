@@ -12,11 +12,11 @@ epsRe = 2.7657; % two possible values (according to the comparison with monostat
 epsIm = 0.03467; % are a real part of 2.71 or 2.795 for the permittivity
 physical_constants;
 
-for i_alpha = 80:numel(angles);
+for i_alpha = [46];%80:numel(angles);
    clear -x c0 dump_TD show_geom angles i_alpha rcs_at_angles freq Path epsRe epsIm L;
    rcs = bistat_cube_rcs(angles(i_alpha), freq, L, epsRe, epsIm, dump_TD, show_geom, Path);
    rcs_at_angles{i_alpha} = rcs;
-   dump_rcsF_to_file(rcs, freq, angles(i_alpha), ['bistrcs_PVC_' num2str(i_alpha) '_eps_2.7657_finerMesh.dat'], ['# RCS of a L=' num2str(L) ' mm dielectric cube, eps_r=' num2str(epsRe) '+i' num2str(epsIm)] );
+   dump_rcsF_to_file(rcs, freq, angles(i_alpha), ['bistrcs_PVC_' num2str(i_alpha) '_eps_2.7657_nf2ff.dat'], ['# RCS of a L=' num2str(L) ' mm dielectric cube, eps_r=' num2str(epsRe) '+i' num2str(epsIm)] );
 end;
 
 

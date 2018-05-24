@@ -9,7 +9,7 @@ function retval = bistat_cube_rcs(alpha_y, freq, L, epsRe, epsIm, dump_TD_slices
 physical_constants;
 unit = 1e-3; % all length in cm
 rot_angle = alpha_y; %incident angle (to x-axis) in rad
-post_processing_only = 0;
+post_processing_only = 1;
 
 % size of the simulation box
 
@@ -75,7 +75,7 @@ endif;
 start = [mesh.x(1)     mesh.y(1)     mesh.z(1)];
 stop  = [mesh.x(end) mesh.y(end) mesh.z(end)];
 [CSX nf2ff] = CreateNF2FFBox(CSX, 'nf2ff', start, stop, 'Directions', [1, 1, 0, 1, 1, 1]);
-
+save nf2ff_struct.dat nf2ff;
 % add 8 lines in all direction as pml spacing
 mesh = AddPML(mesh,8);
 
@@ -118,7 +118,7 @@ rcs = 4*pi*nf2ff.P_rad{1}(:)./Pin(1);
 
 retval = rcs;
 % cleanup
-nf2ff_cleanup([Sim_Path, "/nf2ff_"]);
+%nf2ff_cleanup([Sim_Path, "/nf2ff_"]);
 
 return 
 endfunction;
