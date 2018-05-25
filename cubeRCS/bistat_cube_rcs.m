@@ -9,7 +9,7 @@ function retval = bistat_cube_rcs(alpha_y, freq, L, epsRe, epsIm, dump_TD_slices
 physical_constants;
 unit = 1e-3; % all length in cm
 rot_angle = alpha_y; %incident angle (to x-axis) in rad
-post_processing_only = 1;
+post_processing_only = 0;
 
 % size of the simulation box
 
@@ -101,7 +101,7 @@ if show_geometry;
   CSXGeomPlot([Sim_Path '/' Sim_CSX]);
 endif;
 settings = [''];
-openEMS_opts = ['--engine=multithreaded --numThreads=4'];
+openEMS_opts = ['--engine=multithreaded --numThreads=6'];
 if !(post_processing_only);
     RunOpenEMS( Sim_Path, Sim_CSX, openEMS_opts, settings);
 endif;
