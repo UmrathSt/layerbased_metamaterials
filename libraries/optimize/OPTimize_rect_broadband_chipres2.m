@@ -1,4 +1,4 @@
-function val = optimize_rect_broadband_chipres2(UCDim, fr4_thickness, L1, L2, rho, gapwidth, ...
+function val = OPTimize_rect_broadband_chipres2(UCDim, fr4_thickness, L1, L2, rho, gapwidth, ...
 gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential, fcenter, fwidth);
   physical_constants;
   UC.layer_td = 0;
@@ -13,7 +13,7 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, '_comp');
   end;
   UC.s11_filename = 'Sparameters_';
-  UC.s11_subfolder = 'rect_broadband_chipres2';
+  UC.s11_subfolder = 'rect_broadband_optimize';
   UC.run_simulation = 1;
   UC.show_geometry = 0;
   UC.grounded = 1;
@@ -139,7 +139,7 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
     num_threads = 4;
     try;
       if strcmp(uname.nodename, 'Xeon');
-        num_threads = 6;
+        num_threads = 4;
       end;
     catch lasterror;
     end;

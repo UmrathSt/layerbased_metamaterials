@@ -30,8 +30,8 @@ absorption = [];
 
 
 for UCDim = [14.25];
-for Res1 = [300, 100000];
-for Res2 = [30, 100000];
+for Res1 = [300];
+for Res2 = [30];
   absorption = [absorption, ...
   optimize_rect_broadband_chipres1(UCDim, fr4_thickness, L1, L2, rho, gapwidth, gapwidth2,...
 reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential, fcenter, fwidth)];
