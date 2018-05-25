@@ -18,8 +18,8 @@ function postprocess_nf2ff(nf2ff_struct_Path, Sim_Path, f, theta, theta_off, phi
     ph0 = phi(1)
     phend = phi(end);
     ph_size = size(phi);
-    fprintf(fid, ['# frequency f = ' num2str(F/1e9) ' GHz, theta=linspace('num2str(th0) ',' num2str(thend) ',' num2str(th_size) '\n']);
-    fprintf(fid, ['# phi=linspace('num2str(ph0) ',' num2str(phend) ',' num2str(ph_size) '\n']);
+    fprintf(fid, ['# frequency f = ' num2str(F/1e9) ' GHz, theta=linspace(' num2str(th0) ',' num2str(thend) ',' num2str(th_size) '\n']);
+    fprintf(fid, ['# phi=linspace(' num2str(ph0) ',' num2str(phend) ',' num2str(ph_size) '\n']);
     fclose(fid);
     dlmwrite(rcs_fname, rcs, 'delimiter', ', ', '-append');
   end;
