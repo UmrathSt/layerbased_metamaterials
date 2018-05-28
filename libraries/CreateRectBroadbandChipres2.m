@@ -59,7 +59,7 @@ function [CSX, params] = CreateRectBroadbandChipres2(CSX, object, translate, rot
     bmaterial = object.material.name;
     bstart = [-object.UClx/2, -object.UCly/2, -object.lz/2];
     bstop  = -bstart;
-    CSX = AddBox(CSX, bmaterial, object.prio+1, bstart, bstop,...
+    CSX = AddBox(CSX, bmaterial, object.prio-1, bstart, bstop,...
             'Transform', {'Rotate_Z', rotate, 'Translate', translate});
   end;
 

@@ -16,12 +16,12 @@ clc
 
 %% setup the simulation %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 physical_constants;
-unit = 1e-6; % specify everything in um
-MSL_length = 50000;
-MSL_width = 600;
-substrate_thickness = 254;
-substrate_epr = 3.66;
-stub_length = 12e3;
+unit = 1e-3; % specify everything in um
+MSL_length = 50.000;
+MSL_width = 1.6;
+substrate_thickness = 3.2;
+substrate_epr = 4.6;
+stub_length = 12;
 f_max = 7e9;
 
 %% setup FDTD parameters & excitation function %%%%%%%%%%%%%%%%%%%%%%%%%%%%

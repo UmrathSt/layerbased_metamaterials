@@ -54,7 +54,7 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   FDTD = SetGaussExcite(FDTD, 0.5*(UC.f_start+UC.f_stop),0.5*(UC.f_stop-UC.f_start));
   BC = {'PMC', 'PMC', 'PEC', 'PEC', 'PML_8', 'PML_8'}; % boundary conditions
   FDTD = SetBoundaryCond(FDTD, BC);
-  rectangle.name = 'backplate';
+  rectangle.name = 'groundplane';
   rectangle.lx = UCDim;
   rectangle.ly = UCDim;
   rectangle.lz = 0.5;
@@ -82,10 +82,10 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
 
 
   % chipres
-  chipres.name = 'rectangles';
+  chipres.name = 'chipres_absorber';
   chipres.lz = 0.1;
   chipres.rotate = pi/4;
-  chipres.material.name = 'rectangles';
+  chipres.material.name = 'copperrect';
   chipres.material.Kappa = 56e6;
   chipres.material.type = 'const';
   chipres.bmaterial.name = 'air';
@@ -93,6 +93,7 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   chipres.bmaterial.Epsilon = 1;
   chipres.dphi = 0;
   chipres.Resistor1.name = 'chipresistor1';
+  chipres.RL = 0.0; % additional small pad island narrowing the gap left and 
   chipres.Resistor1.Kappa = gapwidth/(Res1*reswidth*chipres.lz*UC.unit);
   chipres.Resistor1.type = 'const';
   chipres.Resistor1.Epsilon = 1;
@@ -108,12 +109,11 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   chipres.gapwidth = gapwidth;
   chipres.gapwidth2 = gapwidth2;
   chipres.reswidth = reswidth;
-  chipres.RL = 0.5; % additional small pad island narrowing the gap left and 
   chipres.Res1 = Res1; % right to the resistors
   chipres.Res2 = Res2;
   chipres.UClx = UCDim;
   chipres.UCly = UCDim;
-  chipres.prio = 2;
+  chipres.prio = 4;
   chipres.xycenter = [0, 0];
   chipres.complemential = complemential;
   chipres.zrefinement = 1;

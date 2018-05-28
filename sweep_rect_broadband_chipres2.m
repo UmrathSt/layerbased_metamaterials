@@ -22,7 +22,7 @@ fcenter = [9.25e9];
 fwidth = [3.5e9];
 absorption = [];
 for UCDim = [14.25];
-for Res1 = [750];
+for Res1 = [300];
 for Res2 = [30];
   absorption = [absorption, ...
   optimize_rect_broadband_chipres2(UCDim, fr4_thickness, L1, L2, rho, gapwidth, gapwidth2,...
