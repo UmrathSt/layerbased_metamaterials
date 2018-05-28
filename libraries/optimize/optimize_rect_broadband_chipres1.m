@@ -24,7 +24,7 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   UC.ly = UCDim;
   UC.lz = c0/ UC.f_start / 1 / UC.unit;
   UC.dz = c0 / (UC.f_stop) / UC.unit / 20;
-  UC.dx = UC.dz/4/mesh_refinement;
+  UC.dx = UC.dz/3/mesh_refinement;
   UC.dy = UC.dx;
   UC.dump_frequencies = linspace(4,14,101)*1e9;
   UC.s11_delta_f = 10e6;
@@ -84,7 +84,7 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
 
   % chipres
   chipres.name = 'rectangles';
-  chipres.lz = 0.05;
+  chipres.lz = 0.1;
   chipres.rotate = pi/4;
   chipres.material.name = 'rectangles';
   chipres.material.Kappa = 56e6;
@@ -92,15 +92,16 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   chipres.bmaterial.name = 'air';
   chipres.bmaterial.type = 'const';
   chipres.bmaterial.Epsilon = 1;
-  chipres.zrefinement = 3;
+  chipres.zrefinement = 1;
   chipres.dphi = 0;
+  chipres.RL = 0.3;
   chipres.Resistor1.name = 'chipresistor1';
-  chipres.Resistor1.Kappa = gapwidth/(Res1*reswidth*chipres.lz*UC.unit);
-  chipres.Resistor1.Epsilon = 10;
+  chipres.Resistor1.Kappa = (gapwidth-chipres.RL)/(Res1*reswidth*chipres.lz*UC.unit);
+  chipres.Resistor1.Epsilon = 1;
   chipres.Resistor1.type = 'const';
   chipres.Resistor2.name = 'chipresistor2';
-  chipres.Resistor2.Kappa = gapwidth/(Res2*reswidth*chipres.lz*UC.unit);
-  chipres.Resistor2.Epsilon = 10;
+  chipres.Resistor2.Kappa = (gapwidth-chipres.RL)/(Res2*reswidth*chipres.lz*UC.unit);
+  chipres.Resistor2.Epsilon = 1;
   chipres.Resistor2.type = 'const';
 
   chipres.L1 = L1;
@@ -110,15 +111,15 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   chipres.gapwidth = gapwidth;
   chipres.gapwidth2 = gapwidth2;
   chipres.reswidth = reswidth;
-  chipres.RL = 0.3;
+
   chipres.Res1 = Res1;
   chipres.Res2 = Res2;
   chipres.UClx = UCDim;
   chipres.UCly = UCDim;
-  chipres.prio = 2;
+  chipres.prio = 3;
   chipres.xycenter = [0, 0];
   chipres.complemential = complemential;
-  chipres.zrefinement = 2;
+
   
   layer_list = {@CreateUC, UC; @CreateRect, rectangle;
                                @CreateRect, substrate;
