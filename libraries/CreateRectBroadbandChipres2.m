@@ -47,7 +47,7 @@ function [CSX, params] = CreateRectBroadbandChipres2(CSX, object, translate, rot
   % add the center copper rectangle
   irect1 = [-L3/2, -L3/2, -lz/2];
   irect2 = [L3/2, L3/2, lz/2];
-  CSX = AddBox(CSX, material, object.prio+4, irect1, irect2,...
+  CSX = AddBox(CSX, material, object.prio, irect1, irect2,...
   'Transform', {'Rotate_Z', rotate+pi/4, 'Translate', translate});
   if object.complemential;
     try;
@@ -59,7 +59,7 @@ function [CSX, params] = CreateRectBroadbandChipres2(CSX, object, translate, rot
     bmaterial = object.material.name;
     bstart = [-object.UClx/2, -object.UCly/2, -object.lz/2];
     bstop  = -bstart;
-    CSX = AddBox(CSX, bmaterial, object.prio, bstart, bstop,...
+    CSX = AddBox(CSX, bmaterial, object.prio-1, bstart, bstop,...
             'Transform', {'Rotate_Z', rotate, 'Translate', translate});
   end;
 
@@ -73,10 +73,10 @@ function [CSX, params] = CreateRectBroadbandChipres2(CSX, object, translate, rot
  
 
   for rot = (0:3)*pi/2+dphi;
-    CSX = AddLinPoly( CSX, material, object.prio+5, 2, -object.lz/2, p , object.lz, 'CoordSystem',0,...
+    CSX = AddLinPoly( CSX, material, object.prio+1, 2, -object.lz/2, p , object.lz, 'CoordSystem',0,...
         'Transform', {'Rotate_Z', rotate+rot, 'Translate', translate});
     CSX = AddBox(CSX, resistormaterial1, object.prio+2, Oresistor1, Oresistor2,'Transform', {'Rotate_Z', rotate+rot, 'Translate', translate});
-    CSX = AddBox(CSX, resistormaterial2, object.prio+3, Iresistor1, Iresistor2,'Transform', {'Rotate_Z', rotate+rot-pi/4, 'Translate', translate});
+    CSX = AddBox(CSX, resistormaterial2, object.prio+2, Iresistor1, Iresistor2,'Transform', {'Rotate_Z', rotate+rot-pi/4, 'Translate', translate});
 
 
   end;

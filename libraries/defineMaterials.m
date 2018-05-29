@@ -11,17 +11,31 @@ function [CSX, param_str] = defineMaterials(CSX, material_list, param_str);
     end;
     param_str = horzcat(param_str, '\n#');
     isdrude = 0;
-    if strcmp(material_list{i}.name, 'PEC')
+    if(strcmp(material_list{i}.name, 'PEC'))
       CSX = AddMetal(CSX, 'PEC');
-    elseif strcmp(material_list{i}.name, 'FR4_Lorentz');
+    elseif(strcmp(material_list{i}.name, 'FR4_Lorentz'))
       %printf('Using Lorentz Oscillator Model for FR4. \n');
       CSX = AddLorentzMaterial(CSX, 'FR4_Lorentz');
       CSX = SetMaterialProperty(CSX, 'FR4_Lorentz', 'Epsilon', 4.096, 'Kappa', 2.294e-3, 'EpsilonPlasmaFrequency', 8.84e9, 'EpsilonRelaxTime', 7.96e-13);
       try; 
         CSX = SetMaterialProperty(CSX, 'FR4_Lorentz', 'Epsilon', material_list{i}.Epsilon);
       catch lasterror;
+    end;
+    else;
+    if strcmp(material_list{i}.type, 'sheet');
+      fprintf('entering sheet case \n');
+      D = 0;
+      Kappa = 56e6;
+      try;
+        D = material_list{i}.sheet_thickness;
+      catch lasterror;
       end;
-    elseif strcmp(material_list{i}.type, 'const');
+      try;
+       Kappa = material_list{i}.Kappa;
+      catch lasterror;
+      end;
+      CSX = AddConductingSheet(CSX, material_list{i}.name, Kappa, D);
+   elseif(strcmp(material_list{i}.type, 'const'));
       %fprintf(strcat('Using Material with frequency independent epsilon/conducivity for ', material_list{i}.name, '\n'));
       CSX = AddMaterial(CSX, material_list{i}.name);
       try;
@@ -68,9 +82,9 @@ function [CSX, param_str] = defineMaterials(CSX, material_list, param_str);
         CSX = SetMaterialProperty(CSX, material_list{i}.name, 'EpsilonPlasmaFrequency', material_list{i}.EpsilonPlasmaFrequency,...
                  'EpsilonRelaxTime', material_list{i}.EpsilonRelaxTime, 'Kappa', material_list{i}.Kappa, 'Epsilon', 1); % conductivity
       catch lasterror;
-      end;
-
+    end;
       continue;
       end;
   end;
+      fprintf(['name: ' m_mat.name '\n']);
       end

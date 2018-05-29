@@ -6,7 +6,7 @@ addpath('./libraries/optimize');
 
 complemential = 0;
 
-eps_subs = 4.1;
+eps_subs = 4.6;
 tand = 0.02;
 
 UCDim = 14.25;
@@ -19,19 +19,15 @@ gapwidth = 0.60;
 gapwidth2 = 0.6;
 reswidth = 0.5;
 
-rho = 2.0;
-
-
-Res1 = 210;
-Res2 = 15;
+rho = 2.5;
 fcenter = [9.25e9];
 fwidth = [3.5e9];
 absorption = [];
 
 
 for UCDim = [14.25];
-for Res1 = [300, 100000];
-for Res2 = [30, 100000];
+for Res1 = [300];
+for Res2 = [30];
   absorption = [absorption, ...
   optimize_rect_broadband_chipres1(UCDim, fr4_thickness, L1, L2, rho, gapwidth, gapwidth2,...
 reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential, fcenter, fwidth)];
@@ -40,8 +36,4 @@ end;end;
 display(['The minimum integrated reflectance from ' num2str((fcenter-fwidth)/1e9)...
  ' GHz to ' num2str((fcenter+fwidth)/1e9) ' GHz is ' num2str(min(absorption))]);
  
- 
-Res1 = 300;
-Res2 = 30;
- optimize_rect_broadband_chipres1(UCDim, fr4_thickness, L1, L2, rho, gapwidth, gapwidth2,...
-reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential, fcenter, fwidth);
+

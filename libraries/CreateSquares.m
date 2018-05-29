@@ -15,6 +15,6 @@ function [CSX, params] = CreateSquares(CSX, object, translate, rotate);
     endfor;
   endfor; 
   ocenter = [object.xycenter(1:2), 0] + translate;
-  params = ['# squares patch made of '  object.material.name ' lx, ly, lz = ' num2str(object.lx1) ', ' num2str(object.ly1) ', ' num2str(object.lz) ' at center position x = ' num2str(ocenter(1)) ' y = ' num2str(ocenter(2)) ' z = ' num2str(ocenter(3)) '\n'];
+  params = ['# squares patch made of '  object.imaterial.name ' lx, ly, lz = ' num2str(object.lx1) ', ' num2str(object.ly1) ', ' num2str(object.lz) ' at center position x = ' num2str(ocenter(1)) ' y = ' num2str(ocenter(2)) ' z = ' num2str(ocenter(3)) '\n'];
   return;
 endfunction
