@@ -6,18 +6,18 @@ addpath('./libraries/optimize');
 
 complemential = 0;
 
-eps_subs = 4.4;
+eps_subs = 4.6;
 tand = 0.02;
 
 UCDim = 14.25;
 fr4_thickness = 3.2;
-mesh_refinement = 4;
+mesh_refinement =2;
 L1 = 4;
 L2 = 2.5;
 gapwidth = 0.60;
 gapwidth2 = 0.6;
 reswidth = 0.5;
-rho = 2.0;
+rho = 2.5;
 fcenter = [9.25e9];
 fwidth = [3.5e9];
 absorption = [];
