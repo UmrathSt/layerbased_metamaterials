@@ -15,10 +15,10 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   UC.s11_filename = 'Sparameters_';
   UC.s11_subfolder = 'rect_broadband_chipres2';
   UC.run_simulation = 1;
-  UC.show_geometry = 0;
+  UC.show_geometry = 1;
   UC.grounded = 1;
   UC.unit = 1e-3;
-  UC.f_start = 5.0e9;
+  UC.f_start = 1.0e9;
   UC.f_stop = 15e9;
   UC.lx = UCDim;
   UC.ly = UCDim;
@@ -54,6 +54,7 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   FDTD = SetGaussExcite(FDTD, 0.5*(UC.f_start+UC.f_stop),0.5*(UC.f_stop-UC.f_start));
   BC = {'PMC', 'PMC', 'PEC', 'PEC', 'PML_8', 'PML_8'}; % boundary conditions
   FDTD = SetBoundaryCond(FDTD, BC);
+  
   rectangle.name = 'backplate';
   rectangle.lx = UCDim;
   rectangle.ly = UCDim;
@@ -62,7 +63,6 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   rectangle.prio = 2;
   rectangle.xycenter = [0, 0];
   rectangle.material.name = 'copper';
-  %rectangle.material.Kappa = 56e6;
   rectangle.material.type = 'const';
   rectangle.material.Kappa = 56e6;
 
@@ -78,26 +78,32 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   substrate.material.type = 'const';
   substrate.material.Epsilon = eps_subs;
   substrate.material.Kappa = 2*pi*12e9*EPS0*tand*eps_subs;
-  substrate.zrefinement = 5;
+  substrate.zrefinement = 1;
 
 
   % chipres
   chipres.name = 'rectangles';
-  chipres.lz = 0.05;
+  chipres.lz = 0.1;
+  chipres.prio = substrate.prio+1;
   chipres.rotate = pi/4;
-  chipres.material.name = 'rectangles';
+  chipres.sheet_thickness = 18e-3; % 18 Microns
+  chipres.material.name = 'rectangles_sheet';
   chipres.material.Kappa = 56e6;
-  chipres.material.type = 'const';
+  chipres.material.type = 'sheet';
+  chipres.material.D = chipres.sheet_thickness;
   chipres.bmaterial.name = 'air';
   chipres.bmaterial.type = 'const';
   chipres.bmaterial.Epsilon = 1;
-  chipres.zrefinement = 3;
   chipres.dphi = 0;
   chipres.Resistor1.name = 'chipresistor1';
   chipres.Resistor1.Kappa = gapwidth/(Res1*reswidth*chipres.lz*UC.unit);
+  chipres.Resistor1.sheet_thickness = chipres.sheet_thickness;
+  chipres.Resistor1.Epsilon = 1;
   chipres.Resistor1.type = 'const';
   chipres.Resistor2.name = 'chipresistor2';
   chipres.Resistor2.Kappa = gapwidth/(Res2*reswidth*chipres.lz*UC.unit);
+  chipres.Resistor2.sheet_thickness = chipres.sheet_thickness;
+  chipres.Resistor2.Epsilon = 1;
   chipres.Resistor2.type = 'const';
 
   chipres.L1 = L1;
@@ -114,15 +120,16 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   chipres.UCly = UCDim;
   chipres.prio = 2;
   chipres.xycenter = [0, 0];
+  chipres.do_xy_meshing = 1;
   chipres.complemential = complemential;
-  %chipres.zrefinement = 3;
+  chipres.zrefinement =1;
   
   layer_list = {@CreateUC, UC; @CreateRect, rectangle;
                                @CreateRect, substrate;
                                @CreateRectBroadbandChipres2, chipres
                                  };
 
-  material_list = {substrate.material, rectangle.material, chipres.material, chipres.bmaterial, chipres.Resistor1, chipres.Resistor2};
+  material_list = {rectangle.material,substrate.material, chipres.material, chipres.bmaterial, chipres.Resistor1, chipres.Resistor2};
   [CSX, mesh, param_str, UC] = stack_layers(layer_list, material_list);
   
   [CSX, port, UC] = definePorts(CSX, mesh, UC);
