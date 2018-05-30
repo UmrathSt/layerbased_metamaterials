@@ -19,6 +19,7 @@ function [CSX, params] = CreateSMDResistor(CSX, object, translate, rotate);
     subsName = 'AlO2Substrate';
     elecName = 'Electrode';
     CSX = AddMaterial(CSX, subsName, 'Epsilon', EpsilonAlO2);
+
     CSX = AddMetal(CSX, elecName);
     % add the two electrodes
     % left electrode in yz-plane
@@ -42,7 +43,7 @@ function [CSX, params] = CreateSMDResistor(CSX, object, translate, rotate);
     stop  = [W/2,  L/2, T/2];
     SheetKappa = L/(Res*W*SheetThickness*unit);
     CSX = AddConductingSheet(CSX, 'resistive_sheet', SheetKappa, SheetThickness,'Transform', {'Rotate_Z', rotate, 'Translate', translate});
-    CSX = AddBox(CSX,'resistive_sheet', prio+2,start,stop,'Transform', {'Rotate_Z', rotate, 'Translate', translate});
+    CSX = AddBox(CSX,'resistive_sheet', prio+5,start,stop,'Transform', {'Rotate_Z', rotate, 'Translate', translate});
     ocenter = [object.xycenter(1:2), 0] + translate;
 
     params = ["# SMD-Resistor at coordinate " num2str(ocenter(1)) ',' num2str(ocenter(2)) ',' num2str(ocenter(2)) '. ' " \n" ];

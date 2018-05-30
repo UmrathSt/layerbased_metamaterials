@@ -19,18 +19,18 @@ physical_constants;
 unit = 1e-3; % specify everything in um
 MSL_length = 25.000;
 MSL_width = 1.5;
-substrate_thickness = 3.2;
+substrate_thickness = 2;
 substrate_epr = 4.6;
 stub_length = 1;
-f_max = 1e9;
+f_max = 2e9;
 addpath('./libraries');
 
 
 
 %% setup FDTD parameters & excitation function %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 FDTD = InitFDTD();
-FDTD = SetGaussExcite( FDTD, f_max/2, f_max/2 );
-BC   = {'PML_8' 'PML_8' 'MUR' 'MUR' 'PEC' 'MUR'};
+FDTD = SetGaussExcite( FDTD, f_max/2, f_max*2/3 );
+BC   = {'PML_8' 'PML_8' 'PML_8' 'PML_8' 'PEC' 'PML_8'};
 FDTD = SetBoundaryCond( FDTD, BC );
 
 %% setup CSXCAD geometry & mesh %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -38,11 +38,12 @@ CSX = InitCSX();
 resolution = c0/(f_max*sqrt(substrate_epr))/unit /40; % resolution of lambda/50
 mesh.x = SmoothMeshLines( [0 MSL_width/2+[2*resolution/3 -resolution/3]/20], resolution/4, 1.5 ,0 );
 mesh.x = SmoothMeshLines( [-MSL_length -mesh.x -0.15, 0.15 mesh.x MSL_length], resolution, 1.5 ,0 );
-mesh.y = SmoothMeshLines( [0 MSL_width/2+[-resolution/3 +resolution/3*2]/20], resolution/4 , 1.5 ,0);
-mesh.y = SmoothMeshLines( [-15*MSL_width -mesh.y mesh.y stub_length+[-resolution/3 +resolution/3*2]/4 15*MSL_width+stub_length], resolution, 1.3 ,0);
+mesh.y = SmoothMeshLines( [-MSL_width/2+ -0.25 0  0.25 MSL_width/2], resolution/2 , 1.5 ,0);
+mesh.y = SmoothMeshLines( [-15*MSL_width mesh.y  15*MSL_width+stub_length], resolution, 1.3 ,0);
 mesh.z = SmoothMeshLines( [linspace(0,substrate_thickness,5), substrate_thickness+linspace(0,0.35,5), 5*substrate_thickness], resolution/10 );
-CSX = DefineRectGrid( CSX, unit, mesh );
 
+mesh = AddPML(mesh, [1 1 1 1 0 1]*8);
+CSX = DefineRectGrid( CSX, unit, mesh );
 %% substrate
 CSX = AddMaterial( CSX, 'FR4' );
 CSX = SetMaterialProperty( CSX, 'FR4', 'Epsilon', substrate_epr );
@@ -54,7 +55,7 @@ CSX = AddBox( CSX, 'FR4', 0, start, stop );
 CSX = AddMetal( CSX, 'PEC' );
 portstart = [ mesh.x(1), -MSL_width/2, substrate_thickness];
 portstop  = [ -0.25,  MSL_width/2, 0];
-[CSX,port{1}] = AddMSLPort( CSX, 999, 1, 'PEC', portstart, portstop, 0, [0 0 -1], 'ExcitePort', true, 'FeedShift', 10*resolution, 'MeasPlaneShift',  MSL_length/3);
+[CSX,port{1}] = AddMSLPort( CSX, 999, 1, 'PEC', portstart, portstop, 0, [0 0 -1], 'ExcitePort', true, 'FeedShift', 10*resolution, 'MeasPlaneShift',  MSL_length/3, 'Feed_R', 72.5);
 
 portstart = [mesh.x(end), -MSL_width/2, substrate_thickness];
 portstop  = [0.25          ,  MSL_width/2, 0];
@@ -77,6 +78,11 @@ Sim_CSX = 'msl.xml';
 [status, message, messageid] = rmdir( Sim_Path, 's' ); % clear previous directory
 confirm_recursive_rmdir(1);
 [status, message, messageid] = mkdir( Sim_Path ); % create empty simulation folder
+CSX = AddDump(CSX,'Etxy' ,'DumpType', 0);
+CSX = AddBox(CSX,'Etxy',10,[mesh.x(1) mesh.y(1) 1.5],[mesh.x(end), mesh.y(end), 1.5]); %assign box
+CSX = AddDump(CSX,'Etxz' ,'DumpType', 0);
+CSX = AddBox(CSX,'Etxz',10,[mesh.x(1) 0 mesh.z(1)],[mesh.x(end), 0, mesh.z(end)]); %assign box
+
 
 WriteOpenEMS( [Sim_Path '/' Sim_CSX], FDTD, CSX );
 CSXGeomPlot( [Sim_Path '/' Sim_CSX] );
@@ -89,13 +95,15 @@ port = calcPort( port, Sim_Path, f, 'RefImpedance', 50);
 
 s11 = port{1}.uf.ref./ port{1}.uf.inc;
 s21 = port{2}.uf.ref./ port{1}.uf.inc;
+Z11 = port{1}.uf.tot./ port{1}.if.tot;
 
-plot(f/1e9,20*log10(abs(s11)),'k-','LineWidth',2);
+plot(f/1e9,(abs(s11)),'k-','LineWidth',2);
 hold on;
 grid on;
-plot(f/1e9,20*log10(abs(s21)),'r--','LineWidth',2);
+plot(f/1e9,(abs(s21)),'r--','LineWidth',2);
 legend('S_{11}','S_{21}');
 ylabel('S-Parameter (dB)','FontSize',12);
 xlabel('frequency (GHz) \rightarrow','FontSize',12);
 ylim([-40 2]);
 
+plot(f/1e9,abs(Z11))
