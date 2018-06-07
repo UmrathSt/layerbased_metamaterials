@@ -105,8 +105,8 @@ function [CSX, params] = CreateRectBroadbandChipresAlO2(CSX, object, translate, 
     CSX = AddLinPoly( CSX, material, object.prio+5, 2, -object.lz/2, p , object.lz, 'CoordSystem',0,...
         'Transform', {'Rotate_Z', rotate+rot, 'Translate', translate});
      % Add the resistors
-    CSX = AddBox(CSX, resistormaterial1, object.prio+2, Oresistor1, Oresistor2,'Transform', {'Rotate_Z', rotate+rot, 'Translate', translate+[0,0,-AlO2height]});
-    CSX = AddBox(CSX, resistormaterial2, object.prio+3, Iresistor1, Iresistor2,'Transform', {'Rotate_Z', rotate+rot-pi/4, 'Translate', translate+[0,0,-AlO2height]});
+    CSX = AddBox(CSX, resistormaterial1, object.prio+10, Oresistor1, Oresistor2,'Transform', {'Rotate_Z', rotate+rot, 'Translate', translate+[0,0,-AlO2height]});
+    CSX = AddBox(CSX, resistormaterial2, object.prio+10, Iresistor1, Iresistor2,'Transform', {'Rotate_Z', rotate+rot-pi/4, 'Translate', translate+[0,0,-AlO2height]});
     % Add the AlO2 substrate
     CSX = AddBox(CSX, AlO2material, object.prio+6, AlO2_O1, AlO2_O2,'Transform', {'Rotate_Z', rotate+rot+pi/4, 'Translate', translate});
     CSX = AddBox(CSX, AlO2material, object.prio+6, AlO2_I1, AlO2_I2,'Transform', {'Rotate_Z', rotate+rot, 'Translate', translate});

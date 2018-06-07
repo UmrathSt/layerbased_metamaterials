@@ -130,6 +130,7 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   chipres.xycenter = [0, 0];
   chipres.complemential = complemential;
   chipres.zrefinement = 3;
+  chipres.do_xy_meshing = 1;
 
   
   layer_list = {@CreateUC, UC; @CreateRect, rectangle;
