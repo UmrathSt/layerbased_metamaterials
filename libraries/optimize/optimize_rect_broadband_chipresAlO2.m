@@ -1,4 +1,4 @@
-function val = optimize_rect_broadband_chipres1(UCDim, fr4_thickness, L1, L2, rho, gapwidth, ...
+function val = optimize_rect_broadband_chipresAlO2(UCDim, fr4_thickness, L1, L2, rho, gapwidth, ...
 gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential, fcenter, fwidth);
   physical_constants;
   UC.layer_td = 0;
@@ -13,12 +13,12 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, '_comp');
   end;
   UC.s11_filename = 'Sparameters_';
-  UC.s11_subfolder = 'rect_broadband_chipres1';
+  UC.s11_subfolder = 'rect_broadband_chipresAlO2';
   UC.run_simulation = 1;
   UC.show_geometry = 0;
   UC.grounded = 1;
   UC.unit = 1e-3;
-  UC.f_start = 3e9;
+  UC.f_start = 4e9;
   UC.f_stop = 15e9;
   UC.lx = UCDim;
   UC.ly = UCDim;
@@ -95,6 +95,7 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   chipres.zrefinement = 1;
   chipres.dphi = 0;
   chipres.RL = 0.3;
+  chipres.ResistorLength = 0.8;
   chipres.Resistor1.name = 'chipresistor1';
   chipres.Resistor1.Kappa = (chipres.RL)/(Res1*reswidth*chipres.lz*UC.unit);
   chipres.Resistor1.Epsilon = 1;
@@ -107,6 +108,12 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   chipres.AlO2.Epsilon = 8;
   chipres.AlO2.type = 'const';  
   chipres.AlO2.height = 0.35;
+  chipres.AlO2.length = 1;
+  chipres.electrode.name = 'Electrode';
+  chipres.electrode.Kappa = 56e6;
+  chipres.electrode.Epsilon = 1;
+  chipres.electrode.type = 'const';  
+
   chipres.L1 = L1;
   chipres.L2 = L2;
 
@@ -127,9 +134,9 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   
   layer_list = {@CreateUC, UC; @CreateRect, rectangle;
                                @CreateRect, substrate;
-                               @CreateRectBroadbandChipres1, chipres; 
+                               @CreateRectBroadbandChipresAlO2, chipres; 
                                };
-  material_list = {substrate.material, rectangle.material, chipres.material, chipres.bmaterial, chipres.Resistor1, chipres.Resistor2};
+  material_list = {chipres.AlO2, chipres.electrode, substrate.material, rectangle.material, chipres.material, chipres.bmaterial, chipres.Resistor1, chipres.Resistor2};
   [CSX, mesh, param_str, UC] = stack_layers(layer_list, material_list);
   
   [CSX, port, UC] = definePorts(CSX, mesh, UC);

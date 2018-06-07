@@ -1,4 +1,4 @@
-function windings(UCDim, fr4_thickness, rubber_thickness, L, w, g, N, alpha, eps_subs, tand, mesh_refinement, complemential);
+function windings(UCDim, fr4_thickness, rubber_thickness, Rsq, L, w, g, N, alpha, eps_subs, tand, mesh_refinement, complemential);
   physical_constants;
   UC.layer_td = 0;
   UC.layer_fd = 0;
@@ -6,14 +6,14 @@ function windings(UCDim, fr4_thickness, rubber_thickness, L, w, g, N, alpha, eps
   UC.fd_dumps = 0;
   UC.s_dumps = 1;
   UC.nf2ff = 0;
-  if uname().nodename == 'Xeon';
+  if strcmp(uname().nodename, 'Xeon');
     midstr = '/';
     printf('Running job on XEON \n');
   else;
     midstr = '/git_layerbased/';
   endif;
   UC.s_dumps_folder = ['~/Arbeit/openEMS' midstr 'layerbased_metamaterials/Ergebnisse/SParameters'];
-  UC.s11_filename_prefix = ['UCDim_' num2str(UCDim) '_lz_' num2str(fr4_thickness) '_rubber_' num2str(rubber_thickness) '_L_' num2str(L) '_w_' num2str(w) '_g_' num2str(g) '_N_' num2str(N) '_eps_' num2str(eps_subs) '_tand_' num2str(tand)];
+  UC.s11_filename_prefix = ['UCDim_' num2str(UCDim) '_lz_' num2str(fr4_thickness) '_rubber_' num2str(rubber_thickness) '_Rsq_' num2str(Rsq) '_L_' num2str(L) '_w_' num2str(w) '_g_' num2str(g) '_N_' num2str(N) '_eps_' num2str(eps_subs) '_tand_' num2str(tand)];
   complemential = complemential;
   if complemential;
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, '_comp');
@@ -26,6 +26,8 @@ function windings(UCDim, fr4_thickness, rubber_thickness, L, w, g, N, alpha, eps
   UC.unit = 1e-3;
   UC.f_start = 1.5e9;
   UC.f_stop = 15e9;
+  fcenter = (UC.f_start+UC.f_stop)/2;
+  fwidth = (UC.f_stop-UC.f_start)*0.5;
   UC.lx = UCDim;
   UC.ly = UCDim;
   UC.lz = c0/ UC.f_start / 2 / UC.unit;
@@ -36,7 +38,7 @@ function windings(UCDim, fr4_thickness, rubber_thickness, L, w, g, N, alpha, eps
   UC.dump_frequencies = [2.4e9, 5.2e9, 16.5e9];
   UC.s11_delta_f = 10e6;
   UC.EndCriteria = 1e-4;
-  if uname().nodename == 'Xeon';
+  if strcmp(uname().nodename, 'Xeon');
     UC.SimPath = ['/media/stefan/Daten/openEMS/' UC.s11_subfolder '/' UC.s11_filename_prefix];
     UC.ResultPath = ['~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse'];
   else;
@@ -69,16 +71,28 @@ function windings(UCDim, fr4_thickness, rubber_thickness, L, w, g, N, alpha, eps
   substrate.name = 'FR4 substrate';
   substrate.lx = UC.lx;
   substrate.ly = UC.ly;
-  substrate.lz = fr4_thickness;
+  substrate.lz = fr4_thickness*1/3;
   substrate.rotate = 0;
   substrate.prio = 2;
   substrate.xycenter = [0, 0];
   substrate.material.name = 'FR4';
   substrate.material.type = 'const';
   substrate.material.Epsilon = eps_subs;
-  substrate.material.tand = tand;
-  substrate.material.f0 = 10e9;
+  substrate.material.Kappa = 2*pi*10e9*EPS0*tand*eps_subs;
   substrate.zrefinement = 5;
+  # Substrate
+  substrate2.name = 'FR4 substrate2';
+  substrate2.lx = UC.lx;
+  substrate2.ly = UC.ly;
+  substrate2.lz = fr4_thickness*2/3;
+  substrate2.rotate = 0;
+  substrate2.prio = 2;
+  substrate2.xycenter = [0, 0];
+  substrate2.material.name = 'FR4';
+  substrate2.material.type = 'const';
+  substrate2.material.Epsilon = eps_subs;
+  substrate2.material.Kappa = 2*pi*10e9*EPS0*tand*eps_subs;
+  substrate2.zrefinement = 5;
     # rubber
   rubber.name = 'rubber substrate';
   rubber.lx = UC.lx;
@@ -90,8 +104,8 @@ function windings(UCDim, fr4_thickness, rubber_thickness, L, w, g, N, alpha, eps
   rubber.material.name = 'rubber';
   rubber.material.type = 'const';
   rubber.material.Epsilon = 2.5;
-  rubber.material.Kappa = 20;
-  rubber.zrefinement = 4;
+  rubber.material.Kappa = 1/(Rsq*UC.unit*rubber.lz);
+  rubber.zrefinement = 3;
 
   # circle
   coil.name = 'coil';
@@ -115,24 +129,16 @@ function windings(UCDim, fr4_thickness, rubber_thickness, L, w, g, N, alpha, eps
   coil.complemential = complemential;
   
   layer_list = {@CreateUC, UC; @CreateRect, rectangle;
+                               @CreateRect, substrate2;
                                @CreateRect, rubber;
                                @CreateRect, substrate;
                                @CreateCoil, coil
                                  };
   material_list = {substrate.material, rectangle.material, rubber.material, coil.material, coil.bmaterial};
-  [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
-  if UC.nf2ff == 0;
-    [CSX, port] = definePorts(CSX, mesh, UC.f_start);
-  elseif UC.nf2ff == 1;
-    [CSX, port, nf2ff] = definePortsNF2FF(CSX, mesh, UC);
-    phase_center_z = 0
-    for i = 2:(size(layer_list)(1));
-      for j = 1:(size(layer_list{i}(1)));
-        object = layer_list{i}{j, 2};
-        phase_center_z -= object.lz;
-      endfor;
-    endfor;
-  endif;
+  [CSX, mesh, param_str, UC] = stack_layers(layer_list, material_list);
+  
+  [CSX, port, UC] = definePorts(CSX, mesh, UC);
+
   UC.param_str = param_str;
   [CSX] = defineFieldDumps(CSX, mesh, layer_list, UC);
   WriteOpenEMS([UC.SimPath '/' UC.SimCSX], FDTD, CSX);
@@ -145,7 +151,7 @@ function windings(UCDim, fr4_thickness, rubber_thickness, L, w, g, N, alpha, eps
     Settings = ['--disable-dumps'];
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);
   endif;
-  doPortDump(port, UC);
+  val = doPortDump_optimize(port, UC, fcenter, fwidth);
   if UC.nf2ff == 1;
     freq = [2.4e9, 5.2e9, 12e9, 15e9];
     phi = linspace(0, 2*pi, 100);

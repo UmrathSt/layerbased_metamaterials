@@ -26,7 +26,7 @@ absorption = [];
 
 
 for UCDim = [14.25];
-for Res1 = [300];
+for Res1 = [650];
 for Res2 = [30];
   absorption = [absorption, ...
   optimize_rect_broadband_chipres1(UCDim, fr4_thickness, L1, L2, rho, gapwidth, gapwidth2,...

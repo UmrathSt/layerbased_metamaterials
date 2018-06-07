@@ -12,7 +12,7 @@ epsRe = 2.7657; % two possible values (according to the comparison with monostat
 epsIm = 0.03467; % are a real part of 2.71 or 2.795 for the permittivity
 physical_constants;
 
-for i_alpha = [46];%80:numel(angles);
+for i_alpha = [1];%80:numel(angles);
    clear -x c0 dump_TD show_geom angles i_alpha rcs_at_angles freq Path epsRe epsIm L;
    rcs = bistat_cube_rcs(angles(i_alpha), freq, L, epsRe, epsIm, dump_TD, show_geom, Path);
    rcs_at_angles{i_alpha} = rcs;

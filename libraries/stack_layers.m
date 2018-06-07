@@ -56,6 +56,16 @@ function [CSX, mesh, param_str, UC] = stack_layers(layer_list, material_list);
         yvals = horzcat(yvals, vals);    
         xvals = horzcat(xvals, [-rho/sqrt(2)-0.01, rho/sqrt(2)+0.01]);
         yvals = horzcat(yvals, [-rho/sqrt(2)-0.01, rho/sqrt(2)+0.01]);
+        try;
+          resheigth = object.lz;
+          substheight = object.AlO2.height;
+          zvals = horzcat(zvals, [zvals(end)-subst.height+resheight/2]);
+          zvals = horzcat(zvals, [zvals(end)-0.05]);
+           zvals = horzcat(zvals, [zvals(end)-0.05]);
+        catch lasterror;
+        end;
+        
+        
         display(["refined mesh in the resistor region"]);
       catch lasterror;
     end;
@@ -193,7 +203,7 @@ function [CSX, mesh, param_str, UC] = stack_layers(layer_list, material_list);
   if not(UC.grounded);
     mesh.z = SmoothMeshLines([-UC.lz/2, zvals, UC.lz/2], UC.dz, 1.4);
   else;
-    mesh.z = SmoothMeshLines([-7*UC.lz/8, zvals, 1*UC.lz/8], UC.dz, 1.3);
+    mesh.z = SmoothMeshLines([-7*UC.lz/8, zvals, 1*UC.lz/8], UC.dz, 1.2);
   end;
   CSX = DefineRectGrid(CSX, UC.unit, mesh);
   mesh = AddPML(mesh, [0 0 0 0 8 8]);
