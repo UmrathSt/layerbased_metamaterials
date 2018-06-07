@@ -11,7 +11,7 @@ tand = 0.02;
 
 UCDim = 14.25;
 fr4_thickness = 3.2;
-mesh_refinement = 2;
+mesh_refinement = 3;
 L1 = 4;
 L2 = 2.5;
 
@@ -26,7 +26,7 @@ absorption = [];
 
 
 for UCDim = [14.25];
-for Res1 = [650];
+for Res1 = [300];
 for Res2 = [30];
   absorption = [absorption, ...
   optimize_rect_broadband_chipresAlO2(UCDim, fr4_thickness, L1, L2, rho, gapwidth, gapwidth2,...

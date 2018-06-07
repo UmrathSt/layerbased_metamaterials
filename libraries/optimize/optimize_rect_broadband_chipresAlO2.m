@@ -97,11 +97,11 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   chipres.RL = 0.3;
   chipres.ResistorLength = 0.8;
   chipres.Resistor1.name = 'chipresistor1';
-  chipres.Resistor1.Kappa = (chipres.RL)/(Res1*reswidth*chipres.lz*UC.unit);
+  chipres.Resistor1.Kappa = (chipres.ResistorLength)/(Res1*reswidth*chipres.lz*UC.unit);
   chipres.Resistor1.Epsilon = 1;
   chipres.Resistor1.type = 'const';
   chipres.Resistor2.name = 'chipresistor2';
-  chipres.Resistor2.Kappa = (chipres.RL)/(Res2*reswidth*chipres.lz*UC.unit);
+  chipres.Resistor2.Kappa = (chipres.ResistorLength)/(Res2*reswidth*chipres.lz*UC.unit);
   chipres.Resistor2.Epsilon = 1;
   chipres.Resistor2.type = 'const';
   chipres.AlO2.name = 'AlO2';
