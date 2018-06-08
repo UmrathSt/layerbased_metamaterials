@@ -5,15 +5,14 @@ addpath('./libraries');
 
 rect_gap = 0;
 
-UCDim = 30;
-L1 = 25;
+UCDim = 20;
+L1 = 16;
 L2 = 0;
 complemential = 0;
-fr4_thickness = 3.22;
-eps_FR4 = 4.1;
-number = 10;
-fr4_thickness = 2;
+fr4_thickness = 0.5
+eps_FR4 = 4.6;
+
 Rsq = 15;
-for Rsq = [0.1, 1, 10];
+for Rsq = [250, 300, 350, 400, 450];
     squares(UCDim, fr4_thickness, L1, L2, eps_FR4, Rsq, complemential);
 end;

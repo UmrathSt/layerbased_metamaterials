@@ -15,7 +15,7 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   UC.s11_filename = 'Sparameters_';
   UC.s11_subfolder = 'rect_broadband_chipres2';
   UC.run_simulation = 1;
-  UC.show_geometry = 1;
+  UC.show_geometry = 0
   UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 3.0e9;

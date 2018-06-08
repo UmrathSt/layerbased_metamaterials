@@ -12,18 +12,18 @@ function squares(UCDim, fr4_thickness, L1, L2, eps_FR4, Rsq, complemential);
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, '_comp');
   end;
   UC.s11_filename = 'Sparameters_';
-  UC.s11_subfolder = 'squares';
+  UC.s11_subfolder = 'resistive_film_square';
   UC.run_simulation = 1;
   UC.show_geometry = 0;
   UC.grounded = 1;
   UC.unit = 1e-3;
-  UC.f_start = 500e6;
-  UC.f_stop = 5e9;
+  UC.f_start = 2e9;
+  UC.f_stop = 15e9;
   UC.lx = UCDim;
   UC.ly = UCDim;
   UC.lz = c0/ UC.f_start / 2 / UC.unit;
   UC.dz = c0 / (UC.f_stop) / UC.unit / 20;
-  UC.dx = UC.dz/6;
+  UC.dx = UC.dz/3;
   UC.dy = UC.dx;
   UC.dump_frequencies = [2.4e9, 5.2e9];
   UC.s11_delta_f = 10e6;
@@ -69,9 +69,9 @@ function squares(UCDim, fr4_thickness, L1, L2, eps_FR4, Rsq, complemential);
   squares.lx2 = L2; 
   squares.ly1 = L1; 
   squares.ly2 = L2; 
-  squares.lz = 0.05;
+  squares.lz = 0.1;
   squares.rotate = 0;
-  squares.prio = 2;
+  squares.prio = 6;
   squares.xycenter = [0, 0];
   squares.material.name = 'copperSquares';
   squares.material.type = 'const';
@@ -81,8 +81,22 @@ function squares(UCDim, fr4_thickness, L1, L2, eps_FR4, Rsq, complemential);
   squares.omaterial.name = "OcopperSquares";
   squares.omaterial.type = 'const';
 
-  squares.omaterial.Kappa = 1/(squares.lz*Rsq*UC.unit);
+  squares.omaterial.Kappa =56e6;
   
+# film
+
+  film.name = 'resistive_film';
+  film.lx = UCDim;
+  film.ly = UCDim;
+  film.lz = 0.1;
+  film.rotate = 0;
+  film.prio = 3;
+  film.xycenter = [0, 0];
+  film.material.name = 'film_material';
+  film.material.Kappa = 1/(film.lz*Rsq*UC.unit);;
+  film.material.type = 'const';
+  film.zrefinement = 3;
+
 
   # Substrate
   substrate.name = 'FR4 substrate';
@@ -94,18 +108,20 @@ function squares(UCDim, fr4_thickness, L1, L2, eps_FR4, Rsq, complemential);
   substrate.xycenter = [0, 0];
   substrate.material.name = 'FR4';
   substrate.material.Epsilon = eps_FR4;
-  substrate.material.Kappa = 2*pi*5e9*EPS0*0.02*4.4;
+  substrate.material.Kappa = 2*pi*10e9*EPS0*eps_FR4*0.02;
   substrate.material.type = 'const';
-  substrate.material.f0 = 5e9;
+
 
 
 
 
   layer_list = {@CreateUC, UC; @CreateRect, rectangle;
                                @CreateRect, substrate;
+                               @CreateRect, film;
+                               @CreateRect, substrate;
                                @CreateSquares, squares;
                                  };
-  material_list = {squares.imaterial, squares.omaterial, rectangle.material, substrate.material};
+  material_list = {film.material,squares.imaterial, squares.omaterial, rectangle.material, substrate.material};
   [CSX, mesh, param_str, UC] = stack_layers(layer_list, material_list);
   [CSX, port, UC] = definePorts(CSX, mesh, UC);
   UC.param_str = param_str;
@@ -115,7 +131,7 @@ function squares(UCDim, fr4_thickness, L1, L2, eps_FR4, Rsq, complemential);
     CSXGeomPlot([UC.SimPath '/' UC.SimCSX]);
   end;
   if UC.run_simulation;
-    openEMS_opts = '--numThreads=6';#'-vvv';
+    openEMS_opts = '--numThreads=4';#'-vvv';
     #Settings = ['--debug-PEC', '--debug-material'];
     Settings = [''];
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);

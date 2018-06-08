@@ -9,7 +9,7 @@ function retval = bistat_cube_rcs(alpha_y, freq, L, epsRe, epsIm, dump_TD_slices
 physical_constants;
 unit = 1e-3; % all length in cm
 rot_angle = alpha_y; %incident angle (to x-axis) in rad
-post_processing_only = 0;
+post_processing_only = 1;
 
 % size of the simulation box
 
@@ -75,7 +75,7 @@ endif;
 start = [mesh.x(1)     mesh.y(1)     mesh.z(1)];
 stop  = [mesh.x(end) mesh.y(end) mesh.z(end)];
 [CSX nf2ff] = CreateNF2FFBox(CSX, 'nf2ff', start, stop, 'Directions', [1, 1, 0, 1, 1, 1]);
-save nf2ff_struct.dat nf2ff;
+
 % add 8 lines in all direction as pml spacing
 mesh = AddPML(mesh,8);
 
@@ -83,6 +83,7 @@ CSX = DefineRectGrid( CSX, unit, mesh );
 
 %% prepare simulation folder
 Sim_Path = [Path 'Cube_RCS_alpha_y_' num2str(alpha_y*180/pi, "%.1f")];
+save("-text", strcat(Sim_Path, "/", "nf2ff_struct.dat"), "nf2ff")
 Sim_CSX = 'Cube_RCS.xml';
 confirm_recursive_rmdir(0); % overwrite path if it exists
 if !(post_processing_only);

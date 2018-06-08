@@ -13,7 +13,7 @@ function [CSX, params] = CreateSMDResistor(CSX, object, translate, rotate);
     catch lasterror;
     end;
     Res = object.Resistance;
-    SheetThickness = 0.1e-6;
+    SheetThickness = 0.1;
     prio = object.prio;
     EpsilonAlO2 = 10;
     subsName = 'AlO2Substrate';
@@ -40,9 +40,9 @@ function [CSX, params] = CreateSMDResistor(CSX, object, translate, rotate);
     CSX = AddBox(CSX, subsName, prio, start, stop, 'Transform', {'Rotate_Z', rotate, 'Translate', translate});
     % now add the resistive film
     start = [-W/2, -L/2, T/2];
-    stop  = [W/2,  L/2, T/2];
+    stop  = [W/2,  L/2, T/2+SheetThickness];
     SheetKappa = L/(Res*W*SheetThickness*unit);
-    CSX = AddConductingSheet(CSX, 'resistive_sheet', SheetKappa, SheetThickness,'Transform', {'Rotate_Z', rotate, 'Translate', translate});
+    CSX = AddMaterial(CSX, 'resistive_sheet', 'Kappa', SheetKappa);
     CSX = AddBox(CSX,'resistive_sheet', prio+5,start,stop,'Transform', {'Rotate_Z', rotate, 'Translate', translate});
     ocenter = [object.xycenter(1:2), 0] + translate;
 
