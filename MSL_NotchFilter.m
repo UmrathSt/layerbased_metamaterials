@@ -35,7 +35,7 @@ FDTD = SetBoundaryCond( FDTD, BC );
 
 %% setup CSXCAD geometry & mesh %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 CSX = InitCSX();
-resolution = c0/(f_max*sqrt(substrate_epr))/unit /40; % resolution of lambda/50
+resolution = c0/(f_max*sqrt(substrate_epr))/unit /50; % resolution of lambda/50
 mesh.x = SmoothMeshLines( [0 MSL_width/2+[2*resolution/3 -resolution/3]/20], resolution/4, 1.5 ,0 );
 mesh.x = SmoothMeshLines( [-MSL_length -mesh.x -0.15, 0.15 mesh.x MSL_length], resolution, 1.5 ,0 );
 mesh.y = SmoothMeshLines( [-MSL_width/2+ -0.25 0  0.25 MSL_width/2], resolution/2 , 1.5 ,0);
@@ -73,6 +73,9 @@ smdres.xycenter = [0,0];
  
 %% write/show/run the openEMS compatible xml-file
 Sim_Path = '/mnt/hgfs/E/openEMS/layerbased_metamaterials/Simulation/MSL_Notchfilter';
+if strcmp(uname.nodename,"Xeon");
+    Sim_Path = '/media/stefan/openEMS/MSL_Notchfilder';
+end;
 Sim_CSX = 'msl.xml';
 
 [status, message, messageid] = rmdir( Sim_Path, 's' ); % clear previous directory
@@ -86,7 +89,7 @@ CSX = AddBox(CSX,'Etxz',10,[mesh.x(1) 0 mesh.z(1)],[mesh.x(end), 0, mesh.z(end)]
 
 WriteOpenEMS( [Sim_Path '/' Sim_CSX], FDTD, CSX );
 CSXGeomPlot( [Sim_Path '/' Sim_CSX] );
-RunOpenEMS( Sim_Path, Sim_CSX, '--engine=multithreaded --numThreads=1');
+RunOpenEMS( Sim_Path, Sim_CSX, '--engine=multithreaded --numThreads=4');
 
 %% post-processing
 close all
