@@ -1,4 +1,4 @@
-function rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, tand, flat, mesh_refinement, complemential);
+function open_rect(UCDim, fr4_thickness, Ls, phis, ws, splits, eps_subs, tand, mesh_refinement, complemential);
   physical_constants;
   UC.layer_td = 0;
   UC.layer_fd = 0;
@@ -7,12 +7,12 @@ function rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, tand, f
   UC.s_dumps = 1;
   UC.nf2ff = 0;
   UC.s_dumps_folder = '~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters';
-  UC.s11_filename_prefix = ['UCDim_' num2str(UCDim) '_lz_' num2str(fr4_thickness) '_L1_' num2str(L1) '_w_' num2str(w1) '_L2_' num2str(L2) '_gap_' num2str(gap) '_eps_' num2str(eps_subs) '_tand_' num2str(tand) '_flat_' num2str(flat)];
+  UC.s11_filename_prefix = ['UCDim_' num2str(UCDim) '_lz_' num2str(fr4_thickness) '_eps_' num2str(eps_subs) '_tand_' num2str(tand)];
   if complemential;
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, '_comp');
   end;
   UC.s11_filename = 'Sparameters_';
-  UC.s11_subfolder = 'broadband_rect';
+  UC.s11_subfolder = 'open_rect';
   UC.run_simulation = 1;
   UC.show_geometry = 1;
   UC.grounded = 1;
@@ -79,21 +79,8 @@ function rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, tand, f
   substrate.material.tand = tand;
   substrate.material.f0 = 10e9;
   substrate.zrefinement = 3;
-  % rubber
-  rubber.name = 'rubber';
-  rubber.lx = UC.lx;
-  rubber.ly = UC.ly;
-  rubber.lz = 0;
-  rubber.rotate = 0;
-  rubber.prio = 2;
-  rubber.xycenter = [0, 0];
-  rubber.material.name = 'rubber';
-  rubber.material.type = 'const';
-  rubber.material.Epsilon = 2.5;
-  rubber.material.Kappa = 0.5;
-  rubber.zrefinement = 8;
 
-  % circle
+  % open rectangles
   rect.name = 'rectangles';
   rect.lz = 0.05;
   rect.rotate = 0;
@@ -104,21 +91,21 @@ function rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, tand, f
   rect.bmaterial.type = 'const';
   rect.bmaterial.Epsilon = 1;
   rect.zrefinement = 3;
-  rect.flat = flat;
 
-  rect.L1 = L1;
-  rect.L2 = L2;
-  rect.w1 = w1;
-  rect.gap = gap;
+
+  rect.Ls = Ls;
+  rect.ws = ws;
+  rect.phis = phis;
+  rect.splits = splits;
   rect.UClx = UCDim;
   rect.UCly = UCDim;
-  rect.prio = 2;
+  rect.prio = 3;
   rect.xycenter = [0, 0];
   rect.complemential = complemential;
   
   layer_list = {@CreateUC, UC; @CreateRect, rectangle;
                                @CreateRect, substrate;
-                               @CreateBroadbandFlatRect, rect;
+                               @CreateOpenRect, rect;
                                  };
   material_list = {substrate.material, rectangle.material, rect.material, rect.bmaterial};
   [CSX, mesh, param_str, UC] = stack_layers(layer_list, material_list);

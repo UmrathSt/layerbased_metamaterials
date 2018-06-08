@@ -10,7 +10,7 @@ eps_FR4 = 4.4;
 tand = 0.02;
 
 UCDim = 6;
-fr4_thickness = 0.2;
+fr4_thickness = 3.2;
 mesh_refinement = 3;
 L1 = 5;
 L2 = 1.9;

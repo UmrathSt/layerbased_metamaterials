@@ -56,10 +56,10 @@ function [CSX, params] = CreateBroadbandFlatRect(CSX, object, translate, rotate)
         'Transform', {'Rotate_Z', pi/4, 'Translate', translate+[-(L1-w1+L2)/4,(L1-w1+L2)/4,0]}); 
   % add a background material which cuts a rectangle from the inner square
   if flat;
-    gstart = [-sqrt(2)*gap/2, L2/3, -lz/2];
-    gstop  = [+sqrt(2)*gap/2,-L2/3, +lz/2];
+    gstart = [-sqrt(2)*gap/2, L2/2.5, -lz/2];
+    gstop  = [+sqrt(2)*gap/2,-L2/2.5, +lz/2];
     CSX = AddBox(CSX, bmaterial, object.prio+3, gstart, gstop, ...
-        'Transform', {'Rotate_Z', pi/4, 'Translate', translate+[L1/2-gap/2, -L1/2+gap/2,0]}); 
+        'Transform', {'Rotate_Z', pi/4, 'Translate', translate+[L1/2-w1/2-gap/2, -L1/2+w1/2+gap/2,0]}); 
   end;
   ocenter = [object.xycenter(1:2), 0] + translate;
   params = ['# broadband rect absorber made of ',  material, ' at center position x = ', num2str(ocenter(1)), ' y = ', num2str(ocenter(2)), ' z = ' num2str(ocenter(3)), '\n' ...
