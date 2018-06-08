@@ -6,6 +6,7 @@ function [CSX, params] = CreateOpenRect(CSX, object, translate, rotate);
   lz = object.lz;
   Ls = object.Ls;
   ws = object.ws;
+  wbars = object.wbars
   phis = object.phis;
   splits = object.splits;
   % consistency checks for the geometry
@@ -35,7 +36,7 @@ function [CSX, params] = CreateOpenRect(CSX, object, translate, rotate);
   end;
   
   for i = 1:length(Ls);
-      rot = pi/2*i+phis(i);
+      rot = pi*i+phis(i);
       L = Ls(i);
       w = ws(i);
       split = splits(i);
@@ -60,10 +61,12 @@ function [CSX, params] = CreateOpenRect(CSX, object, translate, rotate);
       if i < length(Ls);
           barlength = ((L-w)/2-(Ls(i+1)-ws(i+1))/2)*sqrt(2)
           middle = ((L-w)/2+(Ls(i+1)-ws(i+1))/2)/sqrt(2); 
-          s1 = [middle-barlength/2, w/2, -lz/2];
-          s2 = [middle+barlength/2, -w/2, lz/2];
-          CSX = AddBox(CSX, material, object.prio+1,...
-          s1, s2, 'Transform', {'Translate', translate,'Rotate_Z', rotate+rot-3*pi/4});
+          s1 = [middle-barlength/2, wbars(i)/2, -lz/2];
+          s2 = [middle+barlength/2, -wbars(i)/2, lz/2];
+          if ~(wbars(i) ==0);
+            CSX = AddBox(CSX, material, object.prio+1,...
+          s1, s2, 'Transform', {'Translate', translate,'Rotate_Z', rotate+rot+3*pi/4});
+          end;
       end;
   end;  
 

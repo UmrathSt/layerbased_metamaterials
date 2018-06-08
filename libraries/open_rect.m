@@ -1,4 +1,4 @@
-function open_rect(UCDim, fr4_thickness, Ls, phis, ws, splits, eps_subs, tand, mesh_refinement, complemential);
+function open_rect(UCDim, fr4_thickness, Ls, phis, ws, splits, wbars, eps_subs, tand, mesh_refinement, complemential);
   physical_constants;
   UC.layer_td = 0;
   UC.layer_fd = 0;
@@ -17,7 +17,7 @@ function open_rect(UCDim, fr4_thickness, Ls, phis, ws, splits, eps_subs, tand, m
   UC.show_geometry = 1;
   UC.grounded = 1;
   UC.unit = 1e-3;
-  UC.f_start = 2e9;
+  UC.f_start = 3e9;
   UC.f_stop = 15e9;
   UC.lx = UCDim;
   UC.ly = UCDim;
@@ -78,7 +78,7 @@ function open_rect(UCDim, fr4_thickness, Ls, phis, ws, splits, eps_subs, tand, m
   substrate.material.Epsilon = eps_subs;
   substrate.material.tand = tand;
   substrate.material.f0 = 10e9;
-  substrate.zrefinement = 3;
+  substrate.zrefinement = 5;
 
   % open rectangles
   rect.name = 'rectangles';
@@ -97,6 +97,7 @@ function open_rect(UCDim, fr4_thickness, Ls, phis, ws, splits, eps_subs, tand, m
   rect.ws = ws;
   rect.phis = phis;
   rect.splits = splits;
+  rect.wbars = wbars;
   rect.UClx = UCDim;
   rect.UCly = UCDim;
   rect.prio = 3;
