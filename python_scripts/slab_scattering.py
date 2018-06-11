@@ -1,4 +1,12 @@
 import numpy as np
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--filmlz", dest="filmlz", type=float)
+parser.add_argument("--fr4lz", dest="fr4lz", type=float)
+parser.add_argument("--kappa", dest="kappa", type=float)
+args = parser.parse_args()
+
 
 class SlabStructure:
     def __init__(self, Z, l, k):
@@ -60,43 +68,39 @@ class SlabStructure:
 
 if __name__ == "__main__":
     from matplotlib import pyplot as plt
-    mdata = np.loadtxt("S11_f_UCDim_2_lz_3.5_eps_4_tand_1.txt", delimiter=",")
-    S11 = mdata[:,1]+1j*mdata[:,2]
-    f = np.linspace(84.75,92.5,500)*1e9 
+    #mdata = np.loadtxt("S11_f_UCDim_2_lz_3.5_eps_4_tand_1.txt", delimiter=",")
+    #S11 = mdata[:,1]+1j*mdata[:,2]
+    f = np.linspace(0.01,20,500)*1e9 
     Nf = len(f) 
-    eps1 = 2.7657
-    eps_im = 0.035
-    kappa = 2*np.pi*85e9*8.85e-12*eps_im
+    eps1 = 4.6 
+    eps_im = eps1*0.02
+    eps2 = 1
+
+    kappa1 = 2*np.pi*10e9*8.85e-12*eps_im
+    kappa2 = 1/(args.kappa*args.filmlz) 
     Z0 = np.ones(Nf)*376.73
-    eps = np.zeros((3, Nf), dtype=np.complex128)
-    Zlist = np.zeros((3, Nf), dtype=np.complex128)
+    eps = np.zeros((5, Nf), dtype=np.complex128)
+    Zlist = np.zeros((5, Nf), dtype=np.complex128)
     eps[0,:] = 1
-    eps[1,:] = eps1 + kappa*1j/(2*np.pi*f*8.85e-12)
-    eps[2,:] = 1 
-    Zlist[:,:] = Z0, Z0/np.sqrt(eps[1,:]), Z0/np.sqrt(eps[2,:])
-    l = np.array([0.05])[:,np.newaxis]
-    l2 = np.array([0.051])[:,np.newaxis]
+    eps[1,:] = eps1 + kappa1*1j/(2*np.pi*f*8.85e-12)
+    eps[2,:] = eps2 + kappa2*1j/(2*np.pi*f*8.85e-12)
+    eps[3,:] = eps1 + kappa1*1j/(2*np.pi*f*8.85e-12)
+    eps[4,:] = 56e6j 
+    Zlist[:,:] = Z0, Z0/np.sqrt(eps[1,:]), Z0/np.sqrt(eps[2,:]), Z0/np.sqrt(eps[3,:]),Z0*0
+    l = np.array([0.2e-3,args.filmlz, args.fr4lz])[:,np.newaxis]
     k = np.sqrt(eps)*2*np.pi*f/3e8
     slabstack = SlabStructure(Zlist, l, k)
-    slabstack2 = SlabStructure(Zlist, l2, k)
     R = slabstack.build_gamma()
-    R2 = slabstack2.build_gamma()
     T = slabstack.build_tau()
-    T2 = slabstack2.build_tau()
     plt.plot(f/1e9, 20*np.log10(np.abs(R)),"b-", label="S11, L=50 mm")
-    plt.plot(f/1e9, 20*np.log10(np.abs(R2)),"b--", label="S11, L=100 mm")
-    #R2 = slabstack.Gammas[0]
-    plt.plot(f/1e9, 20*np.log10(np.abs(T)),"r-", label="S12, L=50 mm")
-    plt.plot(f/1e9, 20*np.log10(np.abs(T2)),"r--", label="S12, L=100 mm")
-    #plt.plot(mdata[:,0]/1e9, 20*np.log10(np.abs(S11)),"m-", label="Rmeas")
-#    plt.plot(f/1e9, 20*np.log10(np.abs(T)),"b-", label="T")
+    #plt.plot(f/1e9, 20*np.log10(np.abs(T)),"r-", label="S21, L=50 mm")
     plt.legend(loc="best").draw_frame(False)
     plt.xlabel("f [GHz]", fontsize=14)
     plt.ylabel("$20(\log|S11|),20(\log|S12|)$", fontsize=14)
     #plt.ylabel("$|S_{11}|)$")
     #plt.ylim([-13.5,-8.5])
     plt.title("Streuung an einer L=50 mm dicken Schicht, $\epsilon$=2.76+0.035i")
-    plt.xlim([84.75,92.5])
+    #plt.xlim([84.75,92.5])
     plt.grid()
     #plt.show()
     #plt.plot(f/1e9, 376.73*((1+R)/(1-R)).imag, "k-", linewidth=2)
