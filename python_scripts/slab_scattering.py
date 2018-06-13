@@ -4,7 +4,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--filmlz", dest="filmlz", type=float)
 parser.add_argument("--fr4lz", dest="fr4lz", type=float)
-parser.add_argument("--kappa", dest="kappa", type=float)
+parser.add_argument("--Rsq", dest="Rsq", type=float)
 args = parser.parse_args()
 
 
@@ -77,7 +77,7 @@ if __name__ == "__main__":
     eps2 = 1
 
     kappa1 = 2*np.pi*10e9*8.85e-12*eps_im
-    kappa2 = 1/(args.kappa*args.filmlz) 
+    kappa2 = 1/(args.Rsq*args.filmlz) 
     Z0 = np.ones(Nf)*376.73
     eps = np.zeros((5, Nf), dtype=np.complex128)
     Zlist = np.zeros((5, Nf), dtype=np.complex128)
@@ -86,8 +86,8 @@ if __name__ == "__main__":
     eps[2,:] = eps2 + kappa2*1j/(2*np.pi*f*8.85e-12)
     eps[3,:] = eps1 + kappa1*1j/(2*np.pi*f*8.85e-12)
     eps[4,:] = 56e6j 
-    Zlist[:,:] = Z0, Z0/np.sqrt(eps[1,:]), Z0/np.sqrt(eps[2,:]), Z0/np.sqrt(eps[3,:]),Z0*0
-    l = np.array([0.2e-3,args.filmlz, args.fr4lz])[:,np.newaxis]
+    Zlist[:,:] = Z0, Z0/np.sqrt(eps[1,:]),Z0/np.sqrt(eps[2,:]), Z0/np.sqrt(eps[1,:]), Z0*0
+    l = np.array([args.fr4lz,args.filmlz, args.fr4lz])[:,np.newaxis]
     k = np.sqrt(eps)*2*np.pi*f/3e8
     slabstack = SlabStructure(Zlist, l, k)
     R = slabstack.build_gamma()
@@ -97,19 +97,7 @@ if __name__ == "__main__":
     plt.legend(loc="best").draw_frame(False)
     plt.xlabel("f [GHz]", fontsize=14)
     plt.ylabel("$20(\log|S11|),20(\log|S12|)$", fontsize=14)
-    #plt.ylabel("$|S_{11}|)$")
-    #plt.ylim([-13.5,-8.5])
     plt.title("Streuung an einer L=50 mm dicken Schicht, $\epsilon$=2.76+0.035i")
-    #plt.xlim([84.75,92.5])
     plt.grid()
-    #plt.show()
-    #plt.plot(f/1e9, 376.73*((1+R)/(1-R)).imag, "k-", linewidth=2)
     plt.savefig("streuung_dielektrische_Schicht.pdf", format="pdf")
     plt.show()
-
-    #N1, N2 = 1400, 1800
-    #print("f1, f2 = ", f[[N1,N2]])
-    #missing_phase = np.log(S11[N1]/S11[N2]*R[N2]/R[N1])/(2*np.pi*1j*(f[N1]-f[N2])/3e8)
-    #print(missing_phase)
-    #dphi = S11[N1]/(R[N1]*np.exp(2*np.pi*1j*f[N1]*(-1.75e-3)/3e8))
-    #print("dphi = ", dphi)
