@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 function squares(UCDim, fr4_thickness, film_lz, L1, L2, eps_FR4, Rsq, complemential);
+=======
+function squares(UCDim, fr4_thickness, rubber_thickness, L1, L2, eps_FR4, Rsq, complemential);
+>>>>>>> 480de4afc495e92382d9476196016326bed64178
   physical_constants;
   UC.layer_td = 0;
   UC.layer_fd = 0;
@@ -6,7 +10,7 @@ function squares(UCDim, fr4_thickness, film_lz, L1, L2, eps_FR4, Rsq, complement
   UC.fd_dumps = 0;
   UC.s_dumps = 1;
   UC.s_dumps_folder = '~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse/SParameters';
-  UC.s11_filename_prefix = ['absorber_UCDim_' num2str(UCDim) '_fr4lz_' num2str(fr4_thickness) '_filmlz_' num2str(film_lz) '_L1_' num2str(L1) '_L2_' num2str(L2) '_Rsq_' num2str(Rsq) '_epsFR4_Lorentz_' num2str(eps_FR4)];
+  UC.s11_filename_prefix = ['absorber_UCDim_' num2str(UCDim) '_fr4lz_' num2str(fr4_thickness)  '_rubberlz_' num2str(rubber_thickness) '_L1_' num2str(L1) '_L2_' num2str(L2) '_Rsq_' num2str(Rsq) '_epsFR4_' num2str(eps_FR4)];
   complemential = complemential;
   if complemential;
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, '_comp');
@@ -60,7 +64,7 @@ function squares(UCDim, fr4_thickness, film_lz, L1, L2, eps_FR4, Rsq, complement
   rectangle.prio = 2;
   rectangle.xycenter = [0, 0];
   rectangle.material.name = 'copper';
-  #rectangle.material.Kappa = 56e6;
+  rectangle.material.Kappa = 56e6;
   rectangle.material.type = 'const';
 
   rectangle.material.Kappa = 56e6;
@@ -110,6 +114,20 @@ function squares(UCDim, fr4_thickness, film_lz, L1, L2, eps_FR4, Rsq, complement
   substrate.material.Epsilon = eps_FR4;
   substrate.material.Kappa = 2*pi*10e9*EPS0*eps_FR4*0.02;
   substrate.material.type = 'const';
+  
+      # rubber
+  rubber.name = 'rubber substrate';
+  rubber.lx = UC.lx;
+  rubber.ly = UC.ly;
+  rubber.lz = rubber_thickness;
+  rubber.rotate = 0;
+  rubber.prio = 2;
+  rubber.xycenter = [0, 0];
+  rubber.material.name = 'rubber';
+  rubber.material.type = 'const';
+  rubber.material.Epsilon = 1;
+  rubber.material.Kappa = 1/(Rsq*UC.unit*rubber.lz);
+  rubber.zrefinement = 3;
 
 
 
@@ -117,10 +135,11 @@ function squares(UCDim, fr4_thickness, film_lz, L1, L2, eps_FR4, Rsq, complement
 
   layer_list = {@CreateUC, UC; @CreateRect, rectangle;
                                @CreateRect, substrate;
-                               @CreateRect, film;
+                               @CreateRect, rubber;
+                               @CreateRect, substrate;
                                @CreateSquares, squares;
                                  };
-  material_list = {film.material,squares.imaterial, squares.omaterial, rectangle.material, substrate.material};
+  material_list = {rubber.material,squares.imaterial, squares.omaterial, rectangle.material, substrate.material};
   [CSX, mesh, param_str, UC] = stack_layers(layer_list, material_list);
   [CSX, port, UC] = definePorts(CSX, mesh, UC);
   UC.param_str = param_str;
