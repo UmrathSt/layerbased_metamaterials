@@ -105,7 +105,7 @@ gapwidth2, reswidth, Res1, Res2, eps_subs, tand, mesh_refinement, complemential,
   chipres.Resistor2.Epsilon = 1;
   chipres.Resistor2.type = 'const';
   chipres.AlO2.name = 'AlO2';
-  chipres.AlO2.Epsilon = 8;
+  chipres.AlO2.Epsilon = 9;
   chipres.AlO2.type = 'const';  
   chipres.AlO2.height = 0.35;
   chipres.AlO2.length = 1;

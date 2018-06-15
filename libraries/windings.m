@@ -21,11 +21,11 @@ function windings(UCDim, fr4_thickness, rubber_thickness, Rsq, L, w, g, N, alpha
   UC.s11_filename = 'Sparameters_';
   UC.s11_subfolder = 'windings_rubber';
   UC.run_simulation = 1;
-  UC.show_geometry = 0;
+  UC.show_geometry = 1;
   UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 1.5e9;
-  UC.f_stop = 15e9;
+  UC.f_stop = 20e9;
   fcenter = (UC.f_start+UC.f_stop)/2;
   fwidth = (UC.f_stop-UC.f_start)*0.5;
   UC.lx = UCDim;
@@ -71,7 +71,7 @@ function windings(UCDim, fr4_thickness, rubber_thickness, Rsq, L, w, g, N, alpha
   substrate.name = 'FR4 substrate';
   substrate.lx = UC.lx;
   substrate.ly = UC.ly;
-  substrate.lz = fr4_thickness*1/3;
+  substrate.lz = fr4_thickness;
   substrate.rotate = 0;
   substrate.prio = 2;
   substrate.xycenter = [0, 0];
@@ -80,19 +80,8 @@ function windings(UCDim, fr4_thickness, rubber_thickness, Rsq, L, w, g, N, alpha
   substrate.material.Epsilon = eps_subs;
   substrate.material.Kappa = 2*pi*10e9*EPS0*tand*eps_subs;
   substrate.zrefinement = 5;
-  # Substrate
-  substrate2.name = 'FR4 substrate2';
-  substrate2.lx = UC.lx;
-  substrate2.ly = UC.ly;
-  substrate2.lz = fr4_thickness*2/3;
-  substrate2.rotate = 0;
-  substrate2.prio = 2;
-  substrate2.xycenter = [0, 0];
-  substrate2.material.name = 'FR4';
-  substrate2.material.type = 'const';
-  substrate2.material.Epsilon = eps_subs;
-  substrate2.material.Kappa = 2*pi*10e9*EPS0*tand*eps_subs;
-  substrate2.zrefinement = 5;
+
+
     # rubber
   rubber.name = 'rubber substrate';
   rubber.lx = UC.lx;
@@ -103,7 +92,7 @@ function windings(UCDim, fr4_thickness, rubber_thickness, Rsq, L, w, g, N, alpha
   rubber.xycenter = [0, 0];
   rubber.material.name = 'rubber';
   rubber.material.type = 'const';
-  rubber.material.Epsilon = 2.5;
+  rubber.material.Epsilon = 1;
   rubber.material.Kappa = 1/(Rsq*UC.unit*rubber.lz);
   rubber.zrefinement = 3;
 
@@ -114,7 +103,7 @@ function windings(UCDim, fr4_thickness, rubber_thickness, Rsq, L, w, g, N, alpha
   coil.material.name = 'copper_coil';
   coil.material.Kappa = 56e6;
   coil.material.type = 'const';
-  coil.bmaterial.name = 'air';
+  coil.bmaterial.name = 'rubber';
   coil.bmaterial.type = 'const';
   coil.bmaterial.Epsilon = 1;
   coil.L = L;
@@ -129,12 +118,13 @@ function windings(UCDim, fr4_thickness, rubber_thickness, Rsq, L, w, g, N, alpha
   coil.complemential = complemential;
   
   layer_list = {@CreateUC, UC; @CreateRect, rectangle;
-                               @CreateRect, substrate2;
+                               @CreateRect, substrate;
                                @CreateRect, rubber;
                                @CreateRect, substrate;
-                               @CreateCoil, coil
+                               @CreateCoil, coil;
+
                                  };
-  material_list = {substrate.material, rectangle.material, rubber.material, coil.material, coil.bmaterial};
+  material_list = {substrate.material, rectangle.material, rubber.material, coil.material};
   [CSX, mesh, param_str, UC] = stack_layers(layer_list, material_list);
   
   [CSX, port, UC] = definePorts(CSX, mesh, UC);

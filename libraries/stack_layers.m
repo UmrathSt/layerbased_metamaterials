@@ -194,7 +194,7 @@ function [CSX, mesh, param_str, UC] = stack_layers(layer_list, material_list);
   UC.lastz = lastz;
   try;
   zvals = horzcat(zvals, linspace(zvals(end), zvals(end)-object.AlO2.height+object.lz,5));
-  zvals = horzcat(zvals, linspace(zvals(end), zvals(end)-0.1,3));
+  zvals = horzcat(zvals, linspace(zvals(end), zvals(end)-object.lz,3));
 catch lasterror;
   end;
   mesh.x = SmoothMeshLines([-UC.lx/2, xvals, UC.lx/2], UC.dx, 1.3);

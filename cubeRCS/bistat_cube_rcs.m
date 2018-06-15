@@ -9,7 +9,8 @@ function retval = bistat_cube_rcs(alpha_y, freq, L, epsRe, epsIm, dump_TD_slices
 physical_constants;
 unit = 1e-3; % all length in cm
 rot_angle = alpha_y; %incident angle (to x-axis) in rad
-post_processing_only = 1;
+post_processing_only = 0;
+only_calculate = 1;
 
 % size of the simulation box
 
@@ -19,6 +20,8 @@ PW_Box = L*1.05; %1.05
  % start frequency
 % stop  frequency
 f0 = freq;
+f_min = 1e9;
+f_max = freq;
 %% Scatterer to be studied will be a box of siz
 %% Lx, Ly, Lz
 Box.Lx = L;
@@ -27,10 +30,10 @@ Box.Lz = L;
 Box.epsRe = epsRe;
 Box.epsIm = epsIm;
 %% FDTD only knows about conductivity, not the imaginary parts of epsilon/mu
-Box.kappa = EPS0 * 2 * pi * f0 * Box.epsIm; 
+Box.kappa = EPS0 * 2 * pi * (f_min+f_max)/2 * Box.epsIm; 
 
 FDTD = InitFDTD('EndCriteria', 5e-4);
-FDTD = SetGaussExcite( FDTD, 0.75*freq, 0.3*freq );
+FDTD = SetGaussExcite( FDTD, (f_min+f_max)*0.5, (f_max-f_min)*0.5 );
 BC = [3 3 1 3 3 3];  % set boundary conditions to PML
 FDTD = SetBoundaryCond( FDTD, BC );
 
@@ -82,15 +85,19 @@ mesh = AddPML(mesh,8);
 CSX = DefineRectGrid( CSX, unit, mesh );
 
 %% prepare simulation folder
+
 Sim_Path = [Path 'Cube_RCS_alpha_y_' num2str(alpha_y*180/pi, "%.1f")];
-save("-text", strcat(Sim_Path, "/", "nf2ff_struct.dat"), "nf2ff")
-Sim_CSX = 'Cube_RCS.xml';
+if ~(exist(Sim_Path) == 7);
+  mkdir(Sim_Path);
+end;
+
 confirm_recursive_rmdir(0); % overwrite path if it exists
 if !(post_processing_only);
     [status, message, messageid] = rmdir( Sim_Path, 's' ); % clear previous directory
     [status, message, messageid] = mkdir( Sim_Path ); % create empty simulation folder
 end;
-
+save("-text", strcat(Sim_Path, "/", "nf2ff_struct.dat"), "nf2ff")
+Sim_CSX = 'Cube_RCS.xml';
 %% write openEMS compatible xml-file
 WriteOpenEMS( [Sim_Path '/' Sim_CSX], FDTD, CSX );
 
@@ -102,7 +109,7 @@ if show_geometry;
   CSXGeomPlot([Sim_Path '/' Sim_CSX]);
 endif;
 settings = [''];
-openEMS_opts = ['--engine=multithreaded --numThreads=6'];
+openEMS_opts = ['--engine=multithreaded --numThreads=4'];
 if !(post_processing_only);
     RunOpenEMS( Sim_Path, Sim_CSX, openEMS_opts, settings);
 endif;
@@ -110,16 +117,19 @@ endif;
 %%
 
 %%
-f = freq;
-EF = ReadUI( 'et', Sim_Path, f ); % time domain/freq domain voltage
-Pin = 0.5*norm(E_dir)^2/Z0 .* abs(EF.FD{1}.val).^2;
-theta = (0:1440)*pi/720;
-nf2ff = CalcNF2FF(nf2ff, Sim_Path, f, theta+alpha_y, 0, 'Mode',0, 'Mirror', {1, 'PMC', 0});
-rcs = 4*pi*nf2ff.P_rad{1}(:)./Pin(1);
+retval = 0;
+if !(only_calculate);
+  f = freq;
+  EF = ReadUI( 'et', Sim_Path, f ); % time domain/freq domain voltage
+  Pin = 0.5*norm(E_dir)^2/Z0 .* abs(EF.FD{1}.val).^2;
+  theta = (0:1440)*pi/720;
+  nf2ff = CalcNF2FF(nf2ff, Sim_Path, f, theta+alpha_y, 0, 'Mode',0, 'Mirror', {1, 'PMC', 0});
+  rcs = 4*pi*nf2ff.P_rad{1}(:)./Pin(1);
+  retval = rcs;
+end;
 
-retval = rcs;
 % cleanup
 %nf2ff_cleanup([Sim_Path, "/nf2ff_"]);
 
 return 
-endfunction;
+end
