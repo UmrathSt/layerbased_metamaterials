@@ -1,4 +1,4 @@
-function rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, tand, flat, mesh_refinement, complemential);
+function rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, Rsq, tand, tand2, flat, mesh_refinement, complemential);
   physical_constants;
   UC.layer_td = 0;
   UC.layer_fd = 0;
@@ -7,7 +7,7 @@ function rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, tand, f
   UC.s_dumps = 1;
   UC.nf2ff = 0;
   UC.s_dumps_folder = '~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse/SParameters';
-  UC.s11_filename_prefix = ['UCDim_' num2str(UCDim) '_lz_' num2str(fr4_thickness) '_L1_' num2str(L1) '_w_' num2str(w1) '_L2_' num2str(L2) '_gap_' num2str(gap) '_eps_' num2str(eps_subs) '_tand_' num2str(tand) '_flat_' num2str(flat)];
+  UC.s11_filename_prefix = ['UCDim_' num2str(UCDim) '_lz_' num2str(fr4_thickness) '_L1_' num2str(L1) '_w_' num2str(w1) '_L2_' num2str(L2) '_gap_' num2str(gap) '_eps_' num2str(eps_subs) '_Rsq_' num2str(Rsq) '_tand_' num2str(tand) '_tand2_' num2str(tand2) '_flat_' num2str(flat)];
   if complemential;
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, '_comp');
   end;
@@ -17,7 +17,7 @@ function rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, tand, f
   UC.show_geometry = 1;
   UC.grounded = 1;
   UC.unit = 1e-3;
-  UC.f_start = 2e9;
+  UC.f_start = 3e9;
   UC.f_stop = 15e9;
   UC.lx = UCDim;
   UC.ly = UCDim;
@@ -79,48 +79,72 @@ function rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, tand, f
   substrate.material.tand = tand;
   substrate.material.f0 = 10e9;
   substrate.zrefinement = 3;
-  % rubber
-  rubber.name = 'rubber';
-  rubber.lx = UC.lx;
-  rubber.ly = UC.ly;
-  rubber.lz = 0;
-  rubber.rotate = 0;
-  rubber.prio = 2;
-  rubber.xycenter = [0, 0];
-  rubber.material.name = 'rubber';
-  rubber.material.type = 'const';
-  rubber.material.Epsilon = 2.5;
-  rubber.material.Kappa = 0.5;
-  rubber.zrefinement = 8;
+ % substrate 2
+  substrate2.name = 'FR4 substrate2';
+  substrate2.lx = UC.lx;
+  substrate2.ly = UC.ly;
+  substrate2.lz = fr4_thickness;
+  substrate2.rotate = 0;
+  substrate2.prio = 2;
+  substrate2.xycenter = [0, 0];
+  substrate2.material.name = 'Dielectric2';
+  substrate2.material.type = 'const';
+  substrate2.material.Epsilon = eps_subs;
+  substrate2.material.tand = tand2;
+  substrate2.material.f0 = 10e9;
+  substrate2.zrefinement = 3;
+
 
   % circle
   rect.name = 'rectangles';
   rect.lz = 0.05;
   rect.rotate = 0;
   rect.material.name = 'rectangles';
-  rect.material.Kappa = 56e6;
+  rect.material.Kappa = 1/(Rsq*rect.lz*UC.unit);
   rect.material.type = 'const';
-  rect.bmaterial.name = 'air';
-  rect.bmaterial.type = 'const';
-  rect.bmaterial.Epsilon = 1;
+  rect.bmaterial.name = 'FR4';
   rect.zrefinement = 3;
   rect.flat = flat;
-
   rect.L1 = L1;
   rect.L2 = L2;
   rect.w1 = w1;
   rect.gap = gap;
   rect.UClx = UCDim;
   rect.UCly = UCDim;
-  rect.prio = 2;
+  rect.prio = 6;
   rect.xycenter = [0, 0];
   rect.complemential = complemential;
+  % second rectangle
+    % circle
+  rec1t.name = 'rectangles2';
+  rect1.lz = 0.05;
+  rect1.rotate = 0;
+  rect1.material.name = 'rectangles';
+  rect1.material.Kappa = 1/(Rsq*rect.lz*UC.unit);
+  rect1.material.type = 'const';
+  rect1.bmaterial.name = 'air';
+  rect1.bmaterial.type = 'const';
+  rect1.bmaterial.Epsilon = 1;
+  rect1.zrefinement = 3;
+  rect1.flat = flat;
+  rect1.L1 = L1*1.05;
+  rect1.L2 = L2*1.05;
+  rect1.w1 = w1*1.05;
+  rect1.gap = gap;
+  rect1.UClx = UCDim;
+  rect1.UCly = UCDim;
+  rect1.prio = 6;
+  rect1.xycenter = [0, 0];
+  rect1.complemential = complemential;
+  
   
   layer_list = {@CreateUC, UC; @CreateRect, rectangle;
                                @CreateRect, substrate;
                                @CreateBroadbandFlatRect, rect;
+                               @CreateRect, substrate2;
+                               @CreateBroadbandFlatRect, rect1;
                                  };
-  material_list = {substrate.material, rectangle.material, rect.material, rect.bmaterial};
+  material_list = {substrate.material, substrate2.material, rectangle.material, rect.material, rect1.bmaterial};
   [CSX, mesh, param_str, UC] = stack_layers(layer_list, material_list);
   
   [CSX, port, UC] = definePorts(CSX, mesh, UC);
@@ -132,7 +156,7 @@ function rect_broadband(UCDim, fr4_thickness, L1, w1, L2, gap, eps_subs, tand, f
     CSXGeomPlot([UC.SimPath '/' UC.SimCSX]);
   end;
   if UC.run_simulation;
-    openEMS_opts = '--engine=multithreaded --numThreads=6';%'-vvv';
+    openEMS_opts = '--engine=multithreaded --numThreads=4';%'-vvv';
     %Settings = ['--debug-PEC', '--debug-material'];
     Settings = [''];
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);

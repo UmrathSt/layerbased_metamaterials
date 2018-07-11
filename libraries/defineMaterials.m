@@ -37,8 +37,9 @@ function [CSX, param_str] = defineMaterials(CSX, material_list, param_str);
       CSX = AddConductingSheet(CSX, material_list{i}.name, Kappa, D);
    elseif(strcmp(material_list{i}.type, 'const'));
       %fprintf(strcat('Using Material with frequency independent epsilon/conducivity for ', material_list{i}.name, '\n'));
-      CSX = AddMaterial(CSX, material_list{i}.name);
+      
       try;
+        CSX = AddMaterial(CSX, material_list{i}.name);
         CSX = SetMaterialProperty(CSX, material_list{i}.name, 'Kappa', material_list{i}.Kappa);
       catch lasterror;
       end;

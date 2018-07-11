@@ -28,8 +28,8 @@ PW_Box = 60;
 
 %% setup FDTD parameter & excitation function
 f_start =  0.1e9; % start frequency
-f_stop = 92.5e9; % stop  frequency
-f0 = 50e9;
+f_stop = 50e9; % stop  frequency
+f0 = 25e9;
 
 FDTD = InitFDTD( );
 FDTD = SetGaussExcite( FDTD, 0.5*(f_start+f_stop), 0.5*(f_stop-f_start) );
@@ -37,7 +37,7 @@ BC = [1 1 1 1 1 1]*3;  % set boundary conditions
 FDTD = SetBoundaryCond( FDTD, BC );
 
 %% setup CSXCAD geometry & mesh
-max_res = c0 / f_stop / unit / 30; % cell size: lambda/20
+max_res = c0 / f_stop / unit / 40; % cell size: lambda/20
 CSX = InitCSX();
 
 %create mesh
@@ -72,7 +72,7 @@ mesh = AddPML(mesh,8);
 CSX = DefineRectGrid( CSX, unit, mesh );
 
 %% prepare simulation folder
-Sim_Path = 'Sphere_RCS';
+Sim_Path = '/mnt/hgfs/E/openEMS/Sphere_RCS/';
 Sim_CSX = 'Sphere_RCS.xml';
 
 [status, message, messageid] = rmdir( Sim_Path, 's' ); % clear previous directory
@@ -82,10 +82,10 @@ Sim_CSX = 'Sphere_RCS.xml';
 WriteOpenEMS( [Sim_Path '/' Sim_CSX], FDTD, CSX );
 
 %% show the structure
-CSXGeomPlot( [Sim_Path '/' Sim_CSX] );
+%CSXGeomPlot( [Sim_Path '/' Sim_CSX] );
 
 %% run openEMS
-RunOpenEMS( Sim_Path, Sim_CSX, '--engine=multithreaded --numThreads=2');
+RunOpenEMS( Sim_Path, Sim_CSX, '--engine=multithreaded --numThreads=4');
 
 %%
 disp('Use Paraview to display the elctric fields dumped by openEMS');
@@ -95,18 +95,10 @@ EF = ReadUI( 'et', Sim_Path, f0 ); % time domain/freq domain voltage
 Pin = 0.5*norm(E_dir)^2/Z0 .* abs(EF.FD{1}.val).^2;
 
 %%
-nf2ff = CalcNF2FF(nf2ff, Sim_Path, f0, pi/2, [-180:2:180]*pi/180, 'Mode',1);
-RCS = 4*pi./Pin(1).*nf2ff.P_rad{1}(:);
-polar(nf2ff.phi,RCS);
-xlabel('x -->');
-ylabel('y -->');
-hold on
-grid on
 
-drawnow
 
 %%
-freq = linspace(f_start,f_stop,100);
+freq = linspace(f_start,f_stop,200);
 EF = ReadUI( 'et', Sim_Path, freq ); % time domain/freq domain voltage
 Pin = 0.5*norm(E_dir)^2/Z0 .* abs(EF.FD{1}.val).^2;
 

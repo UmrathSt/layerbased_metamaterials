@@ -48,12 +48,17 @@ def sigma(lmax, f, R, epsSp, epsMd, muSp, muMd):
 
 if __name__ == "__main__":
     from matplotlib import pyplot as plt
-    f = np.linspace(1,30,1160)*1e9
+    f = np.linspace(1,90,891)*1e9
     R = 25e-3
-    lmax =100 
+    lmax =120 
     l = np.arange(1,lmax+1).reshape(lmax,1)
     x = 2*np.pi*f/3e8*R
     area = R**2*np.pi
+    to_write = np.zeros((len(f),2))
+    to_write[:,0] = f/1e9
+    to_write[:,1] = sigmaPEC(lmax, f, R)
+    header = 'Mie-theory result for the monostatic RCS [m^2] of a R = 25 mm PEC sphere as a function of frequency [GHz]'
+    np.savetxt('monostatic_rcs_mie_R_25mm.dat', to_write, delimiter=",", header=header)
     rsphere_result = np.loadtxt("../cubeRCS/PEC_sphere_refined/second_try/refined_monostatic_rcs_sphere.dat", delimiter=",")
     sphere_result = np.loadtxt("../cubeRCS/PEC_sphere/monostatic_rcs_sphere.dat", delimiter=",")
     #cube_result = np.loadtxt("../cubeRCS/PVC_cube_1-10GHz/alpha_0/monostatic_PVC_cube_rcs_f.dat", delimiter=",")

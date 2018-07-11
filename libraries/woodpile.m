@@ -1,4 +1,4 @@
-function csquares(UCDim, fr4_thickness, L1, L2, eps_FR4, Rsq, complemential);
+function woodpile(name, UCDim, params, complemential);
   physical_constants;
   UC.layer_td = 0;
   UC.layer_fd = 0;
@@ -6,15 +6,15 @@ function csquares(UCDim, fr4_thickness, L1, L2, eps_FR4, Rsq, complemential);
   UC.fd_dumps = 0;
   UC.s_dumps = 1;
   UC.s_dumps_folder = '~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse/SParameters';
-  UC.s11_filename_prefix = ['absorber_UCDim_' num2str(UCDim) '_lz_' num2str(fr4_thickness) '_L1_' num2str(L1) '_L2_' num2str(L2) '_Rsq_' num2str(Rsq) '_epsFR4_Lorentz_' num2str(eps_FR4)];
+  UC.s11_filename_prefix = [name];
   complemential = complemential;
   if complemential;
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, '_comp');
   end;
   UC.s11_filename = 'Sparameters_';
-  UC.s11_subfolder = 'csquares';
+  UC.s11_subfolder = 'woodpile';
   UC.run_simulation = 1;
-  UC.show_geometry = 0;
+  UC.show_geometry = 1;
   UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 1e9;
@@ -59,53 +59,59 @@ function csquares(UCDim, fr4_thickness, L1, L2, eps_FR4, Rsq, complemential);
   rectangle.rotate = 0;
   rectangle.prio = 2;
   rectangle.xycenter = [0, 0];
-  rectangle.material.name = 'copper';
-  #rectangle.material.Kappa = 56e6;
+  rectangle.material.name = 'CuBackplane';
+  rectangle.material.Kappa = 56e6;
   rectangle.material.type = 'const';
 
-  rectangle.material.Kappa = 56e6;
-  squares.name = 'squares';
-  squares.lx1 = L1; 
-  squares.lx2 = L2; 
-  squares.ly1 = L1; 
-  squares.ly2 = L2; 
-  squares.lz = 0.05;
-  squares.rotate = 0;
-  squares.prio = 2;
-  squares.xycenter = [0, 0];
-  squares.material.name = 'copperSquares';
-  squares.material.type = 'const';
-  squares.imaterial.name = "Icopper";
-  squares.imaterial.type = "const";
-  squares.omaterial.Kappa = 56e6;
-  squares.omaterial.name = "Ocopper";
-  squares.omaterial.type = 'const';
 
-  squares.imaterial.Kappa = 1/(squares.lz*Rsq*UC.unit);
+
+  cube.name = 'cube';
+  cube.Lx = 0; 
+  cube.Ly = 0; 
+  cube.Lz = 0; 
+  cube.lz  = 0;
+  cube.UClx = UCDim;
+  cube.UCly = UCDim;
+  cube.prio = 6;
+  cube.xycenter = [0, 0];
+  cube.material.name = 'dummy_name';
+  cube.material.type = 'const';
+  cube.material.Kappa = 0;
+  cube.material.Epsilon = 1;
+  cube.bmaterial.name = 'dummy_bname';
+  cube.bmaterial.type = "const";
+  cube.bmaterial.Kappa = 0;
+  cube.bmaterial.Epsilon = 1;
+  cube.rotate = 0;
+  
+for i = 1:size(params)(1);
+    cube.Lx = params{i, 1}; 
+    cube.Ly = params{i, 2}; 
+    cube.Lz = params{i, 3}; 
+    cube.lz  = params{i, 3};
+    cube.material.name = params{i, 4};
+    cube.material.Epsilon = params{i, 5};
+    cube.material.Kappa = params{i, 6};
+    cube.bmaterial.name = params{i, 7};
+    cube.bmaterial.Epsilon = params{i, 8};
+    cube.bmaterial.Kappa = params{i, 9};
+    cubes(i) = cube;
+end;
+fprintf("\n finished appending cubes \n");
+
+layer_list = {@CreateUC, UC; @CreateRect, rectangle};
+material_list{1} = rectangle.material;
+for i = 1:size(params)(1);
+      material_list = append_material(material_list, cubes(i).material, 1);
+      material_list = append_material(material_list, cubes(i).bmaterial, 1);
+end;
+
+for i = 1:size(params)(1);
+        layer_list(2+i,1) = @CreateCrossedCube;
+        layer_list(2+i,2) = cubes(i);
+end;
   
 
-  # Substrate
-  substrate.name = 'FR4 substrate';
-  substrate.lx = UC.lx;
-  substrate.ly = UC.ly;
-  substrate.lz = fr4_thickness;
-  substrate.rotate = 0;
-  substrate.prio = 2;
-  substrate.xycenter = [0, 0];
-  substrate.material.name = 'FR4';
-  substrate.material.Epsilon = eps_FR4;
-  substrate.material.Kappa = 2*pi*5e9*EPS0*0.02*4.4;
-  substrate.material.type = 'const';
-  substrate.material.f0 = 5e9;
-
-
-
-
-  layer_list = {@CreateUC, UC; @CreateRect, rectangle;
-                               @CreateRect, substrate;
-                               @CreateCSquares, squares;
-                                 };
-  material_list = {squares.imaterial, squares.omaterial, rectangle.material, substrate.material};
   [CSX, mesh, param_str, UC] = stack_layers(layer_list, material_list);
   [CSX, port, UC] = definePorts(CSX, mesh, UC);
   UC.param_str = param_str;
@@ -115,7 +121,7 @@ function csquares(UCDim, fr4_thickness, L1, L2, eps_FR4, Rsq, complemential);
     CSXGeomPlot([UC.SimPath '/' UC.SimCSX]);
   end;
   if UC.run_simulation;
-    openEMS_opts = '--numThreads=6';#'-vvv';
+    openEMS_opts = '--numThreads=4';#'-vvv';
     #Settings = ['--debug-PEC', '--debug-material'];
     Settings = [''];
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);

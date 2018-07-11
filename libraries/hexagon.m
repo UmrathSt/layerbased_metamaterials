@@ -1,4 +1,4 @@
-function hexagon(UCly, fr4_thickness, L1, w1, eps_subs, tand, mesh_refinement, complemential);
+function hexagon(UCly, fr4_thickness, L1, w1, eps_subs, tand, kappa, mesh_refinement, complemential);
   physical_constants;
   UC.layer_td = 0;
   UC.layer_fd = 0;
@@ -6,14 +6,14 @@ function hexagon(UCly, fr4_thickness, L1, w1, eps_subs, tand, mesh_refinement, c
   UC.fd_dumps = 0;
   UC.s_dumps = 1;
   UC.nf2ff = 0;
-  if uname().nodename == 'Xeon';
+  if strcmp(uname().nodename, 'Xeon');
     midstr = '/';
     printf('Running job on XEON \n');
   else;
     midstr = '/git_layerbased/';
   endif;
   UC.s_dumps_folder = ['~/Arbeit/openEMS' midstr 'layerbased_metamaterials/Ergebnisse/SParameters'];
-  UC.s11_filename_prefix = ['hexUCly_' num2str(UCly) '_lz_' num2str(fr4_thickness)  '_L_' num2str(L1) '_w_' num2str(w1) '_eps_' num2str(eps_subs) '_tand_' num2str(tand)];
+  UC.s11_filename_prefix = ['hexUCly_' num2str(UCly) '_lz_' num2str(fr4_thickness)  '_L_' num2str(L1) '_w_' num2str(w1) '_kappa_' num2str(kappa) '_eps_' num2str(eps_subs) '_tand_' num2str(tand)];
 
   UC.s11_filename = 'Sparameters_';
   UC.s11_subfolder = 'hexagon';
@@ -32,7 +32,7 @@ function hexagon(UCly, fr4_thickness, L1, w1, eps_subs, tand, mesh_refinement, c
   UC.dump_frequencies = [2.4e9, 5.2e9, 7.5e9];
   UC.s11_delta_f = 10e6;
   UC.EndCriteria = 1e-5;
-  if uname().nodename == 'Xeon';
+  if strcmp(uname().nodename, 'Xeon');
     UC.SimPath = ['/media/stefan/Daten/openEMS/' UC.s11_subfolder '/' UC.s11_filename_prefix];
     UC.ResultPath = ['~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse'];
   else;
@@ -85,7 +85,7 @@ function hexagon(UCly, fr4_thickness, L1, w1, eps_subs, tand, mesh_refinement, c
   hexagon.lz = 0.05;
   hexagon.rotate = 0;
   hexagon.material.name = 'CopperHexagon';
-  hexagon.material.Kappa = 56e6;
+  hexagon.material.Kappa = kappa;
   hexagon.material.type = 'const';
   hexagon.bmaterial.name = 'air';
   hexagon.bmaterial.type = 'const';
@@ -104,9 +104,9 @@ function hexagon(UCly, fr4_thickness, L1, w1, eps_subs, tand, mesh_refinement, c
                                @CreateHEXagon, hexagon;
                                  };
   material_list = {substrate.material, rectangle.material, hexagon.material, hexagon.bmaterial};
-  [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
+  [CSX, mesh, param_str, UC] = stack_layers(layer_list, material_list);
   
-  [CSX, port] = definePorts(CSX, mesh, UC.f_start);
+  [CSX, port, UC] = definePorts(CSX, mesh, UC);
 
   UC.param_str = param_str;
   [CSX] = defineFieldDumps(CSX, mesh, layer_list, UC);
@@ -115,7 +115,7 @@ function hexagon(UCly, fr4_thickness, L1, w1, eps_subs, tand, mesh_refinement, c
     CSXGeomPlot([UC.SimPath '/' UC.SimCSX]);
   end;
   if UC.run_simulation;
-    openEMS_opts = '--engine=multithreaded --numThreads=6';%'-vvv';
+    openEMS_opts = '--engine=multithreaded --numThreads=4';%'-vvv';
     %Settings = ['--debug-PEC', '--debug-material'];
     Settings = [''];
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);

@@ -2,9 +2,10 @@ import numpy as np
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--filmlz", dest="filmlz", type=float)
-parser.add_argument("--fr4lz", dest="fr4lz", type=float)
-parser.add_argument("--Rsq", dest="Rsq", type=float)
+parser.add_argument("--L1", dest="L2", type=float)
+parser.add_argument("--L2", dest="L1", type=float)
+parser.add_argument("--Rsq1", dest="Rsq1", type=float)
+parser.add_argument("--Rsq2", dest="Rsq2", type=float)
 args = parser.parse_args()
 
 
@@ -70,24 +71,20 @@ if __name__ == "__main__":
     from matplotlib import pyplot as plt
     #mdata = np.loadtxt("S11_f_UCDim_2_lz_3.5_eps_4_tand_1.txt", delimiter=",")
     #S11 = mdata[:,1]+1j*mdata[:,2]
-    f = np.linspace(0.01,20,500)*1e9 
+    fmin, fmax = 1, 100
+    f = np.linspace(fmin, fmax,500)*1e9 
     Nf = len(f) 
-    eps1 = 4.6 
-    eps_im = eps1*0.02
-    eps2 = 1
-
-    kappa1 = 2*np.pi*10e9*8.85e-12*eps_im
-    kappa2 = 1/(args.Rsq*args.filmlz) 
+    eps1 = 1 
+    eps2 = 1 
     Z0 = np.ones(Nf)*376.73
-    eps = np.zeros((5, Nf), dtype=np.complex128)
-    Zlist = np.zeros((5, Nf), dtype=np.complex128)
+    eps = np.zeros((4, Nf), dtype=np.complex128)
+    Zlist = np.zeros((4, Nf), dtype=np.complex128)
     eps[0,:] = 1
-    eps[1,:] = eps1 + kappa1*1j/(2*np.pi*f*8.85e-12)
-    eps[2,:] = eps2 + kappa2*1j/(2*np.pi*f*8.85e-12)
-    eps[3,:] = eps1 + kappa1*1j/(2*np.pi*f*8.85e-12)
-    eps[4,:] = 56e6j 
-    Zlist[:,:] = Z0, Z0/np.sqrt(eps[1,:]),Z0/np.sqrt(eps[2,:]), Z0/np.sqrt(eps[1,:]), Z0*0
-    l = np.array([args.fr4lz,args.filmlz, args.fr4lz])[:,np.newaxis]
+    eps[1,:] = eps1 + 1j/(args.Rsq1*args.L1*2*np.pi*f*8.85e-12) 
+    eps[2,:] = eps2 + 1j/(args.Rsq2*args.L2*2*np.pi*f*8.85e-12) 
+    eps[3,:] = 56e6j 
+    Zlist[:,:] = Z0, Z0/np.sqrt(eps[1,:]), Z0/np.sqrt(eps[2,:]), Z0*0
+    l = np.array([args.L1, args.L2])[:,np.newaxis]
     k = np.sqrt(eps)*2*np.pi*f/3e8
     slabstack = SlabStructure(Zlist, l, k)
     R = slabstack.build_gamma()
@@ -98,6 +95,7 @@ if __name__ == "__main__":
     plt.xlabel("f [GHz]", fontsize=14)
     plt.ylabel("$20(\log|S11|),20(\log|S12|)$", fontsize=14)
     plt.title("Streuung an einer L=50 mm dicken Schicht, $\epsilon$=2.76+0.035i")
+    plt.xlim([fmin, fmax])
     plt.grid()
     plt.savefig("streuung_dielektrische_Schicht.pdf", format="pdf")
     plt.show()

@@ -1,4 +1,4 @@
-function squares(UCDim, fr4_thickness, rubber_thickness, L1, L2, eps_FR4, Rsq, complemential);
+function squares(UCDim, fr4_thickness1,  fr4_thickness2, L1, L2, eps_FR4, Rsq1, Rsq2, complemential);
   physical_constants;
   UC.layer_td = 0;
   UC.layer_fd = 0;
@@ -6,13 +6,13 @@ function squares(UCDim, fr4_thickness, rubber_thickness, L1, L2, eps_FR4, Rsq, c
   UC.fd_dumps = 0;
   UC.s_dumps = 1;
   UC.s_dumps_folder = '~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse/SParameters';
-  UC.s11_filename_prefix = ['absorber_UCDim_' num2str(UCDim) '_fr4lz_' num2str(fr4_thickness)  '_rubberlz_' num2str(rubber_thickness) '_L1_' num2str(L1) '_L2_' num2str(L2) '_Rsq_' num2str(Rsq) '_epsFR4_' num2str(eps_FR4)];
+  UC.s11_filename_prefix = ['absorber_UCDim_' num2str(UCDim) '_fr4lz1_' num2str(fr4_thickness1)  '_fr4lz2_' num2str(fr4_thickness2)  '_L1_' num2str(L1) '_L2_' num2str(L2) '_Rsq1_' num2str(Rsq1)  '_Rsq2_' num2str(Rsq2) '_epsFR4_' num2str(eps_FR4)];
   complemential = complemential;
   if complemential;
     UC.s11_filename_prefix = horzcat(UC.s11_filename_prefix, '_comp');
   end;
   UC.s11_filename = 'Sparameters_';
-  UC.s11_subfolder = 'resistive_film_square';
+  UC.s11_subfolder = 'squares';
   UC.run_simulation = 1;
   UC.show_geometry = 0;
   UC.grounded = 1;
@@ -66,43 +66,57 @@ function squares(UCDim, fr4_thickness, rubber_thickness, L1, L2, eps_FR4, Rsq, c
   rectangle.material.Kappa = 56e6;
   squares.name = 'squares';
   squares.lx1 = L1; 
-  squares.lx2 = L2; 
+  squares.lx2 = 0; 
   squares.ly1 = L1; 
-  squares.ly2 = L2; 
+  squares.ly2 = 0; 
   squares.lz = 0.1;
   squares.rotate = 0;
+  squares.UClx = UCDim;
+  squares.UCly = UCDim;
   squares.prio = 6;
   squares.xycenter = [0, 0];
   squares.material.name = 'copperSquares';
   squares.material.type = 'const';
   squares.imaterial.name = "Icopper";
   squares.imaterial.type = "const";
-  squares.imaterial.Kappa = 56e6;
+  squares.imaterial.Kappa = 1/(squares.lz*Rsq1*UC.unit);;
   squares.omaterial.name = "OcopperSquares";
   squares.omaterial.type = 'const';
+  squares.bmaterial.name = 'FR4';
 
-  squares.omaterial.Kappa =56e6;
+  squares.omaterial.Kappa =1/(squares.lz*Rsq1*UC.unit);;
   
-# film
+  
+  squares2.name = 'squares2';
+  squares2.lx1 = L2; 
+  squares2.lx2 =0; 
+  squares2.ly1 = L2; 
+  squares2.ly2 = 0; 
+  squares2.lz = 0.1;
+  squares2.UClx = UCDim;
+  squares2.UCly = UCDim;
+  squares2.rotate = 0;
+  squares2.prio = 6;
+  squares2.xycenter = [0, 0];
+  squares2.material.name = 'copperSquares2';
+  squares2.bmaterial.name = 'FR4';
+  squares2.material.type = 'const';
+  squares2.imaterial.name = "Icopper2";
+  squares2.imaterial.type = "const";
+  squares2.imaterial.Kappa = 1/(squares.lz*Rsq2*UC.unit);;
+  squares2.omaterial.name = "OcopperSquares2";
+  squares2.omaterial.type = 'const';
 
-  film.name = 'resistive_film';
-  film.lx = UCDim;
-  film.ly = UCDim;
-  film.lz = 0.1;
-  film.rotate = 0;
-  film.prio = 3;
-  film.xycenter = [0, 0];
-  film.material.name = 'film_material';
-  film.material.Kappa = 1/(film.lz*Rsq*UC.unit);;
-  film.material.type = 'const';
-  film.zrefinement = 3;
+  squares2.omaterial.Kappa =1/(squares.lz*Rsq2*UC.unit);;
+  
+
 
 
   # Substrate
   substrate.name = 'FR4 substrate';
   substrate.lx = UC.lx;
   substrate.ly = UC.ly;
-  substrate.lz = fr4_thickness;
+  substrate.lz = fr4_thickness1;
   substrate.rotate = 0;
   substrate.prio = 2;
   substrate.xycenter = [0, 0];
@@ -111,31 +125,29 @@ function squares(UCDim, fr4_thickness, rubber_thickness, L1, L2, eps_FR4, Rsq, c
   substrate.material.Kappa = 2*pi*10e9*EPS0*eps_FR4*0.02;
   substrate.material.type = 'const';
   
-      # rubber
-  rubber.name = 'rubber substrate';
-  rubber.lx = UC.lx;
-  rubber.ly = UC.ly;
-  rubber.lz = rubber_thickness;
-  rubber.rotate = 0;
-  rubber.prio = 2;
-  rubber.xycenter = [0, 0];
-  rubber.material.name = 'rubber';
-  rubber.material.type = 'const';
-  rubber.material.Epsilon = 1;
-  rubber.material.Kappa = 1/(Rsq*UC.unit*rubber.lz);
-  rubber.zrefinement = 3;
+  substrate2.name = 'FR4 substrate';
+  substrate2.lx = UC.lx;
+  substrate2.ly = UC.ly;
+  substrate2.lz = fr4_thickness2;
+  substrate2.rotate = 0;
+  substrate2.prio = 2;
+  substrate2.xycenter = [0, 0];
+  substrate2.material.name = 'FR4';
+  substrate2.material.Epsilon = eps_FR4;
+  substrate2.material.Kappa = 2*pi*10e9*EPS0*eps_FR4*0.02;
+  substrate2.material.type = 'const';
 
 
 
 
 
   layer_list = {@CreateUC, UC; @CreateRect, rectangle;
-                               @CreateRect, substrate;
-                               @CreateRect, rubber;
+                               @CreateRect, substrate2;
+                               @CreateSquares, squares2;
                                @CreateRect, substrate;
                                @CreateSquares, squares;
                                  };
-  material_list = {rubber.material,squares.imaterial, squares.omaterial, rectangle.material, substrate.material};
+  material_list = {substrate.material,squares.imaterial, squares.omaterial, squares2.imaterial, squares2.omaterial, rectangle.material};
   [CSX, mesh, param_str, UC] = stack_layers(layer_list, material_list);
   [CSX, port, UC] = definePorts(CSX, mesh, UC);
   UC.param_str = param_str;
