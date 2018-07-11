@@ -1,9 +1,9 @@
-function retval = bistat_PECsphere_rcs(alpha_y, freq, R, dump_TD_slices, show_geometry, Path);
-% Do a monostatic RCS calculation at the frequency "freq" for a dielectric sphere with
+function retval = bistat_PECsphere_rcs(alpha_y, freq, L, dump_TD_slices, show_geometry, Path);
+% Do a monostatic RCS calculation at the frequency "freq" for a dielectric cube with
 % which is rotated around the y-axis by alpha_y
 % A plane wave is propagating along the z-direction and polarized in x-direction
 % 
-retval = 0;
+
 %% setup the simulation
 physical_constants;
 unit = 1e-3; % all length in cm
@@ -12,52 +12,51 @@ post_processing_only = 0;
 
 % size of the simulation box
 
-PW_Box = 2*R*1.05; %1.05
+
 
 %% setup FDTD parameter & excitation function
  % start frequency
 % stop  frequency
+f_stop = freq;
+f_start = 1e9;
+fc = (f_start+f_stop)/2;
+f0 = fc;
+fw = (f_stop-f_start)
 %% Scatterer to be studied will be a box of siz
 %% Lx, Ly, Lz
-Sphere.R = R;
+Box.Lx = L;
+Box.Ly = L;
+Box.Lz = L;
 
-FDTD = InitFDTD('EndCriteria', 5e-4);
-freq_min = 1e9;
-freq_max = freq;
-freq_center = (freq_min+freq_max)/2;
-FDTD = SetGaussExcite( FDTD, freq_center, 0.5*(freq_max-freq_min) );
-BC = [3 3 1 3 3 3];  % set boundary conditions to PML
+FDTD = InitFDTD('EndCriteria', 1e-5);
+FDTD = SetGaussExcite( FDTD, fc, fw);
+BC = [0 3 1 3 3 3];  % set boundary conditions to PML
 FDTD = SetBoundaryCond( FDTD, BC );
 
 %% setup CSXCAD geometry & mesh
-max_res = c0 / freq_max / unit / 20; % cell size: lambda/20
-nf2ff_res = c0 / freq_max / unit / 15;
-sphere_res = max_res;
-
+max_res = c0 / freq / unit / 20; % cell size: lambda/20
 CSX = InitCSX();
-lambda_max = c0 / freq_min / unit;
-SimBox = PW_Box + 2*8*max_res ;%+ lambda_max/2;
+PW_Box = L+20*max_res; %1.05
+SimBox = PW_Box + 2*8*max_res;
 
 %create mesh
-smooth_mesh = AutoSmoothMeshLines([0 Sphere.R], sphere_res);
-smooth_mesh = AutoSmoothMeshLines([smooth_mesh SimBox/2], max_res);
-mesh.x = unique([-smooth_mesh smooth_mesh]);
-mesh.y = smooth_mesh;
-mesh.z = mesh.x;
+smoothx = SmoothMeshLines([0 Box.Lx/2, SimBox/2], max_res);
+smoothy = SmoothMeshLines([0 Box.Ly/2, SimBox/2], max_res);
+mesh.x = smoothx;
+mesh.y = unique([-smoothy, smoothy]);
+mesh.z = unique([-mesh.x,mesh.x]);
 
-%% create metal sphere
-CSX = AddMetal(CSX, 'PECsphere' ); % create a perfect electric conductor (PEC)
-
-
-CSX = AddSphere(CSX,'PECsphere', 1, [0,0,0], R);
+%% create metal cube
+CSX = AddMetal(CSX, 'Cube' ); % create a perfect electric conductor (PEC)
+CSX = AddSphere(CSX,'Cube', 1,[0,0,0], L/2);
 
 %% plane wave excitation
-k_dir = [sin(alpha_y), 0, cos(alpha_y)]; % plane wave direction
-E_dir = [cos(alpha_y), 0, -sin(alpha_y)]; % plane wave polarization --> E_z
+k_dir = [0, cos(alpha_y), sin(alpha_y)]; % plane wave direction
+E_dir = [1, 0, 0]; % plane wave polarization --> E_z
 
-CSX = AddPlaneWaveExcite(CSX, 'plane_wave', k_dir, E_dir, freq_min);
-start = [-PW_Box/2 -PW_Box/2 -PW_Box/2];
-stop  = -start;
+CSX = AddPlaneWaveExcite(CSX, 'plane_wave', k_dir, E_dir, fc);
+start = [mesh.x(1) -PW_Box/2 -PW_Box/2];
+stop  = [PW_Box/2, PW_Box/2, PW_Box/2];
 CSX = AddBox(CSX, 'plane_wave', 0, start, stop);
 if dump_TD_slices;
   start = [mesh.x(1)   0 mesh.z(1)];
@@ -71,11 +70,14 @@ if dump_TD_slices;
   CSX = AddBox(CSX, 'Exy', 0, start, stop);
 endif;
 %%nf2ff calc
-mesh = AddPML(mesh,8);
+start = [mesh.x(1)     mesh.y(1)     mesh.z(1)];
+stop  = [mesh.x(end) mesh.y(end) mesh.z(end)];
+[CSX nf2ff] = CreateNF2FFBox(CSX, 'nf2ff', start, stop, 'Directions', [0, 1, 1, 1, 1, 1]);
+
+% add 8 lines in all direction as pml spacing
+mesh = AddPML(mesh,[0, 8, 8, 8, 8, 8]);
+
 CSX = DefineRectGrid( CSX, unit, mesh );
-start = [mesh.x(8)     mesh.y(8)     mesh.z(8)];
-stop  = [mesh.x(end-9) mesh.y(end-9) mesh.z(end-9)];
-[CSX nf2ff] = CreateNF2FFBox(CSX, 'nf2ff', start, stop, 'Directions', [1, 1, 0, 1, 1, 1]);
 
 %% prepare simulation folder
 
@@ -101,11 +103,14 @@ if show_geometry;
   CSXGeomPlot([Sim_Path '/' Sim_CSX]);
 endif;
 settings = [''];
-openEMS_opts = ['--engine=multithreaded --numThreads=4'];
+openEMS_opts = ['--engine=multithreaded --numThreads=6'];
 if !(post_processing_only);
     RunOpenEMS( Sim_Path, Sim_CSX, openEMS_opts, settings);
 endif;
 
+%%
+
+retval=0;
 
 return 
-end;
+endfunction;

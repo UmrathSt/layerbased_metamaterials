@@ -13,6 +13,7 @@ fr4_thickness1 = 2;
 fr4_thickness2 = 2;
 
 eps_FR4 = 4.6;
+film_lz = 0.2;
 
 Rsq = 15;
 for Rsq = [5,10,20,30];

@@ -12,48 +12,53 @@ post_processing_only = 0;
 
 % size of the simulation box
 
-PW_Box = L*1.05; %1.05
+
 
 %% setup FDTD parameter & excitation function
  % start frequency
 % stop  frequency
-f0 = freq;
+f_stop = freq;
+f_start = 1e9;
+fc = (f_start+f_stop)/2;
+f0 = fc;
+fw = (f_stop-f_start)
 %% Scatterer to be studied will be a box of siz
 %% Lx, Ly, Lz
 Box.Lx = L;
 Box.Ly = L;
 Box.Lz = L;
 
-FDTD = InitFDTD('EndCriteria', 5e-4);
-FDTD = SetGaussExcite( FDTD, 0.75*freq, 0.3*freq );
-BC = [3 3 1 3 3 3];  % set boundary conditions to PML
+FDTD = InitFDTD('EndCriteria', 1e-4);
+FDTD = SetGaussExcite( FDTD, fc, fw);
+BC = [0 3 1 3 3 3];  % set boundary conditions to PML
 FDTD = SetBoundaryCond( FDTD, BC );
 
 %% setup CSXCAD geometry & mesh
 max_res = c0 / freq / unit / 20; % cell size: lambda/20
 CSX = InitCSX();
+PW_Box = L+20*max_res; %1.05
 SimBox = PW_Box + 2*8*max_res;
 
 %create mesh
-smooth_mesh = SmoothMeshLines([0 Box.Lx/2], max_res);
-smooth_mesh = SmoothMeshLines([smooth_mesh SimBox/2], max_res);
-mesh.x = unique([-smooth_mesh smooth_mesh]);
-mesh.y = smooth_mesh;
-mesh.z = mesh.x;
+smoothx = SmoothMeshLines([0 Box.Lx/2, SimBox/2], max_res);
+smoothy = SmoothMeshLines([0 Box.Ly/2, SimBox/2], max_res);
+mesh.x = smoothx;
+mesh.y = unique([-smoothy, smoothy]);
+mesh.z = unique([-mesh.x,mesh.x]);
 
-%% create metal sphere
+%% create metal cube
 CSX = AddMetal(CSX, 'Cube' ); % create a perfect electric conductor (PEC)
 
 start_coords = [Box.Lx/2, Box.Ly/2, Box.Lz/2];
 CSX = AddBox(CSX,'Cube', 1, start_coords, -start_coords);
 
 %% plane wave excitation
-k_dir = [sin(alpha_y), 0, cos(alpha_y)]; % plane wave direction
-E_dir = [cos(alpha_y), 0, -sin(alpha_y)]; % plane wave polarization --> E_z
+k_dir = [0, cos(alpha_y), sin(alpha_y)]; % plane wave direction
+E_dir = [1, 0, 0]; % plane wave polarization --> E_z
 
 CSX = AddPlaneWaveExcite(CSX, 'plane_wave', k_dir, E_dir, f0);
-start = [-PW_Box/2 -PW_Box/2 -PW_Box/2];
-stop  = -start;
+start = [mesh.x(1) -PW_Box/2 -PW_Box/2];
+stop  = [PW_Box/2, PW_Box/2, PW_Box/2];
 CSX = AddBox(CSX, 'plane_wave', 0, start, stop);
 if dump_TD_slices;
   start = [mesh.x(1)   0 mesh.z(1)];
@@ -69,10 +74,10 @@ endif;
 %%nf2ff calc
 start = [mesh.x(1)     mesh.y(1)     mesh.z(1)];
 stop  = [mesh.x(end) mesh.y(end) mesh.z(end)];
-[CSX nf2ff] = CreateNF2FFBox(CSX, 'nf2ff', start, stop, 'Directions', [1, 1, 0, 1, 1, 1]);
+[CSX nf2ff] = CreateNF2FFBox(CSX, 'nf2ff', start, stop, 'Directions', [0, 1, 1, 1, 1, 1]);
 
 % add 8 lines in all direction as pml spacing
-mesh = AddPML(mesh,8);
+mesh = AddPML(mesh,[0, 8, 8, 8, 8, 8]);
 
 CSX = DefineRectGrid( CSX, unit, mesh );
 
@@ -112,7 +117,7 @@ f = freq;
 EF = ReadUI( 'et', Sim_Path, f ); % time domain/freq domain voltage
 Pin = 0.5*norm(E_dir)^2/Z0 .* abs(EF.FD{1}.val).^2;
 theta = (0:1440)*pi/720;
-nf2ff = CalcNF2FF(nf2ff, Sim_Path, f, theta+alpha_y, 0, 'Mode',0, 'Mirror', {1, 'PMC', 0});
+nf2ff = CalcNF2FF(nf2ff, Sim_Path, f, theta+alpha_y, 0, 'Mode',0, 'Mirror', {0, 'PEC', 0});
 rcs = 4*pi*nf2ff.P_rad{1}(:)./Pin(1);
 
 retval = rcs;

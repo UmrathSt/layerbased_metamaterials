@@ -18,7 +18,7 @@ function squares(UCDim, fr4_thickness1,  fr4_thickness2, L1, L2, eps_FR4, Rsq1, 
   UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 2e9;
-  UC.f_stop = 15e9;
+  UC.f_stop = 20e9;
   UC.lx = UCDim;
   UC.ly = UCDim;
   UC.lz = c0/ UC.f_start / 2 / UC.unit;

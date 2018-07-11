@@ -11,7 +11,7 @@ tand = 0.02;
 
 UCDim = 14.25;
 fr4_thickness = 3.2;
-mesh_refinement = 3;
+mesh_refinement = 4;
 L1 = 4;
 L2 = 2.5;
 
