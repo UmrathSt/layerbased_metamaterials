@@ -24,15 +24,14 @@ function [CSX, mesh, param_str, UC] = stack_layers(layer_list, material_list);
       param_str = horzcat(param_str, ['# layer number ' num2str(i-1) ':\n']);
       [CSX, params, mesh_lines] = object_handler(CSX, object, translate, rotate);
       param_str = horzcat(param_str, params);
+      xvals = [xvals, mesh_lines.x];
+      yvals = [yvals, mesh_lines.y];
+      zvals = [zvals, mesh_lines.z];
   end;
       
   lastz = zvals(end);
   UC.lastz = lastz;
-  try;
-  zvals = horzcat(zvals, linspace(zvals(end), zvals(end)-object.AlO2.height+object.lz,5));
-  zvals = horzcat(zvals, linspace(zvals(end), zvals(end)-object.lz,3));
-catch lasterror;
-  end;
+
   mesh.x = SmoothMeshLines([-UC.lx/2, xvals, UC.lx/2], UC.dx, 1.3);
   mesh.y = SmoothMeshLines([-UC.ly/2, yvals, UC.ly/2], UC.dy, 1.3);
   if not(UC.grounded);
