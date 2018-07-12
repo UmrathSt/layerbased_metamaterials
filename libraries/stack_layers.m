@@ -1,4 +1,4 @@
-function [CSX, mesh, param_str, UC] = stack_layers(layer_list, material_list);
+function [CSX, mesh, param_str, UC] = stack_layers(layer_list);
  %% takes a list of structures describing layers. Example:
  %% layer_list = [(@CreateRect, rectangle_object),
  %%               (@CreateCircle, circle_object)]
@@ -30,14 +30,15 @@ catch lasterror;
   for i = 2:size(layer_list, 1); % layer 1 is the Unit-Cell
       object = layer_list{i, 2};
       object_handler = layer_list{i, 1};
-      translate = [object.xycenter(1:2), zvals(end)+object.lz/2]+ add_trans;
+      translate = [object.xycenter(1:2), zvals(end)-object.lz/2-layer_list{i-1,2}.lz/2*(i>2)];
+      fprintf(horzcat('Adding object ', object.name, ' at z-corrdinate Z0 = ', num2str(object.lz/2), '\n')); 
       rotate = object.rotate;
       param_str = horzcat(param_str, ['# layer number ' num2str(i-1) ':\n']);
       [CSX, params, mesh_lines] = object_handler(CSX, object, translate, rotate);
       param_str = horzcat(param_str, params);
       xvals = [xvals, mesh_lines.x];
       yvals = [yvals, mesh_lines.y];
-      zvals = [zvals, mesh_lines.z];
+      zvals = [zvals,  zvals(end)+mesh_lines.z];
   end;
       
   lastz = zvals(end);
