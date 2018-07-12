@@ -26,7 +26,6 @@ catch lasterror;
   end;
   [CSX, params] = UC_handler(CSX, UC, [0, 0, 0], 0);
   param_str = horzcat(param_str, params);
-  [CSX, params] = defineMaterials(CSX, material_list, param_str);
   param_str = horzcat(param_str, params);
   for i = 2:size(layer_list, 1); % layer 1 is the Unit-Cell
       object = layer_list{i, 2};
