@@ -5,10 +5,10 @@ function [CSX, mesh, param_str, UC] = stack_layers(layer_list);
  %% first list entry is supposed to describe unitcell dimensions
  %% development
   CSX = InitCSX();
-  z = 0;
-  zvals = [z];
+  zvals = [0];
   xvals = [];
   yvals = [];
+  zc = layer_list{2,2}.lz/2;
   UC = layer_list{1,2};
   % use only a quarter of the unit-cell for the simulation
   % if the symmetry is high
@@ -19,15 +19,19 @@ function [CSX, mesh, param_str, UC] = stack_layers(layer_list);
 
   [CSX, params] = UC_handler(CSX, UC, [0, 0, 0], 0);
   param_str = horzcat(param_str, params);
-  param_str = horzcat(param_str, params);
   for i = 2:size(layer_list, 1); % layer 1 is the Unit-Cell
       object = layer_list{i, 2};
+      object_before = layer_list{i-1,2};
       object_handler = layer_list{i, 1};
-      translate = [object.xycenter(1:2), zvals(end)-object.lz/2-layer_list{i-1,2}.lz/2*(i>2)];
-      fprintf(horzcat('Adding object ', object.name, ' at z-corrdinate Z0 = ', num2str(object.lz/2), '\n')); 
+      
+      zc = zc-object.lz/2-object_before.lz/2*(i>2);
+      zvals = [zvals,zc-object.lz/2];
+      translate = [object.xycenter(1:2), zc];%
+      fprintf(horzcat('Adding object ', object.name, ' at z-coordinate Z0 = ', num2str(object.lz/2), '\n')); 
       rotate = object.rotate;
       param_str = horzcat(param_str, ['# layer number ' num2str(i-1) ':\n']);
       [CSX, params, mesh_lines] = object_handler(CSX, object, translate, rotate);
+      % mesh_lines are the object-centered desired mesh lines
       param_str = horzcat(param_str, params);
       xvals = [xvals, mesh_lines.x];
       yvals = [yvals, mesh_lines.y];
