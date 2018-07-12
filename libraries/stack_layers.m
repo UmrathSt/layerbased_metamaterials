@@ -12,18 +12,11 @@ function [CSX, mesh, param_str, UC] = stack_layers(layer_list);
   UC = layer_list{1,2};
   % use only a quarter of the unit-cell for the simulation
   % if the symmetry is high
-  use_quarter = 'False';
-  try;
-    if strcmp(UC.use_quarter, 'True');
-        use_quarter = 'True';
-    end;
-catch lasterror;
-    end;
+
+
   UC_handler = layer_list{1,1};
   param_str = ['# stacked metamaterial geometry \n# f [Hz], L [' num2str(UC.unit) ' m]\n'];
-  if strcmp(use_quarter, 'True');
-      param_str = horzcat(param_str, ['# using only a quarter of the unit-cell for the simulation \n']);
-  end;
+
   [CSX, params] = UC_handler(CSX, UC, [0, 0, 0], 0);
   param_str = horzcat(param_str, params);
   param_str = horzcat(param_str, params);
