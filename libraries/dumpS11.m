@@ -27,7 +27,6 @@ function [port] = dumpS11(port, UC);
   fprintf(outfile, [params]);
   fprintf(outfile, "# Re/Im parts of the scattering parameters S11 (refl.) and S21 (transm.) as a function of frequency \n");
   fprintf(outfile, "# first column is frequency, second and third columns are Re/Im of S11 and S21, respectively.\n");
-  fprintf(outfile, "# Parameters of Metamaterial are: \n");
   for i=1:size(s11)(2);
       fprintf(outfile, '%f, %f, %f, %f, %f ', freq(1, i), real(s11(1, i)), imag(s11(1,i )), real(s21(1,i )), imag(s21(1,i )));
       fprintf(outfile, '\n');

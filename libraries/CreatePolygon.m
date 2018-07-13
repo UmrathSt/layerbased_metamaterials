@@ -16,6 +16,7 @@ function [CSX, params, mesh_lines] = CreatePolygon(CSX, object, translate, rotat
   CSX = AddLinPoly(CSX, object.material.name, object.prio, 2, object.lz/2, p , -object.lz, 'CoordSystem',0,...
 'Transform', {'Rotate_Z', rotate, 'Translate', translate});
   ocenter = [object.xycenter(1:2), 0] + translate;
-  params = [params, "# rect patch made of "  object.material.name " lx, ly, lz = " num2str(object.lx) ", " num2str(object.ly) ", " num2str(object.lz) " at center position x = " num2str(ocenter(1)) " y = " num2str(ocenter(2)) " z = " num2str(ocenter(3)) "\n"];
-  return;
+  params = [params, "# polygonal patch made of "  object.material.name " at center position x = " num2str(ocenter(1)) " y = " num2str(ocenter(2)) " z = " num2str(ocenter(3)) "\n"];
+  params = [params, '# points (x, y): ' mat2str(pts) '\n'];
+
 endfunction

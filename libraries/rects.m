@@ -1,4 +1,4 @@
-function quarter_rects(UCDim, name, fr4_thickness, points, epsRe, epsIm, complemential);
+function rects(UCDim, name, fr4_thickness, points, epsRe, epsIm, complemential);
   physical_constants;
   UC.layer_td = 0;
   UC.layer_fd = 0;
@@ -31,6 +31,11 @@ function quarter_rects(UCDim, name, fr4_thickness, points, epsRe, epsIm, complem
   UC.SimPath = ['/mnt/hgfs/E/openEMS/layerbased_metamaterials/Simulation/' UC.s11_subfolder '/' UC.s11_filename_prefix];
   UC.SimCSX = 'geometry.xml';
   UC.ResultPath = ['~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse'];
+  if strcmp(uname.nodename, 'Xeon');
+      UC.SimPath = ['/media/stefan/Daten/openEMS/' UC.s11_subfolder '/' UC.s11_filename_prefix];
+      UC.ResultPath = ['~/Arbeit/openEMS/development/layerbased_metamaterials/Ergebnisse'];
+ end;
+  
   if UC.run_simulation;
     confirm_recursive_rmdir(0);
     [status, message, messageid] = rmdir(UC.SimPath, 's' ); % clear previous directory
@@ -76,7 +81,7 @@ function quarter_rects(UCDim, name, fr4_thickness, points, epsRe, epsIm, complem
    polygon.lx = UC.lx;
    polygon.ly = UC.ly;
    polygon.lz = 0.1;
-   polygon.pts = [[-3, 3];[3,3];[3,-3];[-3,-3]];
+   polygon.pts = points;
    polygon.rotate = 0;
    polygon.prio = 3;
    polygon.xycenter = [0, 0];
@@ -94,6 +99,7 @@ function quarter_rects(UCDim, name, fr4_thickness, points, epsRe, epsIm, complem
   [CSX, port, UC] = definePorts(CSX, mesh, UC);
   UC.param_str = param_str;
   [CSX] = defineFieldDumps(CSX, mesh, layer_list, UC);
+  fprintf(['\nTrying to write simulation data to: ', UC.SimPath '/' UC.SimCSX '\n']);
   WriteOpenEMS([UC.SimPath '/' UC.SimCSX], FDTD, CSX);
   if UC.show_geometry;
     CSXGeomPlot([UC.SimPath '/' UC.SimCSX]);

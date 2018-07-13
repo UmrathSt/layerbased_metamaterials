@@ -7,7 +7,7 @@ function [CSX, param_str] = defineMaterial(CSX, material, param_str);
     CSX = AddMaterial(CSX, material.name);
     
   for [val, key] = material;
-      param_str = horzcat(param_str, [key " = " num2str(val) ","]);
+      param_str = horzcat(param_str, [' ' key " = " num2str(val) ","]);
       if ~(strcmp(key, 'name'));
           CSX = SetMaterialProperty(CSX, material.name, key, val);
       end;
