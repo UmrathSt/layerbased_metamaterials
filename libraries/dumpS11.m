@@ -24,7 +24,7 @@ function [port] = dumpS11(port, UC);
     display("Folder for S11 output found.");
   endif;
   outfile = fopen([s_folder "/" s11_filename], 'w+');
-  fprintf(outfile, [params]);
+  fprintf(outfile, params);
   fprintf(outfile, "# Re/Im parts of the scattering parameters S11 (refl.) and S21 (transm.) as a function of frequency \n");
   fprintf(outfile, "# first column is frequency, second and third columns are Re/Im of S11 and S21, respectively.\n");
   for i=1:size(s11)(2);

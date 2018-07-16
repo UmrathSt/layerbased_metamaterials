@@ -1,7 +1,6 @@
 function [CSX, params, mesh_lines] = CreateRect(CSX, object, translate, rotate);
     % create a homogenious rectangle which takes care of the mesh lines
     % itself.
-  object = object;
   diag = [object.lx/2, object.ly/2, -object.lz/2];
   box_start = diag;
   box_stop = -diag;

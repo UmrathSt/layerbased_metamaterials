@@ -1,4 +1,4 @@
-function random_fss(UCDim, fr4_thickness, filling, eps_subs, tand, complemential, random);
+function random_fss(UCDim, fr4_thickness, filling, eps_subs, tand, complemential);
   % Create an fss on top of a substrate
   % which as a given filling factor of random rectangles
   physical_constants;
@@ -39,8 +39,8 @@ function random_fss(UCDim, fr4_thickness, filling, eps_subs, tand, complemential
     if strcmp(uname.nodename, 'Xeon');
         display('Running on Xeon');
         UC.SimPath = ['/media/stefan/Daten/openEMS/' UC.s11_subfolder '/' UC.s11_filename_prefix];
-        UC.s_dumps_folder = '~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse/SParameters';
-        UC.ResultPath = ['~/Arbeit/openEMS/layerbased_metamaterials/Ergebnisse'];
+        UC.s_dumps_folder = '~/Arbeit/openEMS/development/layerbased_metamaterials/Ergebnisse/SParameters';
+        UC.ResultPath = ['~/Arbeit/openEMS/development/layerbased_metamaterials/Ergebnisse'];
         end;
     catch lasterror;
   end;
@@ -100,48 +100,37 @@ function random_fss(UCDim, fr4_thickness, filling, eps_subs, tand, complemential
   random_rect.zrefinement = 3;
   random_rect.UClx = UCDim;
   random_rect.UCly = UCDim;
-  random_rect.L = UC.dx;
+  random_rect.L = UC.dx*2;
   % choose the center positions according to the filling factor
   random_rect.N = round(UC.lx*UC.ly/(UC.dx*UC.dy)*filling);
-  random_rect.centers = GenerateRandomPoints(-UC.lx/2, UX.lx/2, -UC.ly/2, UC.ly/2, UC.dx, UC.dy);
+  random_rect.centers = GenerateRandomPoints(random_rect.N,-UC.lx/2, UC.lx/2, -UC.ly/2, UC.ly/2, 2*UC.dx, 2*UC.dy);
   random_rect.prio = 2;
   random_rect.xycenter = [0, 0];
   random_rect.complemential = complemential;
   
   layer_list = {@CreateUC, UC; @CreateRect, rectangle;
-                               @CreateRect, substrate;
+                               @CreateRect, substrate
                                @CreateRandomRects, random_rect;
                                  };
-  material_list = {substrate.material, rectangle.material, rect.material, rect.bmaterial};
-  [CSX, mesh, param_str] = stack_layers(layer_list, material_list);
-  
-  [CSX, port] = definePorts(CSX, mesh, UC.f_start);
-
+  [CSX, mesh, param_str, UC] = stack_layers(layer_list);
+  [CSX, port, UC] = definePorts(CSX, mesh, UC);
   UC.param_str = param_str;
   [CSX] = defineFieldDumps(CSX, mesh, layer_list, UC);
+    fprintf(['\nTrying to write simulation data to: ', UC.SimPath '/' UC.SimCSX '\n']);
   WriteOpenEMS([UC.SimPath '/' UC.SimCSX], FDTD, CSX);
   if UC.show_geometry;
     CSXGeomPlot([UC.SimPath '/' UC.SimCSX]);
   end;
   if UC.run_simulation;
-    openEMS_opts = '--engine=multithreaded --numThreads=2';%'-vvv';
-    %Settings = ['--debug-PEC', '--debug-material'];
+    npc = 2;
+    if strcmp(uname.nodename, 'Xeon');
+        npc = 6;
+    end;
+    
+    openEMS_opts = ['--engine=multithreaded --numThreads=' num2str(npc)];%'-vvv';
+    #Settings = ['--debug-PEC', '--debug-material'];
     Settings = [''];
     RunOpenEMS(UC.SimPath, UC.SimCSX, openEMS_opts, Settings);
   end;
   doPortDump(port, UC);
-  if UC.nf2ff == 1;
-    freq = [2.4e9, 5.2e9, 12e9, 15e9];
-    phi = linspace(0, 2*pi, 100);
-    theta = linspace(0, pi, 100);
-    for f0 = freq;
-      printf(['calculating 3D far field for f=' num2str(f0) '\n']);
-      printf(['Using phase center x=0, y=0, z=' num2str(phase_center_z) '\n']);
-      nf2ff = CalcNF2FF(nf2ff, UC.SimPath, f0, theta, phi, 'Mode', UC.run_simulation, 'Center', [0, 0, phase_center_z*2]);
-      printf(['WARNING: Shifted the phase-center by a factor of two for optical reasons \n']);
-      E_far_normalized = nf2ff.E_norm{1}/max(nf2ff.E_norm{1}(:));
-      DumpFF2VTK([UC.SimPath '/NF2FF_f_' num2str(f0/1e9) '_GHz.vtk'],E_far_normalized,theta*180/pi, phi*180/pi,'scale',1e-2);
-      printf(['Far-field pattern for f = ' num2str(f0) ' written to *.vtk\n']);
-    end;
-  end;
 end

@@ -88,7 +88,7 @@ function polygon(UCDim, name, fr4_thickness, points, cpoints, kappa, epsRe, epsI
 
   layer_list = {@CreateUC, UC; @CreateRect, rectangle;
                                @CreateRect, substrate;
-                               @CreatePolygon, polygon
+                               @CreatePolygon, polygon;
                                  };
   [CSX, mesh, param_str, UC] = stack_layers(layer_list);
   [CSX, port, UC] = definePorts(CSX, mesh, UC);

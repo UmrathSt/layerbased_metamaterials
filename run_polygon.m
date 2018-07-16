@@ -10,7 +10,7 @@ R2 = 3;
 R3 = 7;
 % create a star
 scale = 0.4;
-for N = [20,24,26];
+for N = [20];
 for kappa = [56e6];
 for lz = [0.4];
 for i = 1:2*N;
