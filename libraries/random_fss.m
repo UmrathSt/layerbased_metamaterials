@@ -18,7 +18,7 @@ function random_fss(UCDim, fr4_thickness, filling, eps_subs, tand, complemential
   UC.s11_filename = 'Sparameters_';
   UC.s11_subfolder = 'random_filling';
   UC.run_simulation = 1;
-  UC.show_geometry = 1;
+  UC.show_geometry = 0;
   UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 2e9;
@@ -102,7 +102,7 @@ function random_fss(UCDim, fr4_thickness, filling, eps_subs, tand, complemential
   random_rect.UCly = UCDim;
   random_rect.L = UC.dx*2;
   % choose the center positions according to the filling factor
-  random_rect.N = round(UC.lx*UC.ly/(UC.dx*UC.dy)*filling);
+  random_rect.N = round(UC.lx*UC.ly/(random_rect.L**2)*filling);
   random_rect.centers = GenerateRandomPoints(random_rect.N,-UC.lx/2, UC.lx/2, -UC.ly/2, UC.ly/2, 2*UC.dx, 2*UC.dy);
   random_rect.prio = 2;
   random_rect.xycenter = [0, 0];

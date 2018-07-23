@@ -1,34 +1,27 @@
 addpath('libraries');
 addpath('../python_scripts');
 clear;
-N = 20;
-dphi = pi/N;
-phi0 = pi/2;
-UCDim = 15;
-R1 = 5;
-R2 = 3;
-R3 = 7;
-% create a star
-scale = 0.4;
-for N = [20];
-for kappa = [56e6];
-for lz = [0.4];
-for i = 1:2*N;
-    R = R1;
-    if mod(i,2);
-        R = R2;
-    end;
-    if mod(i,3);
-        R = R3;
-    end;
-    
-    punkte(i,1) = R*cos(dphi*i);
-    punkte(i,2) = R*sin(dphi*i);
-    cpunkte(i,1) = R*cos(dphi*i)*scale;
-    cpunkte(i,2) = R*sin(dphi*i)*scale;
 
+
+UCDim = 20;
+lz = 2;
+kappa = 56e6;
+% create a polygon
+rectL = 9; % half the edge-length of the copper rectangle
+punkte{1} = [[-1;1],[1;1],[1;-1],[-1;-1]]*rectL;
+
+rectangle = [[-1.5;1.5],[1.5;1.5],[1.5;-1.5],[-1.5;-1.5]].*1.25;
+
+shift = UCDim/4;
+idx = 1;
+scale = ones(1,25)*0.6;
+for ux = -2:2;
+    for uy = -2:2;
+        cpunkte{idx} = rectangle*scale(idx) + [ux;uy].*[3.5;3.5];
+        idx = idx+1;
+    end;
 end;
-
-polygon(UCDim, ['UCDim_' num2str(UCDim) '_N_' num2str(N) '_lz_' num2str(lz) '_kappa_' num2str(kappa)],...
-         lz, punkte, cpunkte, kappa, 4.6, 0.025, 0)
-end;end;end;
+   
+ 
+polygon(UCDim, ['grid_UCDim_' num2str(UCDim) '_lz_' num2str(lz)],...
+         lz, punkte, cpunkte, 56e6, 4.6, 0.1, 0)
