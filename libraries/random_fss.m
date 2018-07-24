@@ -27,11 +27,12 @@ function random_fss(UCDim, fr4_thickness, filling, eps_subs, tand, complemential
   UC.ly = UCDim;
   UC.lz = c0/ UC.f_start / 2 / UC.unit;
   UC.dz = c0 / (UC.f_stop) / UC.unit / 20;
+  DX = UC.dz
   UC.dx = UC.dz/3;
   UC.dy = UC.dx;
   UC.dump_frequencies = linspace(5,15,41)*1e9;
   UC.s11_delta_f = 10e6;
-  UC.EndCriteria = 1e-3;
+  UC.EndCriteria = 1e-4;
   UC.SimPath = ['/mnt/hgfs/E/openEMS/layerbased_metamaterials/Simulation/' UC.s11_subfolder '/' UC.s11_filename_prefix];
   display(UC.SimPath);
   UC.ResultPath = ['~/Arbeit/openEMS/git_layerbased/layerbased_metamaterials/Ergebnisse'];
@@ -100,10 +101,10 @@ function random_fss(UCDim, fr4_thickness, filling, eps_subs, tand, complemential
   random_rect.zrefinement = 3;
   random_rect.UClx = UCDim;
   random_rect.UCly = UCDim;
-  random_rect.L = UC.dx*2;
+  random_rect.L = DX;
   % choose the center positions according to the filling factor
-  random_rect.N = round(UC.lx*UC.ly/(UC.dx*UC.dy)*filling);
-  random_rect.centers = GenerateRandomPoints(random_rect.N,-UC.lx/2, UC.lx/2, -UC.ly/2, UC.ly/2, 2*UC.dx, 2*UC.dy);
+  random_rect.N = round(UC.lx*UC.ly/(DX**2)*filling);
+  random_rect.centers = GenerateRandomPoints(random_rect.N,-UC.lx/2+DX/2, UC.lx/2-DX/2, -UC.ly/2+DX/2, UC.ly/2-DX/2, DX, DX);
   random_rect.prio = 2;
   random_rect.xycenter = [0, 0];
   random_rect.complemential = complemential;
