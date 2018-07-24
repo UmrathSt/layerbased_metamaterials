@@ -18,7 +18,7 @@ function random_fss(UCDim, fr4_thickness, filling, eps_subs, tand, complemential
   UC.s11_filename = 'Sparameters_';
   UC.s11_subfolder = 'random_filling';
   UC.run_simulation = 1;
-  UC.show_geometry = 1;
+  UC.show_geometry = 0;
   UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 2e9;

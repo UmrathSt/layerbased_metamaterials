@@ -14,7 +14,7 @@ function polygon(UCDim, name, fr4_thickness, points, cpoints, kappa, epsRe, epsI
   UC.s11_filename = 'Sparameters_';
   UC.s11_subfolder = 'polygon';
   UC.run_simulation = 1;
-  UC.show_geometry = 0;
+  UC.show_geometry = 1;
   UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 2e9;
@@ -25,7 +25,7 @@ function polygon(UCDim, name, fr4_thickness, points, cpoints, kappa, epsRe, epsI
   UC.dz = c0 / (UC.f_stop) / UC.unit / 20;
   UC.dx = UC.dz/3;
   UC.dy = UC.dx;
-  UC.dump_frequencies = [2.4e9, 5.2e9, 16.5e9];
+  UC.dump_frequencies = [10.8e9, 11.3e9];
   UC.s11_delta_f = 10e6;
   UC.EndCriteria = 1e-4;
   UC.SimPath = ['/mnt/hgfs/E/openEMS/layerbased_metamaterials/Simulation/' UC.s11_subfolder '/' UC.s11_filename_prefix];
@@ -65,7 +65,7 @@ function polygon(UCDim, name, fr4_thickness, points, cpoints, kappa, epsRe, epsI
   substrate.xycenter = [0, 0];
   substrate.material.name = 'FR4';
   substrate.material.Epsilon = epsRe;
-  substrate.material.Kappa = EPS0*pi*(UC.f_start+UC.f_stop)/2*epsIm;
+  substrate.material.Kappa = EPS0*pi*(UC.f_start+UC.f_stop)*epsIm;
   substrate.zrefinement = 7;
 
    polygon.name = 'Rectangle';

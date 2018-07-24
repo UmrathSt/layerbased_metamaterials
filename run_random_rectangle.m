@@ -3,7 +3,7 @@ addpath('../python_scripts');
 clear;
 UCDim = 20;
 fr4_thickness = 2;
-filling = 0.25;
+filling = 0.5;
 eps_subs = 4.6;
 tand = 0.02;
 complemential = 0;
