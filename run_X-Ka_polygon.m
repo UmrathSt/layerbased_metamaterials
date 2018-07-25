@@ -1,10 +1,10 @@
 addpath('libraries');
-addpath('../python_scripts');
+addpath('./python_scripts');
 clear;
 
 
 UCDim =9;
-lz = 2.7;
+lz = 0.3;
 kappa = 56e6;
 % create a polygon
 
@@ -43,4 +43,4 @@ cpunkte{1} =[[]];
 add_mesh_lines.x = [];
 add_mesh_lines.y = [];
 polygon(UCDim, ['BB_UCDim_' num2str(UCDim) '_lz_' num2str(lz)],...
-         lz, punkte, cpunkte, add_mesh_lines, 56e6, 4.6, 0.1, 0)
+         lz, punkte, cpunkte, add_mesh_lines, 56e6, 4.4, 0.02, 0)

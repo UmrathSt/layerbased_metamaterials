@@ -1,7 +1,7 @@
-function polygon(UCDim, name, fr4_thickness, points, cpoints, add_mesh_lines, kappa, epsRe, epsIm, complemential);
+function polygon(UCDim, name, fr4_thickness, points, cpoints, add_mesh_lines, kappa, epsRe, tand, complemential);
   physical_constants;
-  UC.layer_td = 0;
-  UC.layer_fd = 1;
+  UC.layer_td = 1;
+  UC.layer_fd = 0;
   UC.td_dumps = 0;
   UC.fd_dumps = 0;
   UC.s_dumps = 1;
@@ -17,13 +17,13 @@ function polygon(UCDim, name, fr4_thickness, points, cpoints, add_mesh_lines, ka
   UC.show_geometry = 1;
   UC.grounded = 1;
   UC.unit = 1e-3;
-  UC.f_start = 2e9;
+  UC.f_start = 3e9;
   UC.f_stop = 20e9;
   UC.lx = UCDim;
   UC.ly = UCDim;
   UC.lz = c0/ UC.f_start / 2 / UC.unit;
   UC.dz = c0 / (UC.f_stop) / UC.unit / 20;
-  UC.dx = UC.dz/3;
+  UC.dx = UC.dz/7;
   UC.dy = UC.dx;
   UC.dump_frequencies = [6.46, 8.64,9.2]*1e9;
   UC.s11_delta_f = 10e6;
@@ -43,7 +43,7 @@ function polygon(UCDim, name, fr4_thickness, points, cpoints, add_mesh_lines, ka
   end;
   FDTD = InitFDTD('EndCriteria', UC.EndCriteria);
   FDTD = SetGaussExcite(FDTD, 0.5*(UC.f_start+UC.f_stop),0.5*(UC.f_stop-UC.f_start));
-  BC = {'PMC', 'PMC', 'PEC', 'PEC', 'PML_8', 'PML_8'}; % boundary conditions
+  BC = {'PMC', 'PMC', 'PEC', 'PEC','PML_8', 'PML_8'}; % boundary conditions
   FDTD = SetBoundaryCond(FDTD, BC);
   rectangle.name = 'backplate';
   rectangle.lx = UCDim;
@@ -65,17 +65,17 @@ function polygon(UCDim, name, fr4_thickness, points, cpoints, add_mesh_lines, ka
   substrate.xycenter = [0, 0];
   substrate.material.name = 'FR4';
   substrate.material.Epsilon = epsRe;
-  substrate.material.Kappa = EPS0*pi*(UC.f_start+UC.f_stop)*epsIm;
-  substrate.zrefinement = 7;
+  substrate.material.Kappa = 2*pi*UC.f_stop*tand*epsRe*EPS0;
+  substrate.zrefinement = 3;
 
    polygon.name = 'Rectangle';
    polygon.lx = UC.lx;
    polygon.ly = UC.ly;
-   polygon.lz = 0.1;
+   polygon.lz = 0.05;
    polygon.pts = points;
    polygon.cpts = cpoints;
    polygon.rotate = 0;
-   polygon.prio = 3;
+   polygon.prio = 4;
    polygon.xycenter = [0, 0];
    polygon.material.name = 'CuRectangle';
    polygon.material.Epsilon = 1;
@@ -83,7 +83,7 @@ function polygon(UCDim, name, fr4_thickness, points, cpoints, add_mesh_lines, ka
    polygon.cmaterial.name = 'AirCutout';
    polygon.cmaterial.Epsilon = 1;
    polygon.cmaterial.Kappa = 1;
-   polygon.zrefinement = 7;
+   polygon.zrefinement = 1;
 
 
   layer_list = {@CreateUC, UC; @CreateRect, rectangle;
@@ -91,10 +91,10 @@ function polygon(UCDim, name, fr4_thickness, points, cpoints, add_mesh_lines, ka
                                @CreatePolygon, polygon;
                                  };
   [CSX, mesh, param_str, UC] = stack_layers(layer_list);
-  mesh.x = [mesh.x, add_mesh_lines.x];
-  mesh.y = [mesh.y, add_mesh_lines.y];
+  mesh.x = SmoothMeshLines([mesh.x, add_mesh_lines.x],1.2);
+  mesh.y = SmoothMeshLines([mesh.y, add_mesh_lines.y], 1.2);
   CSX = DefineRectGrid(CSX, UC.unit, mesh);
-  [CSX, port, UC] = definePorts(CSX, mesh, UC);
+  [CSX, port, UC] = definePorts(CSX, mesh, UC, 'y');
   UC.param_str = param_str;
   [CSX] = defineFieldDumps(CSX, mesh, layer_list, UC);
   fprintf(['\nTrying to write simulation data to: ', UC.SimPath '/' UC.SimCSX '\n']);
@@ -103,7 +103,7 @@ function polygon(UCDim, name, fr4_thickness, points, cpoints, add_mesh_lines, ka
     CSXGeomPlot([UC.SimPath '/' UC.SimCSX]);
   end;
   if UC.run_simulation;
-    npc = 2;
+    npc = 4;
     if strcmp(uname.nodename, 'Xeon');
         npc = 6;
     end;

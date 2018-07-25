@@ -19,13 +19,19 @@ function [CSX, mesh, param_str, UC] = stack_layers(layer_list);
 
   [CSX, params] = UC_handler(CSX, UC, [0, 0, 0], 0);
   param_str = horzcat(param_str, params);
+  nsteps = 2;
   for i = 2:size(layer_list, 1); % layer 1 is the Unit-Cell
       object = layer_list{i, 2};
       object_before = layer_list{i-1,2};
       object_handler = layer_list{i, 1};
-      
+      try;
+        nsteps = object.zrefinement;
+    catch lasterror;
+    end;
       zc = zc-object.lz/2-object_before.lz/2*(i>2);
-      zvals = [zvals,zc-object.lz/2];
+      to_add = linspace(min(zvals), zc-object.lz/2, nsteps);
+      %zvals = [zvals,zc-object.lz/2];
+      zvals = unique([zvals, to_add]);
       translate = [object.xycenter(1:2), zc];%
       fprintf(horzcat('Adding object ', object.name, ' at z-coordinate Z0 = ', num2str(object.lz/2), '\n')); 
       rotate = object.rotate;

@@ -1,7 +1,7 @@
 function [CSX, port, UC] = definePorts(CSX, mesh, UC, polarization='y');
   physical_constants;
   f_start = UC.f_start;
-  n_cells_to_edge = 30;
+  n_cells_to_edge = 15;
   p1 = [mesh.x(1), mesh.y(1), mesh.z(n_cells_to_edge)];
   lambda_max = C0/f_start;
   [zmax, idx] = min(abs(mesh.z+lambda_max/3));
