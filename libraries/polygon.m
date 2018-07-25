@@ -1,7 +1,7 @@
-function polygon(UCDim, name, fr4_thickness, points, cpoints, kappa, epsRe, epsIm, complemential);
+function polygon(UCDim, name, fr4_thickness, points, cpoints, add_mesh_lines, kappa, epsRe, epsIm, complemential);
   physical_constants;
   UC.layer_td = 0;
-  UC.layer_fd = 0;
+  UC.layer_fd = 1;
   UC.td_dumps = 0;
   UC.fd_dumps = 0;
   UC.s_dumps = 1;
@@ -25,7 +25,7 @@ function polygon(UCDim, name, fr4_thickness, points, cpoints, kappa, epsRe, epsI
   UC.dz = c0 / (UC.f_stop) / UC.unit / 20;
   UC.dx = UC.dz/3;
   UC.dy = UC.dx;
-  UC.dump_frequencies = [10.8e9, 11.3e9];
+  UC.dump_frequencies = [6.46, 8.64,9.2]*1e9;
   UC.s11_delta_f = 10e6;
   UC.EndCriteria = 1e-4;
   UC.SimPath = ['/mnt/hgfs/E/openEMS/layerbased_metamaterials/Simulation/' UC.s11_subfolder '/' UC.s11_filename_prefix];
@@ -91,6 +91,9 @@ function polygon(UCDim, name, fr4_thickness, points, cpoints, kappa, epsRe, epsI
                                @CreatePolygon, polygon;
                                  };
   [CSX, mesh, param_str, UC] = stack_layers(layer_list);
+  mesh.x = [mesh.x, add_mesh_lines.x];
+  mesh.y = [mesh.y, add_mesh_lines.y];
+  CSX = DefineRectGrid(CSX, UC.unit, mesh);
   [CSX, port, UC] = definePorts(CSX, mesh, UC);
   UC.param_str = param_str;
   [CSX] = defineFieldDumps(CSX, mesh, layer_list, UC);
