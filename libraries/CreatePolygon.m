@@ -3,6 +3,17 @@ function [CSX, params, mesh_lines] = CreatePolygon(CSX, object, translate, rotat
     % itself.
   object = object;
   pts = object.pts; % x and y coordinates of points
+  try; % try to add background material
+    [CSX, params] = defineMaterial(CSX, object.bmaterial, '');
+    catch lasterror;
+  end;
+  try;
+    start = [-object.lx/2,-object.lx/2,-object.lz/2];
+    CSX = AddBox(CSX, object.bmaterial.name, object.prio-1, start, -start, 
+        'Transform', {'Rotate_Z', rotate, 'Translate', translate});
+  catch lasterror;
+  end;
+    
   cutout = 'False';
   try;
   cpts = object.cpts; 
