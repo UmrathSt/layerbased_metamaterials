@@ -7,7 +7,7 @@ function [CSX, params, mesh_lines] = CreateRect(CSX, object, translate, rotate);
   % this object needs no special meshlines
   mesh_lines.x = [];
   mesh_lines.y = [];
-  mesh_lines.z = [object.lz/2, -object.lz/2];
+  mesh_lines.z = [];
   [CSX, params] = defineMaterial(CSX, object.material, '');
   CSX = AddBox(CSX, object.material.name, object.prio, box_start, box_stop,
          'Transform', {'Rotate_Z', rotate, 'Translate', translate});

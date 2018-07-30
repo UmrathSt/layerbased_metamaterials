@@ -3,12 +3,14 @@ function [CSX, mesh, param_str, UC] = stack_layers(layer_list);
  %% layer_list = [(@CreateRect, rectangle_object),
  %%               (@CreateCircle, circle_object)]
  %% first list entry is supposed to describe unitcell dimensions
+ %% 
  %% development
+ 
   CSX = InitCSX();
   zvals = [0];
   xvals = [];
   yvals = [];
-  zc = layer_list{2,2}.lz/2;
+  zc = [layer_list{2,2}.lz/2];
   UC = layer_list{1,2};
   % use only a quarter of the unit-cell for the simulation
   % if the symmetry is high
@@ -29,11 +31,15 @@ function [CSX, mesh, param_str, UC] = stack_layers(layer_list);
     catch lasterror;
     end;
       zc = zc-object.lz/2-object_before.lz/2*(i>2);
-      to_add = linspace(min(zvals), zc-object.lz/2, nsteps);
-      %zvals = [zvals,zc-object.lz/2];
+      % decide which meshlines are to be added in z-direction
+      if object.zrefinement == 1;
+          to_add = [zc];
+      elseif object.zrefinement >= 2;
+          to_add = linspace(zc+object.lz/2, zc-object.lz/2, nsteps);
+      end;
       zvals = unique([zvals, to_add]);
       translate = [object.xycenter(1:2), zc];%
-      fprintf(horzcat('Adding object ', object.name, ' at z-coordinate Z0 = ', num2str(object.lz/2), '\n')); 
+      %fprintf(horzcat('Adding object ', object.name, ' at z-coordinate Z0 = ', num2str(object.lz/2), '\n')); 
       rotate = object.rotate;
       param_str = horzcat(param_str, ['# layer number ' num2str(i-1) ':\n']);
       [CSX, params, mesh_lines] = object_handler(CSX, object, translate, rotate);
@@ -47,8 +53,8 @@ function [CSX, mesh, param_str, UC] = stack_layers(layer_list);
   lastz = zvals(end);
   UC.lastz = lastz;
 
-  mesh.x = SmoothMeshLines([-UC.lx/2, xvals, UC.lx/2], UC.dx, 1.3);
-  mesh.y = SmoothMeshLines([-UC.ly/2, yvals, UC.ly/2], UC.dy, 1.3);
+  mesh.x = SmoothMeshLines([-UC.lx/2, xvals, UC.lx/2], UC.dx, 1.4);
+  mesh.y = SmoothMeshLines([-UC.ly/2, yvals, UC.ly/2], UC.dy, 1.4);
   if not(UC.grounded);
     mesh.z = SmoothMeshLines([-UC.lz/2, zvals, UC.lz/2], UC.dz, 1.4);
   else;

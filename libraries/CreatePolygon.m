@@ -21,7 +21,7 @@ function [CSX, params, mesh_lines] = CreatePolygon(CSX, object, translate, rotat
   maxvals.x = [];
   maxvals.y = [];
   if iscell(cpts);
-    display("Cutting out multiple polygons");
+    %display("Cutting out multiple polygons");
         for j = 1:length(cpts);    % loop over polygons to cutout
             maxvals.x = unique([maxvals.x, unique(cpts{j}(1,:))]);
             maxvals.y = unique([maxvals.y, unique(cpts{j}(2,:))]);
@@ -39,7 +39,7 @@ function [CSX, params, mesh_lines] = CreatePolygon(CSX, object, translate, rotat
   catch lasterror;
   end;  
 if iscell(pts);
-        display("Adding multiple polygons");
+        %display("Adding multiple polygons");
         for j = 1:length(pts);    % loop over polygons to cutout
           maxvals.x = unique([maxvals.x, unique(pts{j}(1,:))]);
           maxvals.y = unique([maxvals.y, unique(pts{j}(2,:))]);

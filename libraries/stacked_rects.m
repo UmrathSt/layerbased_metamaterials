@@ -23,7 +23,7 @@ function stacked_rects(UCDim, name, fr4_thickness, edge_lengths, kappa, epsRe, t
   UC.ly = UCDim;
   UC.lz = c0/ UC.f_start / 2 / UC.unit;
   UC.dz = c0 / (UC.f_stop) / UC.unit / 20;
-  UC.dx = UC.dz/7;
+  UC.dx = UC.dz/5;
   UC.dy = UC.dx;
   UC.dump_frequencies = [6.46, 8.64,9.2]*1e9;
   UC.s11_delta_f = 10e6;
@@ -54,6 +54,7 @@ function stacked_rects(UCDim, name, fr4_thickness, edge_lengths, kappa, epsRe, t
   rectangle.xycenter = [0, 0];
   rectangle.material.name = 'copper';
   rectangle.material.Kappa = 56e6;
+  rectangle.zrefinement = 3;
   
   # Substrate
   substrate.name = 'FR4 substrate';
@@ -107,8 +108,8 @@ function stacked_rects(UCDim, name, fr4_thickness, edge_lengths, kappa, epsRe, t
   add_mesh_lines.x = [];
   add_mesh_lines.y = [];
   [CSX, mesh, param_str, UC] = stack_layers(layer_list);
-  mesh.x = SmoothMeshLines([mesh.x, add_mesh_lines.x],1.2);
-  mesh.y = SmoothMeshLines([mesh.y, add_mesh_lines.y], 1.2);
+  mesh.x = SmoothMeshLines([mesh.x, add_mesh_lines.x],1.4);
+  mesh.y = SmoothMeshLines([mesh.y, add_mesh_lines.y], 1.4);
   CSX = DefineRectGrid(CSX, UC.unit, mesh);
   [CSX, port, UC] = definePorts(CSX, mesh, UC, 'y');
   UC.param_str = param_str;
