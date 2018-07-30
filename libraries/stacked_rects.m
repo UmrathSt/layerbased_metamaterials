@@ -14,7 +14,7 @@ function stacked_rects(UCDim, name, fr4_thickness, edge_lengths, kappa, epsRe, t
   UC.s11_filename = 'Sparameters_';
   UC.s11_subfolder = 'stacked_rects';
   UC.run_simulation = 1;
-  UC.show_geometry = 1;
+  UC.show_geometry = 0;
   UC.grounded = 1;
   UC.unit = 1e-3;
   UC.f_start = 3e9;
@@ -105,6 +105,8 @@ function stacked_rects(UCDim, name, fr4_thickness, edge_lengths, kappa, epsRe, t
     p.pts = rect;
     layer_list = vertcat(layer_list, {@CreateRect, s; @CreatePolygon, p});
   end;
+  s.material.name = 'outermost substrate';
+  layer_list = vertcat(layer_list, {@CreateRect, s});
   add_mesh_lines.x = [];
   add_mesh_lines.y = [];
   [CSX, mesh, param_str, UC] = stack_layers(layer_list);

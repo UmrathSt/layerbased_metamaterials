@@ -58,8 +58,8 @@ else;
 end;
   xMinMax = [min(maxvals.x), max(maxvals.x)];
   yMinMax = [min(maxvals.y), max(maxvals.y)];
-  mesh_lines.x = [-(UCDim/2+xMinMax(1))/2, maxvals.x, (UCDim/2+xMinMax(2))/2];
-  mesh_lines.y = [-(UCDim/2+yMinMax(1))/2, maxvals.y, (UCDim/2+yMinMax(2))/2];
+  mesh_lines.x = [xMinMax];
+  mesh_lines.y = [yMinMax];
   mesh_lines.z = [0];
 
   [CSX, params] = defineMaterial(CSX, object.material, '');
