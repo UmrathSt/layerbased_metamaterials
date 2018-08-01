@@ -14,10 +14,10 @@ cpunkte{1} = [[]];
 w1 = 0.5;
 L2 = 4;
 L1 = 7;
-for N = [3,5,7,9,11];
+for N = [7];
 edge_lengths = linspace(L1, L2, N);
 
-lz = linspace(0.5,0.2,N);
-stacked_rects(UCDim, ['UCDim_' num2str(UCDim) '_N_' num2str(length(edge_lengths)) '_L1_' num2str(L1) '_L2_' num2str(L2) '_lz_' num2str(sum(lz))],...
-         lz, edge_lengths, 56e6, 4.6, 0.1, 0);
+lz =[0.5,0.4,ones(1,N-2)*0.15];
+stacked_rects(UCDim, ['UCDim_' num2str(UCDim) '_N_' num2str(length(edge_lengths)) '_L1_' num2str(L1) '_L2_' num2str(L2) ...
+            '_lz_' num2str(sum(lz)) '_kappa_' num2str(kappa)], lz, edge_lengths, kappa, 4.6, 0.1, 0);
 end;

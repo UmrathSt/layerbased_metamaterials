@@ -54,6 +54,7 @@ function polygon(UCDim, name, fr4_thickness, points, cpoints, add_mesh_lines, ka
   rectangle.xycenter = [0, 0];
   rectangle.material.name = 'copper';
   rectangle.material.Kappa = 56e6;
+  rectangle.zrefinement = 4;
   
   # Substrate
   substrate.name = 'FR4 substrate';
@@ -66,12 +67,12 @@ function polygon(UCDim, name, fr4_thickness, points, cpoints, add_mesh_lines, ka
   substrate.material.name = 'FR4';
   substrate.material.Epsilon = epsRe;
   substrate.material.Kappa = 2*pi*UC.f_stop*tand*epsRe*EPS0;
-  substrate.zrefinement = 3;
+  substrate.zrefinement = 4;
 
    polygon.name = 'Rectangle';
    polygon.lx = UC.lx;
    polygon.ly = UC.ly;
-   polygon.lz = 0.05;
+   polygon.lz = 0.1;
    polygon.pts = points;
    polygon.cpts = cpoints;
    polygon.rotate = 0;

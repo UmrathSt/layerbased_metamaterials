@@ -60,7 +60,7 @@ end;
   yMinMax = [min(maxvals.y), max(maxvals.y)];
   mesh_lines.x = [xMinMax];
   mesh_lines.y = [yMinMax];
-  mesh_lines.z = [0];
+  mesh_lines.z = [];
 
   [CSX, params] = defineMaterial(CSX, object.material, '');
   if iscell(p);
